@@ -69,7 +69,7 @@ def print_data(enc, transformed, kmeans):
 
 
 if __name__ == "__main__":
-	d = __init__('surveyresponsesedited.csv')
+	d = __init__('survey_responses.csv')
 	data = do_preprocessing(d)
 	km = do_k_means(data, 3)
 	plot_k_means(km)
