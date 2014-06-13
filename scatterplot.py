@@ -43,16 +43,17 @@ def plot_colorful_data(xlist, ylist, xlabel, ylabel, shader, is_ug_major = True)
 	if is_ug_major:
 		colormap = {0: 'r', 1: 'b', 2: 'g', 3: 'y', 4: 'c', 5: 'k', 6:'m', 7:'k'}
 
-	# THIS IS UNSTABLE. SHOULD POSSIBLY FIX.
+	# TODO: THIS IS UNSTABLE. SHOULD POSSIBLY FIX.
 	# Then the shader must be degree_pursuing
 	else:
 		colormap = {0: 'y', 1: 'b', 2: 'r'}
 
 	i_xlist = [x + random.uniform(-jitter, jitter) for x in xlist]
+	i_ylist = [y + random.uniform(-jitter, jitter) for y in ylist]
 	plt.axis([-1, 5, -1, 9])
 
 	for i in range(0, len(i_xlist)):
-		plt.plot(i_xlist[i], ylist[i], colormap[shader[i]] + 'o', alpha = 0.7)
+		plt.plot(i_xlist[i], i_ylist[i], colormap[shader[i]] + 'o', alpha = 0.7)
 
 	# TEXT
 	# plt.text(0, 8, 'Red: ug_major')
