@@ -10,10 +10,6 @@ def make_hist(file):
 	ug_major = data_array[:,0]
 	degree_pursuing = data_array[:,2]
 
-
-	print ug_major
-	#categorical = np.array(ug_major, degree_pursuing)
-
 	# Make ug_major histogram
 	plt.figure()
 	plt.hist(ug_major, 8, histtype='bar')
