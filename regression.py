@@ -132,11 +132,7 @@ def extract_columns(file):
 
 if __name__ == "__main__":
 	''' Perform multinomial logistic regression with undergraduate major and degree pursuing as the
-		dependent variables. 
-
-		 '''
-
-
+		dependent variables. '''
 
 	ug, ca, dp, we, ge, mge, data = extract_columns('survey_responses.csv')
 	# do_all_linear_regressions(ug, ca, dp, we, ge, mge, data)
