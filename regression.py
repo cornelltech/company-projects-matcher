@@ -45,6 +45,24 @@ def do_all_regressions(file):
 	do_regression(x3, y3)
 	print ""
 
+	print "Predict work experience through coding ability and m_group experience"
+	x3 = data[[ca, mge]]
+	y3 = data[we]
+	do_regression(x3, y3)
+	print ""
+
+	print "Predict coding ability through work experience and m_group experience"
+	x3 = data[[we, mge]]
+	y3 = data[ca]
+	do_regression(x3, y3)
+	print ""
+
+	print "Predict m_group experience through work experience and coding ability"
+	x3 = data[[we, ca]]
+	y3 = data[mge]
+	do_regression(x3, y3)
+	print ""
+
 def do_regression(x, y):
 	estimate = sm.OLS(y, x).fit()
 	print estimate.summary()
