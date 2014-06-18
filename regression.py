@@ -120,6 +120,11 @@ def do_mn_logit(x, y):
 	estimate = model.fit()
 	print estimate.summary()
 
+def do_logit(x, y):
+	model = sm.Logit(y, x)
+	estimate = model.fit()
+	print estimate.summary()
+
 def extract_columns(file):
 	data = pd.read_csv(file)
 	ug = 'ug_major'
@@ -135,9 +140,14 @@ if __name__ == "__main__":
 		dependent variables. '''
 
 	ug, ca, dp, we, ge, mge, data = extract_columns('survey_responses.csv')
-	# do_all_linear_regressions(ug, ca, dp, we, ge, mge, data)
 	
-	do_all_mn_logits(ug, ca, dp, we, ge, mge, data)
+	do_all_linear_regressions(ug, ca, dp, we, ge, mge, data)
+	
+	#do_all_mn_logits(ug, ca, dp, we, ge, mge, data)
+	# a = data[ug]
+	# b = data[[ca, dp]]
+	# do_logit(b, a)
+
 
 
 	
