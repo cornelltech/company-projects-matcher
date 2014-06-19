@@ -48,8 +48,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		Returns
 		--------
 
-		teams: a list of tuples that represent teams. Each tuple will contain integers,
-				which represent the IDs of the students in the team.
+		teams: a list of lists that represent teams. Each team list will contain 
+		(type * id) tuples.
 	'''
 	# TODO: must guarantee that each team has at least one player of each team.
 	# PSEUDOCODE
@@ -74,37 +74,88 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	#	toReturn[i] = team_creating
 	# print out the leftover students (iterate through both lists and print IDs)
 
+	# Guarantee proper input.
 	if ((MBA_student_ids == []) | (MEng_student_ids == [])):
 		raise InputError('Student ID lists must not be empty.')
+	
 	elif (not are_unique(MBA_student_ids, MEng_student_ids)):
 		raise InputError('Student ID lists must not overlap.')
+	
+	# Input is properly formatted.
 	else:
 		total_students = len(MBA_student_ids) + len(MEng_student_ids)
 		num_teams = total_students / team_size
+
+		if ((len(MBA_student_ids) < num_teams) | (len(MEng_student_ids) < num_teams)):
+			raise InputError('Not enough MBAs or MEngs.')
+
 		to_return = [None] * num_teams
+		
+		# For each team that we need to create:
 		for i in range(0, num_teams):
+			
 			team_creating = [None] * team_size
+			
+			# At the beginning, the team has neither MBAs nor MEngs.
+			team_has_MBA = False
+			team_has_MEng = False
+			
+			# Start adding to the beginning of the team.
+			# Initially have the entire team to fill.
 			team_index = 0
 			num_left = team_size
+			
+			# While there are empty spots left on the team:
 			while (num_left > 0):
-				cur_team_info = None
+
+				# Generate a random number between 0 and 1.
 				rand = random.random()
-				
-				# Choosing which team to take a student from.
-				if (rand >= 0.5 and not(MBA_student_ids == [])):
-					cur_team_info = ("MBA", MBA_student_ids)
-				elif (not (MEng_student_ids == [])):
-					cur_team_info = ("MEng", MEng_student_ids)
+
+				# Function to pick a team in a purely random manner.
+				def rand_team_choose():
+					if (rand >= 0.5 and not(MBA_student_ids == [])):
+						return ("MBA", MBA_student_ids)
+					elif (not (MEng_student_ids == [])):
+						return ("MEng", MEng_student_ids)
+					else:
+						raise FunctionError('AMEYA FIX THIS: Both teams are empty.')
+
+				# Logic to pick the current team to take students from.
+				def pick_cur_team():
+					# If the team either has both MBA and MEng students,
+					# or the team has neither, we can pick the team in
+					# a purely random manner through rand_team_choose().
+					if (team_has_MBA == team_has_MEng):
+						return rand_team_choose()
+
+					# Otherwise, if the team doesn't have an MBA student,
+					# we will add an MBA student.
+					elif (not(team_has_MBA)):
+						return ("MBA", MBA_student_ids)
+					
+					# Doesn't have MEng, so add MEng.
+					else:
+						return ("MEng", MEng_student_ids)
+
+				# Call the above function.
+				cur_team_info = pick_cur_team()
+
+				# Extract fields.
+				cur_team_name = cur_team_info[0]
+				cur_team = cur_team_info[1]
+
+				if (cur_team_name == "MBA"):
+					team_has_MBA = True
+
+				elif (cur_team_name == "MEng"):
+					team_has_MEng = True
+
+				# Sanity check for when we add more student types.
 				else:
-					raise FunctionError('AMEYA FIX THIS: Both teams are empty.')
+					raise FunctionError('Are there more than two types of students?')
 				
-				# Choose which player to take from the current team.
-				if (cur_team_info == None):
-					raise FunctionError('AMEYA FIX THIS: Cur team not assigned.')
-				else:
-					cur_team_name = cur_team_info[0]
-					cur_team = cur_team_info[1]
-				
+				# TODO: make sure teams cannot both be empty.
+				# Protect against randint error for team of size 1.
 				if (len(cur_team) == 1):
 					r = 0
 				else:
@@ -170,6 +221,6 @@ def are_unique(l1, l2):
 
 if __name__ == "__main__":
 	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
-	l1 = [3]
+	l1 = [3, 19, 20, 8]
 	l2 = [2, 1, 6, 7]
 	create_teams(l1, l2, 3)
