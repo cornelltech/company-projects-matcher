@@ -1,6 +1,13 @@
 #import exceptions
+import random
 
 class InputError(Exception):
+	def __init__(self, value):
+		self.val = value
+	def __str__(self):
+		return repr(self.val)
+
+class FunctionError(Exception):
 	def __init__(self, value):
 		self.val = value
 	def __str__(self):
@@ -44,20 +51,21 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		teams: a list of tuples that represent teams. Each tuple will contain integers,
 				which represent the IDs of the students in the team.
 	'''
+	# TODO: must guarantee that each team has at least one player of each team.
 	# PSEUDOCODE
 	# if student ID lists are empty or team sizes is empty, error.
 	# if the lists are not unique, error.
 	# make a list of length toReturn = (total students / team_size) (also integer division is a thing YAY)
 	# while there are still teams to make (for i in range (0, toReturn))
-	# 	make a temporary team team_creating of [-1] * team_size
+	# 	make a temporary team team_creating of [None] * team_size
 	#	team_index = 0
 	# 	num_left = team_size
 	# 	while num_left > 0
 	#		cur_team = None
 	# 		generate a random number between 0 and 1.
 	#		if the number is greater than 0.5, cur_team is the MBA team.
-	#		otherwise, cur_team is the MEng team.
-	#		generate a random number r between 0 and len(cur_team)
+	#		otherwise, cur_team is the MEng team. (check for errors here)
+	#		generate a random integer r between 0 and len(cur_team)
 	#		cur_student_id = cur_team.pop(r) (this is good because it actually removes the ID
 	# 							from the original list)
 	#		team_creating[team_index] = cur_student_id
@@ -71,7 +79,51 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	elif (not are_unique(MBA_student_ids, MEng_student_ids)):
 		raise InputError('Student ID lists must not overlap.')
 	else:
-		pass
+		total_students = len(MBA_student_ids) + len(MEng_student_ids)
+		num_teams = total_students / team_size
+		to_return = [None] * num_teams
+		for i in range(0, num_teams):
+			team_creating = [None] * team_size
+			team_index = 0
+			num_left = team_size
+			while (num_left > 0):
+				cur_team_info = None
+				rand = random.random()
+				
+				# Choosing which team to take a student from.
+				if (rand >= 0.5 and not(MBA_student_ids == [])):
+					cur_team_info = ("MBA", MBA_student_ids)
+				elif (not (MEng_student_ids == [])):
+					cur_team_info = ("MEng", MEng_student_ids)
+				else:
+					raise FunctionError('AMEYA FIX THIS: Both teams are empty.')
+				
+				# Choose which player to take from the current team.
+				if (cur_team_info == None):
+					raise FunctionError('AMEYA FIX THIS: Cur team not assigned.')
+				else:
+					cur_team_name = cur_team_info[0]
+					cur_team = cur_team_info[1]
+				
+				if (len(cur_team) == 1):
+					r = 0
+				else:
+					r = random.randint(0, len(cur_team) - 1)
+				
+				# Place the player onto our current team.
+				cur_student_id = cur_team.pop(r)
+				to_add = (cur_team_name, cur_student_id)
+				team_creating[team_index] = to_add
+				team_index += 1
+				num_left -= 1
+
+			to_return[i] = team_creating
+		print to_return
+		print "MEng student IDs is "
+		print MEng_student_ids
+		print "MBA student IDs is "
+		print MBA_student_ids
+
 
 # TODO: undefined size thing. Look at TODOs above create_teams.
 # def create_student_ids(types_and_sizes):
