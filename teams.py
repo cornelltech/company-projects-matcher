@@ -1,3 +1,11 @@
+#import exceptions
+
+class InputError(Exception):
+	def __init__(self, value):
+		self.val = value
+	def __str__(self):
+		return repr(self.val)
+
 # TODO: Make this work for arbitrary number of student types. 
 # TODO: Make user not have to input the actual student IDs.
 #		Can do this by picking the degree with the max
@@ -36,7 +44,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		teams: a list of tuples that represent teams. Each tuple will contain integers,
 				which represent the IDs of the students in the team.
 	'''
-	
+	# PSEUDOCODE
 	# if student ID lists are empty or team sizes is empty, error.
 	# if the lists are not unique, error.
 	# make a list of length toReturn = (total students / team_size) (also integer division is a thing YAY)
@@ -58,9 +66,12 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	#	toReturn[i] = team_creating
 	# print out the leftover students (iterate through both lists and print IDs)
 
-
-
-	print "hi"
+	if ((MBA_student_ids == []) | (MEng_student_ids == [])):
+		raise InputError('Student ID lists must not be empty.')
+	elif (not are_unique(MBA_student_ids, MEng_student_ids)):
+		raise InputError('Student ID lists must not overlap.')
+	else:
+		pass
 
 # TODO: undefined size thing. Look at TODOs above create_teams.
 # def create_student_ids(types_and_sizes):
@@ -106,7 +117,7 @@ def are_unique(l1, l2):
 	return (set(l1).intersection(set(l2)) == set([]))
 
 if __name__ == "__main__":
-	types_and_sizes = [("MBA", 39), ("MEng", 35)]
-	l1 = [2, 3]
+	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
+	l1 = [3]
 	l2 = [2, 1, 6, 7]
-	print are_unique(l1, l2)
+	create_teams(l1, l2, 3)
