@@ -246,6 +246,11 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 
 	return output
 
+
+# TODO: ensure that the teams satisfy the three criteria specified in 
+# 		create_teams (i.e. one of each type of student on each team.)
+#		Can do this by checking how many of each type there are
+# 		on each team, and 
 def fill_teams(output):
 	'''
 		Used after the initial loop assigning students to teams. Used to assign remaining
@@ -271,7 +276,25 @@ def fill_teams(output):
 		add_students_to_team(remaining_MBAs, 'MBA', output_solution, has_spots)
 		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
 
-	return output	
+	print "Diversity: " + str(is_diverse(output_solution))
+	return output_solution
+
+def is_diverse(output):
+	print "Output is " + str(output)
+	for team in output:
+		#print "Team is " + str(team)
+		team_has_MBA = False
+		team_has_MEng = False
+		for person in team:
+			#print "Person is " + str(person)
+			if (person != None):
+				if (person[0] == "MBA"):
+					team_has_MBA = True
+				elif (person[0] == "MEng"):
+					team_has_MEng = True
+		if (not (team_has_MBA) or not(team_has_MEng)):
+			return False
+	return True
 
 def clean_team(output):
 	result = [None] * len(output)
