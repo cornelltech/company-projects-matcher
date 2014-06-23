@@ -102,7 +102,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		for i in range(0, num_teams):
 			
 			# Initialize empty tuple to hold the current team.
-			team_creating = [None] * team_size
+			team_creating = [None] * (team_size + 1)
 			
 			# At the beginning, the team has neither MBAs nor MEngs.
 			team_has_MBA = False
@@ -121,12 +121,20 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 				# Function to pick a team in a purely random manner.
 				def rand_team_choose():
-					if (rand >= 0.5 and not(MBA_student_ids == [])):
-						return ("MBA", MBA_student_ids)
-					elif (not (MEng_student_ids == [])):
-						return ("MEng", MEng_student_ids)
+					if (rand >= 0.5):
+						# Pick MBAs first, if not empty.
+						if (not(MBA_student_ids == [])):
+							return ("MBA", MBA_student_ids)
+						# Pick MEngs if MBA is empty.
+						else:
+							return ("MEng", MEng_student_ids)
 					else:
-						raise FunctionError('AMEYA FIX THIS: Both teams are empty.')
+						# Pick MEngs first, if not empty.
+						if (not(MEng_student_ids == [])):
+							return ("MEng", MEng_student_ids)
+						# Pick MBAs if MEng is empty.
+						else:
+							return ("MBA", MBA_student_ids)
 
 				# Logic to pick the current team to take students from.
 				def pick_cur_team():
@@ -171,7 +179,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				
 				# Place the player onto our current team.
 				# NOTE: if we want to keep the input teams unchanged, then change this
-				# pop into a peek.
+				# pop into a peek. The problem with this is that we will repeat the students
+				# on the teams, and our loop will never end.
 				cur_student_id = cur_team.pop(r)
 				to_add = (cur_team_name, cur_student_id)
 				team_creating[team_index] = to_add
@@ -179,7 +188,6 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				num_left -= 1
 
 			to_return[i] = team_creating
-		print to_return
 		# NOTE: if we changed the above pop to a peek, printing this information
 		# 		should be useless because our input teams should be unchanged.
 		#		This would be a good place to sanity check for this.
@@ -188,6 +196,19 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		print MEng_student_ids
 		print "MBA student IDs is "
 		print MBA_student_ids
+
+		while (len(MEng_student_ids) > 0):
+			r = random.randint(0, len(MEng_student_ids) - 1)
+			cur_student_id = MEng_student_ids.pop(r)
+
+		#NOTE: fill in None with the desired thingy.
+
+
+		print to_return
+		print "The formatted team is:",
+		print_team (to_return)
+		return to_return
+
 
 
 # TODO: undefined size thing. Look at TODOs above create_teams.
@@ -229,6 +250,69 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	# student_ids_two = range(num_students_one, num_students_one + num_students_two)
 
 	# return student_ids_one, student_ids_two
+
+def have_spots(output):
+	'''
+		The teams out of our result formation that have spots for new members.
+	'''
+	result = [0] * len(output)
+	# print "length of result is "
+	# print len(result)
+	cur = 0
+	# print "cur is "
+	# print cur
+	for team in output:
+		for spot in team:
+			if (spot == None):
+				# print "spot is None"
+				result[cur] = 1
+		cur += 1
+		# print "did iteration. cur is "
+		# print cur
+	return result
+
+def fill_teams(t1, t1_type, t2, t2_type, team_size, res):
+	'''
+		Used after the initial loop assigning students to teams. Used to assign remaining
+		students to teams.
+
+		Parameters
+		---------
+		t1: team 1 (i.e. remaining MBA students.)
+
+		t1_type: string telling us what type t1 is.
+
+		t2: team 2 (i.e. remaining MEng students.)
+
+		t2_type: string telling us what type t2 is.
+
+		team_size: the ideal team size (taken from create_teams).
+
+		res: the total team formations that create_teams will output.
+
+	'''
+	# while there are students left on t1
+	while (len(t1) > 0):
+		# get a random student
+		if (len(t1) == 1):
+			r = 0
+		else:
+			r = random.randint(0, len(t1) - 1)
+		cur_student_id = t1.pop(r)
+		res[team_size - 1] = (t1_type, cur_student_id)
+
+# TODO: add in logic for commas in the right places.
+def print_team(output):
+	result = ""
+	result += '['
+	for team in output:
+		result += '['
+		for tup in team:
+			if (tup != None):
+				result += str(tup) + ' '
+		result += ']'
+	result += ']'
+	print result
 
 def are_unique(l1, l2):
 	''' 
@@ -280,7 +364,9 @@ if __name__ == "__main__":
 	# print res
 	# t1 = res[0]
 	# t2 = res[1]
-	#create_teams(l1, l2, 3)
+	output = create_teams(l1, l2, 4)
+	res = have_spots(output)
+	print res
 
 	# Checks for invalid input
 	# create_teams(l1, l2, 0)
@@ -292,5 +378,6 @@ if __name__ == "__main__":
 	# create_teams([5], [], 8)
 	# create_teams([8], [9, 0], 4)
 	# create_teams ([0], [8, 9], 4)
+
 
 
