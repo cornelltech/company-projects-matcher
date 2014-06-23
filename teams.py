@@ -47,34 +47,16 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 		Returns
 		--------
+		A tuple (teams, l1, l2), with:
 
-		teams: a list of lists that represent teams. Each team list will contain 
-		(type * id) tuples.
+			teams: a list of lists that represent teams. Each team list will contain 
+			(type * id) tuples.
+
+			l1: the first team passed into create_teams.
+
+			l2: the second team passed into create_teams.
 
 	'''
-	# TODO: must guarantee that each team has at least one player of each team.
-	# PSEUDOCODE
-	# if student ID lists are empty or team sizes is empty, error.
-	# if the lists are not unique, error.
-	# make a list of length toReturn = (total students / team_size) (also integer division is a thing YAY)
-	# while there are still teams to make (for i in range (0, toReturn))
-	# 	make a temporary team team_creating of [None] * team_size
-	#	team_index = 0
-	# 	num_left = team_size
-	# 	while num_left > 0
-	#		cur_team = None
-	# 		generate a random number between 0 and 1.
-	#		if the number is greater than 0.5, cur_team is the MBA team.
-	#		otherwise, cur_team is the MEng team. (check for errors here)
-	#		generate a random integer r between 0 and len(cur_team)
-	#		cur_student_id = cur_team.pop(r) (this is good because it actually removes the ID
-	# 							from the original list)
-	#		team_creating[team_index] = cur_student_id
-	#		team_index += 1
-	# 		num_left -= 1
-	#	toReturn[i] = team_creating
-	# print out the leftover students (iterate through both lists and print IDs)
-
 	# Guarantee proper input.
 	if ((MBA_student_ids == []) | (MEng_student_ids == [])):
 		raise InputError('Student ID lists must not be empty.')
@@ -178,9 +160,6 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 					r = random.randint(0, len(cur_team) - 1)
 				
 				# Place the player onto our current team.
-				# NOTE: if we want to keep the input teams unchanged, then change this
-				# pop into a peek. The problem with this is that we will repeat the students
-				# on the teams, and our loop will never end.
 				cur_student_id = cur_team.pop(r)
 				to_add = (cur_team_name, cur_student_id)
 				team_creating[team_index] = to_add
@@ -188,66 +167,16 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				num_left -= 1
 
 			to_return[i] = team_creating
-		# NOTE: if we changed the above pop to a peek, printing this information
-		# 		should be useless because our input teams should be unchanged.
-		#		This would be a good place to sanity check for this.
 
 		print "After running create_teams:"
 		print "     MEng student IDs is: " + str(MEng_student_ids)
 		print "     MBA student IDs is: " + str(MBA_student_ids)
 
-		# TODO: fill in None with the remaining people.
-
-		#print "The messy version is:",
 		print "     Initial solution space is: " + str(to_return)
-		
-		#clean = clean_team(to_return)
-		# print "The clean version is:",
-		# print clean
-		
-		# NOTE: do not change this to the clean version. ONLY want to use the clean_team
-		# function after we have filled the None spots.
+
 		return (to_return, MBA_student_ids, MEng_student_ids)
 
 # TODO: undefined size thing. Look at TODOs above create_teams.
-# def create_student_ids(types_and_sizes):
-# 	# Internal method to create student IDs from number of each type of student.
-
-# Parameters
-# 		----------
-
-# 		types_and_sizes: a list of tuples of the form (student_type, num_students).
-# 						By inputting a specific type of student, you are stating
-# 						that you want at least one of that type of student on each
-# 						team.
-
-# 						For example: [(MBA, 39), (MEng, 35)].
-# 						NOTE: for now the student "type" is really just a string.
-# 						Will probably change that later.
-
-# 	cur_id = 0 
-# 	student_ids = [[None for x in xrange()]]
-# 	for i in range(0, len(types_and_sizes)):
-# 		tuple_i = types_and_sizes[i]
-# 		num_students_i = tuple_i[1]
-
-# 		print type(range(cur_id, cur_id + num_students_i))
-
-# 		student_ids[i] = range(cur_id, cur_id + num_students_i)
-# 		cur_id = num_students_i
-# 	return student_ids
-
-	# Note: way for two teams.
-	# tuple_one = types_and_sizes[0]
-	# tuple_two = types_and_sizes[1]
-
-	# num_students_one = tuple_one[1]
-	# num_students_two = tuple_two[1]
-
-	# student_ids_one = range(0, num_students_one)
-	# student_ids_two = range(num_students_one, num_students_one + num_students_two)
-
-	# return student_ids_one, student_ids_two
 
 def teams_with_empty_spots(output):
 	'''
@@ -255,33 +184,24 @@ def teams_with_empty_spots(output):
 		the i-th team has spots for new members.
 	'''
 	result = [0] * len(output)
-	# print "length of result is "
-	# print len(result)
 	cur = 0
-	# print "cur is "
-	# print cur
 	for team in output:
 		for spot in team:
 			if (spot == None):
 				result[cur] += 1
 		cur += 1
-		# print "did iteration. cur is "
-		# print cur
 	return result
 
-# While there are students left on t1
 def add_students_to_team(remaining_students, s_type, output, empty_spots):
-	
-	# print "Before adding extra students to teams, our output is ",
-	# print output
-	# print "Before adding extra students to teams, our remaining students are ",
-	# print remaining_students
-
+	'''
+		Given remaining students (and type), an output from create_teams, and
+		a list of empty spots in the list (comes from teams_with_empty_spots):
+		add the remaining students to teams with spots.
+	'''
 	team_to_look_at = 0 
 	if (len(remaining_students) == 0):
 		return output
 
-	# TODO: run tests on the logic here.
 	while (len(remaining_students) > 0):
 			
 	# Get a random student
@@ -289,9 +209,6 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 			r = 0
 		else:
 			r = random.randint(0, len(remaining_students) - 1)
-		
-		# print "Length of the remaining students is ",
-		# print len(remaining_students)
 
 		cur_student_id = remaining_students.pop(r)
 		new_student = (s_type, cur_student_id)
@@ -299,7 +216,7 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		# Find the next available spot.
 
 		# TODO: decide what to do in the case where there is no existing team to look at.
-		# TODO: could add one extra team of all None as a buffer to the initial. Would never
+		#  		could add one extra team of all None as a buffer to the initial. Would never
 		# 		need more than 1 such buffer because if there was room for one more team,
 		# 		it would have already been made.
 		while (empty_spots[team_to_look_at] <= 0):
@@ -308,42 +225,24 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		 		print "Ended early. Output is: ",
 		 		print output
 				return output
-	
-		# print "Team to look at is: ",
-		# print team_to_look_at
-
-		# print "New student is: ",
-		# print new_student
-
-		# print "Cur team is ",
-		# print output[team_to_look_at]
 		
 		cur_team = output[team_to_look_at]
 
 		# We have found a team with an empty spot.
 		for i in range (0, len(cur_team)):
 			if (cur_team[i] == None):
-				# print "Cur team at i is ",
-				# print cur_team[i]
-				# print "STUDENT IS NONE ALERT"
 				cur_team[i] = new_student
-				# print "Cur team at i is now ",
-				# print cur_team[i]
-				# print "Cur team is now ",
-				# print cur_team
 		
-		# UPDATE THE EMPTY SPOTS STRUCTURE
+		# Update the empty spots structure.
 		empty_spots[team_to_look_at] -= 1
 	
 	print "After adding extra students to teams, our solution space is ",
 	print output
-	# print "After adding extra students to teams, our remaining students are ",
-	# print remaining_students
 
 	return output
 
-# TODO: finish this
-def fill_teams(t1, t1_type, t2, t2_type, team_size, output):
+# TODO: this.
+def fill_teams(a1, a1_type, a2, a2_type, team_size, output):
 	'''
 		Used after the initial loop assigning students to teams. Used to assign remaining
 		students to teams.
@@ -363,14 +262,22 @@ def fill_teams(t1, t1_type, t2, t2_type, team_size, output):
 		output: the team formations that create_teams will output.
 
 	'''
-	pass
-	# teams_with_empty_spots = have_spots(output)
-	# result = [None] * len(output)
-	
 
-	# print 
-	# add_students_to_team(t1, t1_type, )
-	# add_students_to_team(t2)
+	has_spots = teams_with_empty_spots(output)
+	print "The teams with empty spots are " + str(has_spots)
+
+	# Random number to determine which students to add to team first.
+	rand = random.random()
+	if (rand >= 0.5):
+		add_students_to_team(a2, 'MEng', output, has_spots)
+		add_students_to_team(a1, 'MBA', output, has_spots)
+	else:
+		add_students_to_team(a1, 'MBA', output, has_spots)
+		add_students_to_team(a2, 'MEng', output, has_spots)
+
+
+	pass
+	
 
 	# TODO: abstract the above loop into a function, and call it on t2 as well.
 	# TODO: make sure that the above is correct.
