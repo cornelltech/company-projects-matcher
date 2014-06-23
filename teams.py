@@ -50,6 +50,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 		teams: a list of lists that represent teams. Each team list will contain 
 		(type * id) tuples.
+
 	'''
 	# TODO: must guarantee that each team has at least one player of each team.
 	# PSEUDOCODE
@@ -80,20 +81,27 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	
 	elif (not are_unique(MBA_student_ids, MEng_student_ids)):
 		raise InputError('Student ID lists must not overlap.')
+
+	elif (team_size == 0):
+		raise InputError('Team size cannot be zero.')
 	
-	# Input is properly formatted.
 	else:
 		total_students = len(MBA_student_ids) + len(MEng_student_ids)
 		num_teams = total_students / team_size
 
-		if ((len(MBA_student_ids) < num_teams) | (len(MEng_student_ids) < num_teams)):
-			raise InputError('Not enough MBAs or MEngs.')
+		if (num_teams == 0):
+			raise InputError('Team size is too large for given input.')
 
+		if ((len(MBA_student_ids) < num_teams) | (len(MEng_student_ids) < num_teams)):
+			raise InputError('Not enough MBAs or MEngs to produce balanced teams.')
+
+		# Initialize empty array to hold the final teams.
 		to_return = [None] * num_teams
 		
 		# For each team that we need to create:
 		for i in range(0, num_teams):
 			
+			# Initialize empty tuple to hold the current team.
 			team_creating = [None] * team_size
 			
 			# At the beginning, the team has neither MBAs nor MEngs.
@@ -122,7 +130,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 				# Logic to pick the current team to take students from.
 				def pick_cur_team():
-					# If the team either has both MBA and MEng students,
+
+					# If the team either has both MBA and MEng students
 					# or the team has neither, we can pick the team in
 					# a purely random manner through rand_team_choose().
 					if (team_has_MBA == team_has_MEng):
@@ -154,7 +163,6 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				else:
 					raise FunctionError('Are there more than two types of students?')
 				
-				# TODO: make sure teams cannot both be empty.
 				# Protect against randint error for team of size 1.
 				if (len(cur_team) == 1):
 					r = 0
@@ -162,6 +170,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 					r = random.randint(0, len(cur_team) - 1)
 				
 				# Place the player onto our current team.
+				# NOTE: if we want to keep the input teams unchanged, then change this
+				# pop into a peek.
 				cur_student_id = cur_team.pop(r)
 				to_add = (cur_team_name, cur_student_id)
 				team_creating[team_index] = to_add
@@ -170,6 +180,10 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 			to_return[i] = team_creating
 		print to_return
+		# NOTE: if we changed the above pop to a peek, printing this information
+		# 		should be useless because our input teams should be unchanged.
+		#		This would be a good place to sanity check for this.
+
 		print "MEng student IDs is "
 		print MEng_student_ids
 		print "MBA student IDs is "
@@ -217,10 +231,66 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	# return student_ids_one, student_ids_two
 
 def are_unique(l1, l2):
+	''' 
+		Checks if two given lists are unique.
+	'''
 	return (set(l1).intersection(set(l2)) == set([]))
+
+def do_loop_to_create_teams(t1, t2, s, n):
+	'''
+		A loop that runs create_teams n times on the given input
+		lists t1 and t2. It will return a list of multiple random
+		team formations from our input lists.
+
+		Parameters:
+		----------
+
+		t1: a list of the student ids of the MBA students.
+
+		t2: a list of the student ids of the MEng students.
+
+		s: team_size (see create_teams docs.)
+
+		n: number of iterations. 
+
+		Returns:
+		--------
+
+		teams: a list of lists, where each internal list represents a team 
+		formation and is therefore made up of (type * id) tuples.
+
+	'''
+	# TODO: copy the initial arrays over into a buffer.
+	# TODO: create a while loop to perform the team creation multiple times.
+	result = create_teams(t1, t2, s)
+	return (t1, t2, result)
 
 if __name__ == "__main__":
 	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
 	l1 = [3, 19, 20, 8]
 	l2 = [2, 1, 6, 7]
-	create_teams(l1, l2, 3)
+
+	# TODO: find out how to do assertion tests (or equivalent) in Python.
+
+	# Checks for valid output
+
+	# Use when above function is defined.
+	# res = do_loop_to_create_teams(l1, l2, 3)
+	# print "res is "
+	# print res
+	# t1 = res[0]
+	# t2 = res[1]
+	#create_teams(l1, l2, 3)
+
+	# Checks for invalid input
+	# create_teams(l1, l2, 0)
+	# create_teams(l2, l1, 0)
+	# create_teams([], [], 3)
+	# create_teams([], [4], 1)
+	# create_teams([], [4], 8)
+	# create_teams([5], [], 1)
+	# create_teams([5], [], 8)
+	# create_teams([8], [9, 0], 4)
+	# create_teams ([0], [8, 9], 4)
+
+
