@@ -277,7 +277,12 @@ def fill_teams(output):
 		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
 
 	print "Diversity: " + str(is_diverse(output_solution))
-	return output_solution
+
+	if (not (is_diverse(output_solution))):
+		pass
+		# TODO: add some swaps to make it diverse.		
+	else:
+		return output_solution
 
 def is_diverse(output):
 	print "Output is " + str(output)
