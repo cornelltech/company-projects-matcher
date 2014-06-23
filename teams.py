@@ -197,10 +197,6 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		print "After running create_teams, MBA student IDs is "
 		print MBA_student_ids
 
-		while (len(MEng_student_ids) > 0):
-			r = random.randint(0, len(MEng_student_ids) - 1)
-			cur_student_id = MEng_student_ids.pop(r)
-
 		# TODO: fill in None with the remaining people.
 
 		#print "The messy version is:",
@@ -212,7 +208,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		
 		# NOTE: do not change this to the clean version. ONLY want to use the clean_team
 		# function after we have filled the None spots.
-		return to_return
+		return (to_return, MBA_student_ids, MEng_student_ids)
 
 # TODO: undefined size thing. Look at TODOs above create_teams.
 # def create_student_ids(types_and_sizes):
@@ -268,8 +264,7 @@ def teams_with_empty_spots(output):
 	for team in output:
 		for spot in team:
 			if (spot == None):
-				# print "spot is None"
-				result[cur] = 1
+				result[cur] += 1
 		cur += 1
 		# print "did iteration. cur is "
 		# print cur
@@ -278,6 +273,8 @@ def teams_with_empty_spots(output):
 # While there are students left on t1
 def add_students_to_team(remaining_students, s_type, output, empty_spots):
 	
+	print "Before adding extra students to teams, our output is ",
+	print output
 	print "Before adding extra students to teams, our remaining students are ",
 	print remaining_students
 
@@ -299,7 +296,7 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		new_student = (s_type, cur_student_id)
 		
 		# Find the next available spot.
-		while (not (empty_spots[team_to_look_at])):
+		while (empty_spots[team_to_look_at] <= 0):
 			team_to_look_at += 1
 	
 		print "Team to look at is: ",
@@ -312,6 +309,8 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		print output[team_to_look_at]
 
 		cur_team = output[team_to_look_at]
+
+		# We have found a team with an empty spot.
 		for i in range (0, len(cur_team)):
 			if (cur_team[i] == None):
 				print "Cur team at i is ",
@@ -323,8 +322,8 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 				# UPDATE THE EMPTY SPOTS STRUCTURE
 				print "Cur team is now ",
 				print cur_team
-				break
-
+		
+		empty_spots[team_to_look_at] -= 1
 	
 	print "After adding extra students to teams, our solution space is ",
 	print output
@@ -423,10 +422,22 @@ if __name__ == "__main__":
 	# print res
 	# t1 = res[0]
 	# t2 = res[1]
-	output = create_teams(l1, l2, 3)
+	o = create_teams(l1, l2, 3)
+	output = o[0]
+
+	a1 = o[1]
+	a2 = o[2]
+
+	print "After creating teams, a1 is now ",
+	print a1 
+
+	print "After creating teams, a2 is now ",
+	print a2
+
 	has_spots = teams_with_empty_spots(output)
-	add_students_to_team(l1, 'MBA', output, has_spots)
-	add_students_to_team(l2, 'MEng', output, has_spots)
+
+	add_students_to_team(a1, 'MBA', output, has_spots)
+	add_students_to_team(a2, 'MEng', output, has_spots)
 
 	# res = have_spots(output)
 	# print res
