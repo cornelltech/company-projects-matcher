@@ -43,11 +43,11 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 						((total_num_students) mod team_size)
 					teams with (team_size + 1) students.
 
-					TODO: check this with Greg. 
+					TODO: add to teams based on their technical/businessy needs.
 
 		Returns
 		--------
-		A tuple (teams, l1, l2), with:
+		A tuple (teams, l1, l2, team_size), with:
 
 			teams: a list of lists that represent teams. Each team list will contain 
 			(type * id) tuples.
@@ -55,6 +55,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 			l1: the first team passed into create_teams.
 
 			l2: the second team passed into create_teams.
+
+			team_size: passed along from input.
 
 	'''
 	# Guarantee proper input.
@@ -78,7 +80,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 			raise InputError('Not enough MBAs or MEngs to produce balanced teams.')
 
 		# Initialize empty array to hold the final teams.
-		to_return = [None] * num_teams
+		to_return = [None] * (num_teams + 1)
 		
 		# For each team that we need to create:
 		for i in range(0, num_teams):
@@ -168,13 +170,15 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 			to_return[i] = team_creating
 
+		to_return[num_teams] = [None] * team_size
+
 		print "After running create_teams:"
 		print "     MEng student IDs is: " + str(MEng_student_ids)
 		print "     MBA student IDs is: " + str(MBA_student_ids)
 
 		print "     Initial solution space is: " + str(to_return)
 
-		return (to_return, MBA_student_ids, MEng_student_ids)
+		return (to_return, MBA_student_ids, MEng_student_ids, team_size)
 
 # TODO: undefined size thing. Look at TODOs above create_teams.
 
@@ -232,6 +236,7 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		for i in range (0, len(cur_team)):
 			if (cur_team[i] == None):
 				cur_team[i] = new_student
+				break
 		
 		# Update the empty spots structure.
 		empty_spots[team_to_look_at] -= 1
@@ -241,46 +246,32 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 
 	return output
 
-# TODO: this.
-def fill_teams(a1, a1_type, a2, a2_type, team_size, output):
+def fill_teams(output):
 	'''
 		Used after the initial loop assigning students to teams. Used to assign remaining
 		students to teams.
 
 		Parameters
-		---------
-		t1: team 1 (i.e. remaining MBA students.)
-
-		t1_type: string telling us what type t1 is.
-
-		t2: team 2 (i.e. remaining MEng students.)
-
-		t2_type: string telling us what type t2 is.
-
-		team_size: the ideal team size (taken from create_teams).
-
+		----------
 		output: the team formations that create_teams will output.
 
 	'''
+	output_solution = output[0]
+	remaining_MBAs = output[1]
+	remaining_MEngs = output[2]
 
-	has_spots = teams_with_empty_spots(output)
-	print "The teams with empty spots are " + str(has_spots)
+	has_spots = teams_with_empty_spots(output_solution)
 
 	# Random number to determine which students to add to team first.
 	rand = random.random()
 	if (rand >= 0.5):
-		add_students_to_team(a2, 'MEng', output, has_spots)
-		add_students_to_team(a1, 'MBA', output, has_spots)
+		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
+		add_students_to_team(remaining_MBAs, 'MBA', output_solution, has_spots)
 	else:
-		add_students_to_team(a1, 'MBA', output, has_spots)
-		add_students_to_team(a2, 'MEng', output, has_spots)
+		add_students_to_team(remaining_MBAs, 'MBA', output_solution, has_spots)
+		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
 
-
-	pass
-	
-
-	# TODO: abstract the above loop into a function, and call it on t2 as well.
-	# TODO: make sure that the above is correct.
+	return output	
 
 def clean_team(output):
 	result = [None] * len(output)
@@ -342,22 +333,7 @@ if __name__ == "__main__":
 	# t1 = res[0]
 	# t2 = res[1]
 	o = create_teams(l1, l2, 5)
-	output = o[0]
-
-	a1 = o[1]
-	a2 = o[2]
-
-	has_spots = teams_with_empty_spots(output)
-	print "The teams with empty spots are " + str(has_spots)
-
-	# Random number to determine which students to add to team first.
-	rand = random.random()
-	if (rand >= 0.5):
-		add_students_to_team(a2, 'MEng', output, has_spots)
-		add_students_to_team(a1, 'MBA', output, has_spots)
-	else:
-		add_students_to_team(a1, 'MBA', output, has_spots)
-		add_students_to_team(a2, 'MEng', output, has_spots)
+	fill_teams(o)
 
 	# res = have_spots(output)
 	# print res
