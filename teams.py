@@ -251,7 +251,7 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 # 		create_teams (i.e. one of each type of student on each team.)
 #		Can do this by checking how many of each type there are
 # 		on each team, and 
-def fill_teams(output):
+def fill_teams(all_output):
 	'''
 		Used after the initial loop assigning students to teams. Used to assign remaining
 		students to teams.
@@ -261,9 +261,9 @@ def fill_teams(output):
 		output: the team formations that create_teams will output.
 
 	'''
-	output_solution = output[0]
-	remaining_MBAs = output[1]
-	remaining_MEngs = output[2]
+	output_solution = all_output[0]
+	remaining_MBAs = all_output[1]
+	remaining_MEngs = all_output[2]
 
 	has_spots = teams_with_empty_spots(output_solution)
 
@@ -276,32 +276,52 @@ def fill_teams(output):
 		add_students_to_team(remaining_MBAs, 'MBA', output_solution, has_spots)
 		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
 
-	print "Diversity: " + str(is_diverse(output_solution))
+	#print "Diversity: " + str(is_diverse(output_solution))
 
-	if (not (is_diverse(output_solution))):
-		pass
+	#if (not (is_diverse(all_output))):
+	#	print "Not diverse"
+	#	return output_solution 
 		# TODO: add some swaps to make it diverse.		
-	else:
+	#else:
 		return output_solution
 
-def is_diverse(output):
-	print "Output is " + str(output)
+def get_diversity_stats(all_output):
+	count = 0
+	output = all_output[0]
+	result = [None] * len(output)
 	for team in output:
-		#print "Team is " + str(team)
-		team_has_MBA = False
-		team_has_MEng = False
+		MBA_count = 0
+		MEng_count = 0
 		for person in team:
-			#print "Person is " + str(person)
+			# print "Person is " + str(person)
 			if (person != None):
 				if (person[0] == "MBA"):
-					team_has_MBA = True
+					MBA_count += 1
 				elif (person[0] == "MEng"):
-					team_has_MEng = True
-		if (not (team_has_MBA) or not(team_has_MEng)):
-			return False
-	return True
+					MEng_count += 1
+		result[count] = (MBA_count, MEng_count)
+		count += 1
+	return result
 
-def clean_team(output):
+# def find_problematic_teams(output):
+# 	result = [(None, None)] * len(output)
+# 	for team in output:
+# 		MBA_count = 0
+# 		MEng_count = 0
+# 		# TODO: this is not a boolean anymore
+# 		if (not (is_diverse_team(team))):
+# 			for person in team:
+
+
+
+
+# def make_diverse(output):
+# 	for team in output:
+
+
+
+def clean_team(all_output):
+	output = all_output[0]
 	result = [None] * len(output)
 	cur = 0
 	for team in output:
@@ -362,6 +382,9 @@ if __name__ == "__main__":
 	# t2 = res[1]
 	o = create_teams(l1, l2, 5)
 	fill_teams(o)
+	#print is_diverse(o)
+
+	print get_diversity_stats(o)
 
 	# res = have_spots(output)
 	# print res
