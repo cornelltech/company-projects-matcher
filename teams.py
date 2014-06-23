@@ -201,15 +201,17 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 			r = random.randint(0, len(MEng_student_ids) - 1)
 			cur_student_id = MEng_student_ids.pop(r)
 
-		#NOTE: fill in None with the desired thingy.
+		# TODO: fill in None with the remaining people.
 
-
+		print "The messy version is:",
 		print to_return
-		print "The formatted team is:",
-		print_team (to_return)
+		clean = clean_team(to_return)
+		print "The clean version is:",
+		print clean
+		
+		# NOTE: do not change this to the clean version. ONLY want to use the clean_team
+		# function after we have filled the None spots.
 		return to_return
-
-
 
 # TODO: undefined size thing. Look at TODOs above create_teams.
 # def create_student_ids(types_and_sizes):
@@ -253,7 +255,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 def have_spots(output):
 	'''
-		The teams out of our result formation that have spots for new members.
+		A list of the same size as our num_teams,which contains a 1 at spot i if
+		the i-th team has spots for new members.
 	'''
 	result = [0] * len(output)
 	# print "length of result is "
@@ -271,7 +274,8 @@ def have_spots(output):
 		# print cur
 	return result
 
-def fill_teams(t1, t1_type, t2, t2_type, team_size, res):
+# TODO: finish this
+def fill_teams(t1, t1_type, t2, t2_type, team_size, output):
 	'''
 		Used after the initial loop assigning students to teams. Used to assign remaining
 		students to teams.
@@ -288,31 +292,42 @@ def fill_teams(t1, t1_type, t2, t2_type, team_size, res):
 
 		team_size: the ideal team size (taken from create_teams).
 
-		res: the total team formations that create_teams will output.
+		output: the team formations that create_teams will output.
 
 	'''
-	# while there are students left on t1
+	teams_with_empty_spots = have_spots(output)
+	result = [None] * len(output)
+	
+	# While there are students left on t1
 	while (len(t1) > 0):
-		# get a random student
+		look_at = 0 
+		
+		# Get a random student
 		if (len(t1) == 1):
 			r = 0
 		else:
 			r = random.randint(0, len(t1) - 1)
+		
 		cur_student_id = t1.pop(r)
-		res[team_size - 1] = (t1_type, cur_student_id)
+		new = (t1_type, cur_student_id)
+		
+		# Find the next available spot.
+		while (not (teams_with_empty_spots(look_at))):
+			look_at += 1
+	
+		result[look_at] = new
 
-# TODO: add in logic for commas in the right places.
-def print_team(output):
-	result = ""
-	result += '['
+	# TODO: abstract the above loop into a function, and call it on t2 as well.
+	# TODO: make sure that the above is correct.
+
+def clean_team(output):
+	result = [None] * len(output)
+	cur = 0
 	for team in output:
-		result += '['
-		for tup in team:
-			if (tup != None):
-				result += str(tup) + ' '
-		result += ']'
-	result += ']'
-	print result
+		filtered_team = [tup for tup in team if tup != None]
+		result[cur] = filtered_team
+		cur += 1
+	return [r for r in result if r != None]
 
 def are_unique(l1, l2):
 	''' 
@@ -365,8 +380,9 @@ if __name__ == "__main__":
 	# t1 = res[0]
 	# t2 = res[1]
 	output = create_teams(l1, l2, 4)
-	res = have_spots(output)
-	print res
+
+	# res = have_spots(output)
+	# print res
 
 	# Checks for invalid input
 	# create_teams(l1, l2, 0)
