@@ -283,7 +283,7 @@ def fill_teams(all_output):
 	#	return output_solution 
 		# TODO: add some swaps to make it diverse.		
 	#else:
-		return output_solution
+	return output_solution
 
 def get_diversity_stats(all_output):
 	count = 0
@@ -292,16 +292,42 @@ def get_diversity_stats(all_output):
 	for team in output:
 		MBA_count = 0
 		MEng_count = 0
+		changed = False
 		for person in team:
 			# print "Person is " + str(person)
 			if (person != None):
 				if (person[0] == "MBA"):
 					MBA_count += 1
+					changed = True
 				elif (person[0] == "MEng"):
 					MEng_count += 1
-		result[count] = (MBA_count, MEng_count)
-		count += 1
+					changed = True
+		if (not changed):
+			result[count] = (-1, -1)
+		else:
+			result[count] = (MBA_count, MEng_count)
+		count += 1			
 	return result
+
+def do_swap(diversity_stats):
+	result = [(None, None)] * len(diversity_stats)
+	count = 0
+	for tup in diversity_stats:
+		print tup
+		if (tup[0] == 0):
+			result[count] = (True, "MBA")
+			# TODO: needs an MBA student
+		elif (tup[1] == 0):
+			result[count] = (True, "MEng")
+			# TODO: needs an MEng student
+		else:
+			pass
+		count += 1
+	# TODO: return the swapped thing 
+	return result
+
+#def 
+
 
 # def find_problematic_teams(output):
 # 	result = [(None, None)] * len(output)
@@ -380,11 +406,14 @@ if __name__ == "__main__":
 	# print res
 	# t1 = res[0]
 	# t2 = res[1]
-	o = create_teams(l1, l2, 5)
+	o = create_teams(l1, l2, 3)
 	fill_teams(o)
 	#print is_diverse(o)
 
-	print get_diversity_stats(o)
+	a = get_diversity_stats(o)
+	print a
+	print needs_swap(a)
+
 
 	# res = have_spots(output)
 	# print res
