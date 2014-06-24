@@ -30,7 +30,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		The set of teams teams adhere to our requirements:
 			- Plausibility: teams will be formed from selection without 
 			replacement (each student is assigned to exactly one team.)
-			- Size: Each team will be of a size found in team_sizes.
+			- Size: Each team will be of a size found in team_sizes (or +- 1).
 			- Diversity: each team will have one student of each input type.
 
 		Parameters
@@ -64,11 +64,10 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	'''
 	# Guarantee proper input.
 
-	print "Initial size of teams is "
-	print len(MBA_student_ids),
-	print "and "
-	print len(MEng_student_ids)
-
+	# print "Initial size of teams is "
+	# print len(MBA_student_ids),
+	# print "and "
+	# print len(MEng_student_ids)
 
 	if ((MBA_student_ids == []) | (MEng_student_ids == [])):
 		raise InputError('Student ID lists must not be empty.')
@@ -83,7 +82,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		total_students = len(MBA_student_ids) + len(MEng_student_ids)
 		num_teams = total_students / team_size
 		num_teams_left = num_teams
-		print "Num teams is " + str(num_teams)
+		# print "Num teams is " + str(num_teams)
 
 		if (num_teams == 0):
 			raise InputError('Team size is too large for given input.')
@@ -177,15 +176,15 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 					# Why is the length of the current team zero?
 					# Add print statements.
 				else:
-					print "Numleft is " + str(num_left)
-					print "Current team is " + cur_team_name
-					print "Length of the other team is ",
-					if (cur_team_name == "MBA"):
-						print len(MEng_student_ids)
-					else:
-						print len(MBA_student_ids)
-					print "Length of the current team is ",
-					print len(cur_team)
+					# print "Numleft is " + str(num_left)
+					# print "Current team is " + cur_team_name
+					# print "Length of the other team is ",
+					# if (cur_team_name == "MBA"):
+					# 	print len(MEng_student_ids)
+					# else:
+					# 	print len(MBA_student_ids)
+					# print "Length of the current team is ",
+					# print len(cur_team)
 					r = random.randint(0, len(cur_team) - 1)
 				
 				# Place the player onto our current team.
@@ -200,15 +199,26 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 		to_return[num_teams] = [None] * team_size
 
-		print "After running create_teams:"
-		print "     MEng student IDs is: " + str(MEng_student_ids)
-		print "     MBA student IDs is: " + str(MBA_student_ids)
+		# print "After running create_teams:"
+		# print "     MEng student IDs is: " + str(MEng_student_ids)
+		# print "     MBA student IDs is: " + str(MBA_student_ids)
 
-		print "     Initial solution space is: " + str(to_return)
+		# print "     Initial solution space is: " + str(to_return)
 
 		return (to_return, MBA_student_ids, MEng_student_ids, team_size)
 
-# TODO: undefined size thing. Look at TODOs above create_teams.
+#TODO: undefined size thing. Look at TODOs above create_teams.
+
+def create_IDs_from_lists(MBA_num, MEng_num):
+	MBA_ids = range(0, MBA_num)
+	i = 1000
+	# To ensure there is no overlap between the two IDs
+	while (i <= MBA_num):
+		i *= 10
+	MEng_ids = range (1, MEng_num+1) # To ensure zero isn't included in both
+	MEng_ids = [elm * i for elm in MEng_ids]
+	# print "i is " + str(i)
+	return (MBA_ids, MEng_ids)
 
 def teams_with_empty_spots(output):
 	'''
@@ -246,11 +256,6 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		new_student = (s_type, cur_student_id)
 		
 		# Find the next available spot.
-
-		# TODO: decide what to do in the case where there is no existing team to look at.
-		#  		could add one extra team of all None as a buffer to the initial. Would never
-		# 		need more than 1 such buffer because if there was room for one more team,
-		# 		it would have already been made.
 		while (empty_spots[team_to_look_at] <= 0):
 		 	team_to_look_at += 1
 		 	if (team_to_look_at > (len(output) - 1)):
@@ -274,11 +279,6 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 
 	return output
 
-
-# TODO: ensure that the teams satisfy the three criteria specified in 
-# 		create_teams (i.e. one of each type of student on each team.)
-#		Can do this by checking how many of each type there are
-# 		on each team, and 
 def fill_teams(all_output):
 	'''
 		Used after the initial loop assigning students to teams. Used to assign remaining
@@ -304,13 +304,6 @@ def fill_teams(all_output):
 		add_students_to_team(remaining_MBAs, 'MBA', output_solution, has_spots)
 		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
 
-	#print "Diversity: " + str(is_diverse(output_solution))
-
-	#if (not (is_diverse(all_output))):
-	#	print "Not diverse"
-	#	return output_solution 
-		# TODO: add some swaps to make it diverse.		
-	#else:
 	return output_solution
 
 def get_diversity_stats(all_output):
@@ -361,56 +354,15 @@ def is_diverse(fixed_output):
 		if (0 in tup):
 			return False
 	return True
-# def do_swap(diversity_stats_tuple, output):
-# 	iter_index = 0
-# 	swap_index = 0
 
-# 	# (MBA, MEng)
-# 	# Determine which teams have the ability to swap.
-	
-# 	diversity_stats = diversity_stats_tuple[0]
-# 	can_swap = diversity_stats_tuple[1]
-
-# 	for tup in diversity_stats:
-# 		print tup
-# 		if (tup[0] == 0):
-# 			pass
-# 			# TODO: needs an MBA student
-
-# 		elif (tup[1] == 0):
-# 			pass
-# 			# TODO: needs an MEng student
-# 		else:
-# 			pass
-# 		count += 1
-	# TODO: return the swapped thing 
-
-#def find_MBA_swap
-
-#def 
-
-
-# def find_problematic_teams(output):
-# 	result = [(None, None)] * len(output)
-# 	for team in output:
-# 		MBA_count = 0
-# 		MEng_count = 0
-# 		# TODO: this is not a boolean anymore
-# 		if (not (is_diverse_team(team))):
-# 			for person in team:
-
-
-
-
-def clean_team(all_output):
-	output = all_output[0]
-	result = [None] * len(output)
+def clean_team(filled_teams):
+	result = [None] * len(filled_teams)
 	cur = 0
-	for team in output:
+	for team in filled_teams:
 		filtered_team = [tup for tup in team if tup != None]
 		result[cur] = filtered_team
 		cur += 1
-	return [r for r in result if r != None]
+	return [r for r in result if r != None and r!= []]
 
 def are_unique(l1, l2):
 	''' 
@@ -447,6 +399,11 @@ def do_loop_to_create_teams(t1, t2, s, n):
 	result = create_teams(t1, t2, s)
 	return (t1, t2, result)
 
+# NOTE: to be used after the Nones have been removed.
+def print_clean(solution_space):
+	for team in solution_space:
+		print team
+
 if __name__ == "__main__":
 	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
 	l1 = [30, 40, 50, 60]
@@ -462,14 +419,19 @@ if __name__ == "__main__":
 	# print res
 	# t1 = res[0]
 	# t2 = res[1]
-	o = create_teams(l1, l2, 3)
-	fill_teams(o)
+	# o = create_teams(l1, l2, 3)
+	# fill_teams(o)
+	# print is_diverse(o)
+
+	t = create_IDs_from_lists(35, 49)
+	MBA = t[0]
+	MEng = t[1]
+	o = create_teams(MBA, MEng, 3)
+	f = fill_teams(o)
+	c = clean_team(f)
+	print_clean(c)
+	# print clean_team(f)
 	print is_diverse(o)
-
-	#a = get_diversity_stats(o)
-	#print a
-	#print needs_swap(a)
-
 
 	# res = have_spots(output)
 	# print res
@@ -484,6 +446,3 @@ if __name__ == "__main__":
 	# create_teams([5], [], 8)
 	# create_teams([8], [9, 0], 4)
 	# create_teams ([0], [8, 9], 4)
-
-
-
