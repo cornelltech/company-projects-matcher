@@ -88,7 +88,7 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 			raise InputError('Team size is too large for given input.')
 
 		if ((len(first_ids) < num_teams) | (len(second_ids) < num_teams)):
-			raise InputError('Not enough MBAs or MEngs to produce balanced teams.')
+			raise InputError('Not enough members to produce balanced teams.')
 
 		# Initialize empty array to hold the final teams.
 		to_return = [None] * (num_teams + 1)
@@ -117,37 +117,37 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 				# Function to pick a team in a purely random manner.
 				def rand_team_choose():
 					if (rand >= 0.5):
-						# Pick MBAs first, if there are enough remaining.
+						# Pick firsts first, if there are enough remaining.
 						if (len(first_ids) >= num_teams_left):
 						#if (not (first_ids == [])):
 							return (first_name, first_ids)
-						# Pick MEngs otherwise.
+						# Pick secondss otherwise.
 						else:
 							return (second_name, second_ids)
 					else:
-						# Pick MEngs first, if there are enough remaining.
+						# Pick seconds first, if there are enough remaining.
 						if (len(second_ids) >= num_teams_left):
 						#if (not (second_ids == [])):
 							return (second_name, second_ids)
-						# Pick MBAs otherwise.
+						# Pick firsts otherwise.
 						else:
 							return (first_name, first_ids)
 
 				# Logic to pick the current team to take students from.
 				def pick_cur_team():
 
-					# If the team either has both MBA and MEng students
+					# If the team either has both first and second students
 					# or the team has neither, we can pick the team in
 					# a purely random manner through rand_team_choose().
 					if (team_has_first == team_has_second):
 						return rand_team_choose()
 
-					# Otherwise, if the team doesn't have an MBA student,
-					# we will add an MBA student.
+					# Otherwise, if the team doesn't have a first student,
+					# we will add an first student.
 					elif (not(team_has_first)):
 						return (first_name, first_ids)
 					
-					# Doesn't have MEng, so add MEng.
+					# Doesn't have second, so add second.
 					else:
 						return (second_name, second_ids)
 
@@ -179,7 +179,7 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 					# print "Numleft is " + str(num_left)
 					# print "Current team is " + cur_team_name
 					# print "Length of the other team is ",
-					# if (cur_team_name == "MBA"):
+					# if (cur_team_name == first_name):
 					# 	print len(second_ids)
 					# else:
 					# 	print len(first_ids)
@@ -200,12 +200,12 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 		to_return[num_teams] = [None] * team_size
 
 		# print "After running create_teams:"
-		# print "     MEng student IDs is: " + str(second_ids)
-		# print "     MBA student IDs is: " + str(first_ids)
+		# print "     Second student IDs is: " + str(second_ids)
+		# print "     First student IDs is: " + str(first_ids)
 
 		# print "     Initial solution space is: " + str(to_return)
 
-		return (to_return, first_ids, second_ids, team_size)
+		return (to_return, first_ids, first_name, second_ids, second_name, team_size)
 
 #TODO: undefined size thing. Look at TODOs above create_teams.
 
@@ -291,45 +291,49 @@ def fill_teams(all_output):
 	'''
 	output_solution = all_output[0]
 	remaining_firsts = all_output[1]
-	remaining_seconds = all_output[2]
+	first_name = all_output[2]
+	remaining_seconds = all_output[3]
+	second_name = all_output[4]
 
 	has_spots = teams_with_empty_spots(output_solution)
 
 	# Random number to determine which students to add to team first.
 	rand = random.random()
 	if (rand >= 0.5):
-		add_students_to_team(remaining_seconds, 'MEng', output_solution, has_spots)
-		add_students_to_team(remaining_firsts, 'MBA', output_solution, has_spots)
+		add_students_to_team(remaining_seconds, second_name, output_solution, has_spots)
+		add_students_to_team(remaining_firsts, first_name, output_solution, has_spots)
 	else:
-		add_students_to_team(remaining_firsts, 'MBA', output_solution, has_spots)
-		add_students_to_team(remaining_seconds, 'MEng', output_solution, has_spots)
+		add_students_to_team(remaining_firsts, first_name, output_solution, has_spots)
+		add_students_to_team(remaining_seconds, second_name, output_solution, has_spots)
 
 	return output_solution
 
 def get_diversity_stats(all_output):
 	count = 0
 	output = all_output[0]
+	first_name = all_output[2]
+	second_name = all_output[4]
 	result = [None] * len(output)
 	can_swap = [(False, False)] * len(output)
 	
 	# Filling up the result diversity list.
 	for team in output:
-		MBA_count = 0
-		MEng_count = 0
+		first_count = 0
+		second_count = 0
 		changed = False
 		for person in team:
 			# print "Person is " + str(person)
 			if (person != None):
-				if (person[0] == "MBA"):
-					MBA_count += 1
+				if (person[0] == first_name):
+					first_count += 1
 					changed = True
-				elif (person[0] == "MEng"):
-					MEng_count += 1
+				elif (person[0] == second_name):
+					second_count += 1
 					changed = True
 		if (not changed):
 			result[count] = (-1, -1)
 		else:
-			result[count] = (MBA_count, MEng_count)
+			result[count] = (first_count, second_count)
 		count += 1	
 
 	# Filling up the can_swap list.
@@ -344,7 +348,7 @@ def get_diversity_stats(all_output):
 		else:
 			pass
 
-	# Result in the form (MBA, count, MEng_count)
+	# Result in the form (first, count, second_count)
 	return (result, can_swap)
 
 def is_diverse(fixed_output):
@@ -379,9 +383,9 @@ def do_loop_to_create_teams(t1, t2, s, n):
 		Parameters:
 		----------
 
-		t1: a list of the student ids of the MBA students.
+		t1: a list of the student ids of the first students.
 
-		t2: a list of the student ids of the MEng students.
+		t2: a list of the student ids of the second students.
 
 		s: team_size (see create_teams docs.)
 
@@ -405,7 +409,6 @@ def print_clean(solution_space):
 		print team
 
 if __name__ == "__main__":
-	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
 	l1 = [30, 40, 50, 60]
 	l2 = [2, 1, 6, 7, 8, 9, 10]
 
