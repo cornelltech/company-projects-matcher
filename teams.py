@@ -450,7 +450,7 @@ def do_loop_to_create_teams(t1, t2, s, n):
 if __name__ == "__main__":
 	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
 	l1 = [30, 40, 50, 60]
-	l2 = [2, 1, 6, 7, 8]
+	l2 = [2, 1, 6, 7, 8, 9, 10]
 
 	# TODO: find out how to do assertion tests (or equivalent) in Python.
 
