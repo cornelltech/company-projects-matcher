@@ -19,6 +19,9 @@ class FunctionError(Exception):
 #		number of students. Use this as a parameter to make
 #		the matrix of student IDs.
 # TODO: Make this work with more than team size.
+# TODO: Can apply these (functions that apply to two teams) apply to 
+#		three or more teams by taking input in a list, and then
+# 		using map.
 def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	'''
 		A loop that goes through the sample space of students
@@ -60,6 +63,13 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 
 	'''
 	# Guarantee proper input.
+
+	print "Initial size of teams is "
+	print len(MBA_student_ids),
+	print "and "
+	print len(MEng_student_ids)
+
+
 	if ((MBA_student_ids == []) | (MEng_student_ids == [])):
 		raise InputError('Student ID lists must not be empty.')
 	
@@ -72,6 +82,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	else:
 		total_students = len(MBA_student_ids) + len(MEng_student_ids)
 		num_teams = total_students / team_size
+		num_teams_left = num_teams
+		print "Num teams is " + str(num_teams)
 
 		if (num_teams == 0):
 			raise InputError('Team size is too large for given input.')
@@ -106,17 +118,19 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				# Function to pick a team in a purely random manner.
 				def rand_team_choose():
 					if (rand >= 0.5):
-						# Pick MBAs first, if not empty.
-						if (not(MBA_student_ids == [])):
+						# Pick MBAs first, if there are enough remaining.
+						if (len(MBA_student_ids) >= num_teams_left):
+						#if (not (MBA_student_ids == [])):
 							return ("MBA", MBA_student_ids)
-						# Pick MEngs if MBA is empty.
+						# Pick MEngs otherwise.
 						else:
 							return ("MEng", MEng_student_ids)
 					else:
-						# Pick MEngs first, if not empty.
-						if (not(MEng_student_ids == [])):
+						# Pick MEngs first, if there are enough remaining.
+						if (len(MEng_student_ids) >= num_teams_left):
+						#if (not (MEng_student_ids == [])):
 							return ("MEng", MEng_student_ids)
-						# Pick MBAs if MEng is empty.
+						# Pick MBAs otherwise.
 						else:
 							return ("MBA", MBA_student_ids)
 
@@ -158,7 +172,20 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				# Protect against randint error for team of size 1.
 				if (len(cur_team) == 1):
 					r = 0
+					# Could say if length of cur team is 0 pick other team.
+					# But this seems wrong.
+					# Why is the length of the current team zero?
+					# Add print statements.
 				else:
+					print "Numleft is " + str(num_left)
+					print "Current team is " + cur_team_name
+					print "Length of the other team is ",
+					if (cur_team_name == "MBA"):
+						print len(MEng_student_ids)
+					else:
+						print len(MBA_student_ids)
+					print "Length of the current team is ",
+					print len(cur_team)
 					r = random.randint(0, len(cur_team) - 1)
 				
 				# Place the player onto our current team.
@@ -169,6 +196,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				num_left -= 1
 
 			to_return[i] = team_creating
+			num_teams_left -= 1
 
 		to_return[num_teams] = [None] * team_size
 
@@ -289,6 +317,9 @@ def get_diversity_stats(all_output):
 	count = 0
 	output = all_output[0]
 	result = [None] * len(output)
+	can_swap = [(False, False)] * len(output)
+	
+	# Filling up the result diversity list.
 	for team in output:
 		MBA_count = 0
 		MEng_count = 0
@@ -306,25 +337,47 @@ def get_diversity_stats(all_output):
 			result[count] = (-1, -1)
 		else:
 			result[count] = (MBA_count, MEng_count)
-		count += 1			
-	return result
+		count += 1	
 
-def do_swap(diversity_stats):
-	result = [(None, None)] * len(diversity_stats)
+	# Filling up the can_swap list.
 	count = 0
-	for tup in diversity_stats:
-		print tup
-		if (tup[0] == 0):
-			result[count] = (True, "MBA")
-			# TODO: needs an MBA student
-		elif (tup[1] == 0):
-			result[count] = (True, "MEng")
-			# TODO: needs an MEng student
+	for tup in result:
+		if ((tup[0] >= 2) and (tup[1] >= 2)):
+			can_swap[count] = (True, True)
+		elif (tup[0] >= 2):
+			can_swap[count] = (True, False)
+		elif (tup[1] >= 2):
+			can_swap[count] = (False, True)
 		else:
 			pass
-		count += 1
+
+	return (result, can_swap)
+
+# def do_swap(diversity_stats_tuple, output):
+# 	iter_index = 0
+# 	swap_index = 0
+
+# 	# (MBA, MEng)
+# 	# Determine which teams have the ability to swap.
+	
+# 	diversity_stats = diversity_stats_tuple[0]
+# 	can_swap = diversity_stats_tuple[1]
+
+# 	for tup in diversity_stats:
+# 		print tup
+# 		if (tup[0] == 0):
+# 			pass
+# 			# TODO: needs an MBA student
+
+# 		elif (tup[1] == 0):
+# 			pass
+# 			# TODO: needs an MEng student
+# 		else:
+# 			pass
+# 		count += 1
 	# TODO: return the swapped thing 
-	return result
+
+#def find_MBA_swap
 
 #def 
 
@@ -338,11 +391,6 @@ def do_swap(diversity_stats):
 # 		if (not (is_diverse_team(team))):
 # 			for person in team:
 
-
-
-
-# def make_diverse(output):
-# 	for team in output:
 
 
 
@@ -393,8 +441,8 @@ def do_loop_to_create_teams(t1, t2, s, n):
 
 if __name__ == "__main__":
 	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
-	l1 = [3, 19, 20, 8]
-	l2 = [2, 1, 6, 7]
+	l1 = [30, 40, 50, 60, 80, 100, 45, 67, 89, 202, 192]
+	l2 = [2, 1, 6, 7, 8, 0]
 
 	# TODO: find out how to do assertion tests (or equivalent) in Python.
 
@@ -407,12 +455,12 @@ if __name__ == "__main__":
 	# t1 = res[0]
 	# t2 = res[1]
 	o = create_teams(l1, l2, 3)
-	fill_teams(o)
+	#fill_teams(o)
 	#print is_diverse(o)
 
-	a = get_diversity_stats(o)
-	print a
-	print needs_swap(a)
+	#a = get_diversity_stats(o)
+	#print a
+	#print needs_swap(a)
 
 
 	# res = have_spots(output)
