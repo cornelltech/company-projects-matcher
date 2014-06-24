@@ -269,8 +269,8 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		# Update the empty spots structure.
 		empty_spots[team_to_look_at] -= 1
 	
-	print "After adding extra students to teams, our solution space is ",
-	print output
+	print "After adding extra students to teams, our solution space is: "
+	print "     " + str(output)
 
 	return output
 
@@ -351,8 +351,16 @@ def get_diversity_stats(all_output):
 		else:
 			pass
 
+	# Result in the form (MBA, count, MEng_count)
 	return (result, can_swap)
 
+def is_diverse(fixed_output):
+	diversity_stats_output = get_diversity_stats(fixed_output)
+	diversity_stats = diversity_stats_output[0]
+	for tup in diversity_stats:
+		if (0 in tup):
+			return False
+	return True
 # def do_swap(diversity_stats_tuple, output):
 # 	iter_index = 0
 # 	swap_index = 0
@@ -441,8 +449,8 @@ def do_loop_to_create_teams(t1, t2, s, n):
 
 if __name__ == "__main__":
 	#types_and_sizes = [("MBA", 39), ("MEng", 35)]
-	l1 = [30, 40, 50, 60, 80, 100, 45, 67, 89, 202, 192]
-	l2 = [2, 1, 6, 7, 8, 0]
+	l1 = [30, 40, 50, 60]
+	l2 = [2, 1, 6, 7, 8]
 
 	# TODO: find out how to do assertion tests (or equivalent) in Python.
 
@@ -455,8 +463,8 @@ if __name__ == "__main__":
 	# t1 = res[0]
 	# t2 = res[1]
 	o = create_teams(l1, l2, 3)
-	#fill_teams(o)
-	#print is_diverse(o)
+	fill_teams(o)
+	print is_diverse(o)
 
 	#a = get_diversity_stats(o)
 	#print a
