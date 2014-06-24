@@ -22,7 +22,7 @@ class FunctionError(Exception):
 # TODO: Can apply these (functions that apply to two teams) apply to 
 #		three or more teams by taking input in a list, and then
 # 		using map.
-def create_teams(MBA_student_ids, MEng_student_ids, team_size):
+def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 	'''
 		A loop that goes through the sample space of students
 		and creates teams of students.
@@ -36,9 +36,9 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		Parameters
 		----------
 
-		MBA_student_ids: a list of the student ids of the MBA students.
+		first_ids: a list of the student ids of the MBA students.
 
-		MEng_student_ids: a list of the student ids of the MBA students.
+		second_ids: a list of the student ids of the MBA students.
 
 		team_size: the target size for teams. If there are extra students left
 					at the end, add them to teams:
@@ -65,21 +65,21 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 	# Guarantee proper input.
 
 	# print "Initial size of teams is "
-	# print len(MBA_student_ids),
+	# print len(first_ids),
 	# print "and "
-	# print len(MEng_student_ids)
+	# print len(second_ids)
 
-	if ((MBA_student_ids == []) | (MEng_student_ids == [])):
+	if ((first_ids == []) | (second_ids == [])):
 		raise InputError('Student ID lists must not be empty.')
 	
-	elif (not are_unique(MBA_student_ids, MEng_student_ids)):
+	elif (not are_unique(first_ids, second_ids)):
 		raise InputError('Student ID lists must not overlap.')
 
 	elif (team_size == 0):
 		raise InputError('Team size cannot be zero.')
 	
 	else:
-		total_students = len(MBA_student_ids) + len(MEng_student_ids)
+		total_students = len(first_ids) + len(second_ids)
 		num_teams = total_students / team_size
 		num_teams_left = num_teams
 		# print "Num teams is " + str(num_teams)
@@ -87,7 +87,7 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		if (num_teams == 0):
 			raise InputError('Team size is too large for given input.')
 
-		if ((len(MBA_student_ids) < num_teams) | (len(MEng_student_ids) < num_teams)):
+		if ((len(first_ids) < num_teams) | (len(second_ids) < num_teams)):
 			raise InputError('Not enough MBAs or MEngs to produce balanced teams.')
 
 		# Initialize empty array to hold the final teams.
@@ -100,8 +100,8 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 			team_creating = [None] * (team_size + 1)
 			
 			# At the beginning, the team has neither MBAs nor MEngs.
-			team_has_MBA = False
-			team_has_MEng = False
+			team_has_first = False
+			team_has_second = False
 			
 			# Start adding to the beginning of the team.
 			# Initially have the entire team to fill.
@@ -118,20 +118,20 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				def rand_team_choose():
 					if (rand >= 0.5):
 						# Pick MBAs first, if there are enough remaining.
-						if (len(MBA_student_ids) >= num_teams_left):
-						#if (not (MBA_student_ids == [])):
-							return ("MBA", MBA_student_ids)
+						if (len(first_ids) >= num_teams_left):
+						#if (not (first_ids == [])):
+							return (first_name, first_ids)
 						# Pick MEngs otherwise.
 						else:
-							return ("MEng", MEng_student_ids)
+							return (second_name, second_ids)
 					else:
 						# Pick MEngs first, if there are enough remaining.
-						if (len(MEng_student_ids) >= num_teams_left):
-						#if (not (MEng_student_ids == [])):
-							return ("MEng", MEng_student_ids)
+						if (len(second_ids) >= num_teams_left):
+						#if (not (second_ids == [])):
+							return (second_name, second_ids)
 						# Pick MBAs otherwise.
 						else:
-							return ("MBA", MBA_student_ids)
+							return (first_name, first_ids)
 
 				# Logic to pick the current team to take students from.
 				def pick_cur_team():
@@ -139,17 +139,17 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 					# If the team either has both MBA and MEng students
 					# or the team has neither, we can pick the team in
 					# a purely random manner through rand_team_choose().
-					if (team_has_MBA == team_has_MEng):
+					if (team_has_first == team_has_second):
 						return rand_team_choose()
 
 					# Otherwise, if the team doesn't have an MBA student,
 					# we will add an MBA student.
-					elif (not(team_has_MBA)):
-						return ("MBA", MBA_student_ids)
+					elif (not(team_has_first)):
+						return (first_name, first_ids)
 					
 					# Doesn't have MEng, so add MEng.
 					else:
-						return ("MEng", MEng_student_ids)
+						return (second_name, second_ids)
 
 				# Call the above function.
 				cur_team_info = pick_cur_team()
@@ -158,11 +158,11 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 				cur_team_name = cur_team_info[0]
 				cur_team = cur_team_info[1]
 
-				if (cur_team_name == "MBA"):
-					team_has_MBA = True
+				if (cur_team_name == first_name):
+					team_has_first = True
 
-				elif (cur_team_name == "MEng"):
-					team_has_MEng = True
+				elif (cur_team_name == second_name):
+					team_has_second = True
 
 				# Sanity check for when we add more student types.
 				else:
@@ -180,9 +180,9 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 					# print "Current team is " + cur_team_name
 					# print "Length of the other team is ",
 					# if (cur_team_name == "MBA"):
-					# 	print len(MEng_student_ids)
+					# 	print len(second_ids)
 					# else:
-					# 	print len(MBA_student_ids)
+					# 	print len(first_ids)
 					# print "Length of the current team is ",
 					# print len(cur_team)
 					r = random.randint(0, len(cur_team) - 1)
@@ -200,25 +200,25 @@ def create_teams(MBA_student_ids, MEng_student_ids, team_size):
 		to_return[num_teams] = [None] * team_size
 
 		# print "After running create_teams:"
-		# print "     MEng student IDs is: " + str(MEng_student_ids)
-		# print "     MBA student IDs is: " + str(MBA_student_ids)
+		# print "     MEng student IDs is: " + str(second_ids)
+		# print "     MBA student IDs is: " + str(first_ids)
 
 		# print "     Initial solution space is: " + str(to_return)
 
-		return (to_return, MBA_student_ids, MEng_student_ids, team_size)
+		return (to_return, first_ids, second_ids, team_size)
 
 #TODO: undefined size thing. Look at TODOs above create_teams.
 
-def create_IDs_from_lists(MBA_num, MEng_num):
-	MBA_ids = range(0, MBA_num)
+def create_IDs_from_lists(first_num, second_num):
+	first_ids = range(0, first_num)
 	i = 1000
 	# To ensure there is no overlap between the two IDs
-	while (i <= MBA_num):
+	while (i <= first_num):
 		i *= 10
-	MEng_ids = range (1, MEng_num+1) # To ensure zero isn't included in both
-	MEng_ids = [elm * i for elm in MEng_ids]
+	second_ids = range (1, second_num+1) # To ensure zero isn't included in both
+	second_ids = [elm * i for elm in second_ids]
 	# print "i is " + str(i)
-	return (MBA_ids, MEng_ids)
+	return (first_ids, second_ids)
 
 def teams_with_empty_spots(output):
 	'''
@@ -290,19 +290,19 @@ def fill_teams(all_output):
 
 	'''
 	output_solution = all_output[0]
-	remaining_MBAs = all_output[1]
-	remaining_MEngs = all_output[2]
+	remaining_firsts = all_output[1]
+	remaining_seconds = all_output[2]
 
 	has_spots = teams_with_empty_spots(output_solution)
 
 	# Random number to determine which students to add to team first.
 	rand = random.random()
 	if (rand >= 0.5):
-		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
-		add_students_to_team(remaining_MBAs, 'MBA', output_solution, has_spots)
+		add_students_to_team(remaining_seconds, 'MEng', output_solution, has_spots)
+		add_students_to_team(remaining_firsts, 'MBA', output_solution, has_spots)
 	else:
-		add_students_to_team(remaining_MBAs, 'MBA', output_solution, has_spots)
-		add_students_to_team(remaining_MEngs, 'MEng', output_solution, has_spots)
+		add_students_to_team(remaining_firsts, 'MBA', output_solution, has_spots)
+		add_students_to_team(remaining_seconds, 'MEng', output_solution, has_spots)
 
 	return output_solution
 
@@ -422,11 +422,12 @@ if __name__ == "__main__":
 	# o = create_teams(l1, l2, 3)
 	# fill_teams(o)
 	# print is_diverse(o)
+	print "RIght version"
 
 	t = create_IDs_from_lists(35, 49)
 	MBA = t[0]
 	MEng = t[1]
-	o = create_teams(MBA, MEng, 3)
+	o = create_teams(MBA, 'MBA', MEng, 'MEng', 3)
 	f = fill_teams(o)
 	c = clean_team(f)
 	print_clean(c)
