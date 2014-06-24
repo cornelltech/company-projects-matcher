@@ -388,7 +388,7 @@ def do_loop_to_create_teams(t1, t2, s, n):
 		n: number of iterations. 
 
 		Returns:
-		--------
+		-------- 
 
 		teams: a list of lists, where each internal list represents a team 
 		formation and is therefore made up of (type * id) tuples.
