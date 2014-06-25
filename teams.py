@@ -204,7 +204,7 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 
 		# print "     Initial solution space is: " + str(to_return)
 
-		return (to_return, first_ids, first_name, second_ids, second_name, team_size)
+		return (to_return, first_ids, second_ids)
 
 #TODO: undefined size thing. Look at TODOs above create_teams.
 
@@ -278,7 +278,7 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 
 	return output
 
-def fill_teams(all_output):
+def fill_teams(all_output, first_name, second_name):
 	'''
 		Used after the initial loop assigning students to teams. Used to assign remaining
 		students to teams.
@@ -290,9 +290,7 @@ def fill_teams(all_output):
 	'''
 	output_solution = all_output[0]
 	remaining_firsts = all_output[1]
-	first_name = all_output[2]
-	remaining_seconds = all_output[3]
-	second_name = all_output[4]
+	remaining_seconds = all_output[2]
 
 	has_spots = teams_with_empty_spots(output_solution)
 
@@ -402,7 +400,7 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 		to_use_t1 = t1[:]
 		to_use_t2 = t2[:]
 		output = create_teams(to_use_t1, t1_name, to_use_t2, t2_name, size)
-		filled = fill_teams(output)
+		filled = fill_teams(output, t1_name, t2_name)
 		clean = clean_team(filled)
 		print_clean(clean)
 		if (not (is_diverse(clean, t1_name, t2_name))):
