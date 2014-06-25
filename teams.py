@@ -48,26 +48,23 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 
 		Returns
 		--------
-		A tuple (teams, l1, l2, team_size), with:
+		A tuple (teams, l1, l2), with:
 
-			teams: a list of lists that represent teams. Each team list will contain 
-			(type * id) tuples.
+			teams: a list of lists that represents the current teams. Each team list will
+			contain (type * id) tuples. These teams will also contain None.
 
-			l1: the first team passed into create_teams.
+			l1: the remaining members of the first group passed into create_teams.
 
-			l2: the second team passed into create_teams.
-
-			team_size: passed along from input.
+			l2: the remaining members of the second group passed into create_teams.
 
 	'''
-	# Guarantee proper input.
 
 	# print "Initial size of teams is "
 	# print len(first_ids),
 	# print "and "
 	# print len(second_ids)
 
-
+	# Guarantee proper input.
 	if ((first_ids == []) | (second_ids == [])):
 		raise InputError('Student ID lists must not be empty.')
 	
@@ -170,10 +167,6 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 				# Protect against randint error for team of size 1.
 				if (len(cur_team) == 1):
 					r = 0
-					# Could say if length of cur team is 0 pick other team.
-					# But this seems wrong.
-					# Why is the length of the current team zero?
-					# Add print statements.
 				else:
 					# print "Numleft is " + str(num_left)
 					# print "Current team is " + cur_team_name
@@ -206,23 +199,25 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 
 		return (to_return, first_ids, second_ids)
 
-#TODO: undefined size thing. Look at TODOs above create_teams.
-
 def create_IDs_from_lists(first_num, second_num):
+	'''
+		Given the numbers of students in each group, generate IDs for each.
+	
+	'''
 	first_ids = range(0, first_num)
 	i = 1000
-	# To ensure there is no overlap between the two IDs
+	# To ensure there is no overlap between the two sets of IDs that we create
 	while (i <= first_num):
 		i *= 10
 	second_ids = range (1, second_num+1) # To ensure zero isn't included in both
 	second_ids = [elm * i for elm in second_ids]
-	# print "i is " + str(i)
 	return (first_ids, second_ids)
 
 def teams_with_empty_spots(output):
 	'''
 		A list of the same size as our num_teams, which contains a 1 at spot i if
 		the i-th team has spots for new members.
+	
 	'''
 	result = [0] * len(output)
 	cur = 0
@@ -238,6 +233,32 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		Given remaining students (and type), an output from create_teams, and
 		a list of empty spots in the list (comes from teams_with_empty_spots):
 		add the remaining students to teams with spots.
+
+
+		Parameters
+		----------
+		remaining_students: a list of ints (IDs of remaining students, who are all of the
+							same type). "Remaining students" means that these students were
+							not assigned to teams after create_teams. This list
+							will be obtained from the second or third slot of the
+							return tuple of create_teams.
+
+		s_type: a string saying the type of the students in remaining_students.
+
+		output: a list of int*string lists, which are assignments of students to teams
+				(obtained from the first slot of the return tuple of create_teams).
+				Note: these are not the students in remaining_students; the students in
+				output have already been assigned to teams.
+
+		empty_spots: a list of integers. If empty_spots[i] = 0, then the i-th team has no
+					spots to add someone. If empty_spots[i] = n (>0), the i-th teams
+					has n spots to add someone.
+
+		Returns
+		-------
+		filled_teams: a list of int*string lists, which have the students from remaining_students
+					  assigned to teams.
+
 	'''
 	team_to_look_at = 0 
 	if (len(remaining_students) == 0):
@@ -280,12 +301,20 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 
 def fill_teams(all_output, first_name, second_name):
 	'''
-		Used after the initial loop assigning students to teams. Used to assign remaining
+		Used after the initial loop assigning students to teams. Assigns remaining
 		students to teams.
 
 		Parameters
 		----------
-		output: the team formations that create_teams will output.
+		all_output: the team formations that create_teams will output.
+		
+		first_name, second_name: names passed as inputs to create_teams.
+
+		Returns
+		-------
+		fixed_output: A list of teams with the remaining students assigned to teams. 
+					  The first_ids and second_ids lists from all_output are empty
+					  after executing this function.
 
 	'''
 	output_solution = all_output[0]
@@ -306,8 +335,48 @@ def fill_teams(all_output, first_name, second_name):
 	return output_solution
 
 def is_diverse(fixed_output, first_name, second_name):
+	'''
+		Used after filling teams with the remaining students. Checks if the teams that
+		were created are diverse, i.e. contains at least one of each type of student.
+
+		Parameters
+		----------
+		fixed_output: the team formations that fill_teams will output.
+
+		first_name, second_names: names passed as inputs to create_teams.
+
+		Returns
+		-------
+		is_diverse: a boolean value indicating if the set of teams is diverse or not,
+					as specified above.
+
+	'''
 
 	def get_diversity_stats():
+		'''
+			Sums up the type of each student in each team.
+
+			Parameters
+			----------
+			N/A.
+
+			Returns
+			-------
+			A tuple of lists, in the form (result, can_swap), where
+
+				result: a list of int tuples, where result[i] = (num_a, num_b)
+						indicates that the i-th team created has num_a members
+						of student type 1 and num_b members of student type 2.
+
+				can_swap: a list of boolean tuples, where can_swap[i] = (True, False)
+						  means that the i-th team could spare at least 1 member of 
+						  student type 1 but no members of student type 2. 
+
+						  NOTE: this was created to solve issues of non-diverse teams
+						  		by swapping members with other teams. Currently not used
+						  		but that could change.
+
+		'''
 		count = 0
 		result = [None] * len(fixed_output)
 		can_swap = [(False, False)] * len(fixed_output)
@@ -344,7 +413,7 @@ def is_diverse(fixed_output, first_name, second_name):
 			else:
 				pass
 
-		# Result in the form (first, count, second_count)
+		# Result in the form (first_count, second_count)
 		return (result, can_swap)
 
 	diversity_stats_output = get_diversity_stats()
@@ -355,6 +424,20 @@ def is_diverse(fixed_output, first_name, second_name):
 	return True
 
 def clean_team(filled_teams):
+	'''
+		Removes the None values from teams after all remaining students
+		have been assigned to teams.
+
+		Parameters
+		----------
+		filled_teams: a list of lists with all students assigned to teams,
+					  i.e. after running the fill_teams function.
+
+		Returns
+		-------
+		clean_teams: a list of lists with all None values removed.
+
+	'''
 	result = [None] * len(filled_teams)
 	cur = 0
 	for team in filled_teams:
@@ -366,6 +449,15 @@ def clean_team(filled_teams):
 def are_unique(l1, l2):
 	''' 
 		Checks if two given lists are unique.
+
+		Parameters
+		----------
+		l1, l2: two arbitrary lists.
+
+		Returns
+		-------
+		are_unique: a boolean value indicating if these lists are unique.
+
 	'''
 	return (set(l1).intersection(set(l2)) == set([]))
 
@@ -377,7 +469,6 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 
 		Parameters:
 		----------
-
 		t1: a list of the student ids of the first students.
 
 		t2: a list of the student ids of the second students.
@@ -388,7 +479,6 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 
 		Returns:
 		-------- 
-
 		teams: a list of lists, where each internal list represents a team 
 		formation and is therefore made up of (type * id) tuples.
 
@@ -396,7 +486,7 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 	i = 0
 	while (i < n):
 		print "Iteration " + str(i+1) + ":"
-		print "-------------------------------------------------------------"
+		print "-------------------------------------------------------------------------"
 		to_use_t1 = t1[:]
 		to_use_t2 = t2[:]
 		output = create_teams(to_use_t1, t1_name, to_use_t2, t2_name, size)
@@ -404,15 +494,32 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 		clean = clean_team(filled)
 		print_clean(clean)
 		if (not (is_diverse(clean, t1_name, t2_name))):
-			raise FunctionError('From looping to create teams, output is not diverse.')
+			raise FunctionError('From looping to create teams: output is not diverse.')
 		print ""
 		i += 1
-	print "Completed all iterations."
+	print "Success! Completed " + str(n) + " iterations."
+	print
 
-# NOTE: to be used after the Nones have been removed.
 def print_clean(solution_space):
+	'''
+		Formats printing teams.
+
+		Parameters
+		----------
+		solution_space: a list of lists (obtained from clean_team).
+
+		Returns
+		-------
+		None
+
+	'''
+	i = 1
 	for team in solution_space:
+		print "Team " + str(i) + " : ",
 		print team
+		i += 1
+
+
 
 if __name__ == "__main__":
 	l1 = [30, 40, 50, 60]
