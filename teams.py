@@ -440,7 +440,32 @@ def clean_team(filled_teams):
 		cur += 1
 	return [r for r in result if r != None and r!= []] 
 
+# TODO: pairwise differences, to ensure that teams are balanced.
+# TODO: if the number of remaining students is team_size - 1, just make a new team.
+# TODO: consider removing members from teams instead of adding.
+# TODO: get rid of Nones and use append. but also no, because Nones tell us who has room.
+# 		Could use length of lists for this.
+
 def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
+	'''
+		If there are teams with only one person, this will fix that problem.
+		NOTE: currently finds a team that could spare a member of the desired type.
+			  Creates a team of size 2.
+
+		For example, if cleaned_teams is:
+
+		Team 1: [('MBA', 3), ('MEng', 9), ('MBA', 12), ('MBA', 15), ('MEng', 18)]
+		Team 2: [('MEng', 4)]
+
+		Then, fix_singletons may return:
+
+		Team 1: [('MEng', 9), ('MBA', 12), ('MBA', 15), ('MEng', 18)]
+		Team 2: [('MEng', 4), ('MBA', 3)]
+
+		Things.
+
+
+	'''
 
 	def get_indices_of_singletons():
 		i = 0
@@ -573,7 +598,12 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 			raise FunctionError('From looping to create teams: output is not diverse.')
 		print ""
 		i += 1
-	print "Success! Completed " + str(n) + " iterations."
+
+	print "Success! Completed " + str(n),
+	if (n == 1):
+		print "iteration."
+	else:
+		print "iterations."
 	print
 
 def print_clean(solution_space):
@@ -624,8 +654,12 @@ if __name__ == "__main__":
 	lst_c = [8, 9]
 	lst_d = [10, 11, 12]
 
+	lst_e = [3, 6, 9, 12, 15]
+	lst_f = [30, 60, 90, 120, 150, 180]
+
 	#do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 2, 1)
-	do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
+	#do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
+	do_loop_to_create_teams(lst_e, 'MBA', lst_f, 'MEng', 4, 1)
 
 	# res = have_spots(output)
 	# print res
