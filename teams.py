@@ -191,11 +191,11 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 
 		to_return[num_teams] = [None] * team_size
 
-		print "After running create_teams:"
-		print "     Second student IDs is: " + str(second_ids)
-		print "     First student IDs is: " + str(first_ids)
+		# print "After running create_teams:"
+		# print "     Second student IDs is: " + str(second_ids)
+		# print "     First student IDs is: " + str(first_ids)
 
-		print "     Initial solution space is: " + str(to_return)
+		# print "     Initial solution space is: " + str(to_return)
 
 		return (to_return, first_ids, second_ids)
 
@@ -473,15 +473,9 @@ def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
 		result = []
 		for team in cleaned_teams:
 			if (len(team) == 1):
-				result.append((i, team))
+				result.append(team)
 			i += 1
 		return result
-
-# Now we have tuples of the form (index, team) 
-	# Iterate through lst
-	#	
-
-
 
 	lst = get_indices_of_singletons()
 
@@ -492,35 +486,61 @@ def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
 	 	can_swap = stats[1]
 	 	can_swap_fst = can_swap[0]
 	 	can_swap_snd = can_swap[1]
-	 	for tup in lst:
-	 		index_of_singleton_team_in_teams = tup[0]
-	 		print "Current index is: " + str(index_of_singleton_team_in_teams)
-	 		print "Tup is " + str(tup)
-	 		team = tup[1]
+	 	for team in lst:
 	 		first_member = team[0]
 	 		team_name = first_member[0]
-	 		print "Team is " + str(team)
+	 		#print "Team is " + str(team)
 
 	 		if (team_name == first_name):
+	 			other_name = second_name
 	 			swap_from = can_swap_snd
 	 		elif (team_name == second_name):
+	 			other_name = first_name
 	 			swap_from = can_swap_fst
 	 		else:
 	 			# Sanity check
 	 			raise FunctionError("Are there more than two types?")
 
-			print "swap_from is :" + str(swap_from)
+			# print "swap_from is:" + str(swap_from)
 			if (len(swap_from) == 0):
 				r = 0
 			else:
 	 			r = random.randint(0, len(swap_from) - 1)
-	 		
+	 		# print "R is " + str(r)
 	 		team_to_take_from = cleaned_teams[r]
+	 		# print "Team to take from is " + str(team_to_take_from)
 
 	 		#new = 0
 	 		#cleaned_teams[index_of_singleton_team_in_teams].append(new)
-	 		print team_to_take_from
+	 		possible_members_to_swap = filter(lambda tup: tup[0] == other_name, team_to_take_from)
+	 		possible_indices = map(lambda member: team_to_take_from.index(member), possible_members_to_swap)
 
+	 		# print "Possibilities is " + str(possible_members_to_swap)
+	 		# print "Team is " + str(team)
+	 		# print "Possible indices is " + str(possible_indices)
+
+	 		if (len(possible_indices) == 1):
+				i = 0
+			else:
+	 			i = random.randint(0, len(possible_indices) - 1)
+
+	 		# print "i is " + str(i)
+
+	 		index_to_swap_at = possible_indices[i]
+
+	 		# print "index to swap at is " + str(index_to_swap_at)
+	 		member_to_swap = team_to_take_from[index_to_swap_at]
+	 		# print "Member to swap is " + str(member_to_swap)
+
+	 		team.append(member_to_swap)
+	 		# print "Team is now " + str(team)
+
+	 		try:
+	 			team_to_take_from.remove(member_to_swap)
+	 			# print "Team to take from is now " + str(team_to_take_from)
+
+	 		except ValueError:
+	 			raise FunctionError("The member you are trying to remove is not in the given team.")
 
 	 		pass
 	 		
@@ -574,11 +594,10 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 		output = create_teams(to_use_t1, t1_name, to_use_t2, t2_name, size)
 		filled = fill_teams(output, t1_name, t2_name)
 		clean = clean_team(filled)
-		print_clean(clean)
 		fix_singletons(filled, clean, t1_name, t2_name)
+		print_clean(clean)
 		if (not (is_diverse(clean, t1_name, t2_name))):
-			pass
-			#raise FunctionError('From looping to create teams: output is not diverse.')
+			raise FunctionError('From looping to create teams: output is not diverse.')
 		print ""
 		i += 1
 	print "Success! Completed " + str(n) + " iterations."
@@ -624,16 +643,16 @@ if __name__ == "__main__":
 	t = create_IDs_from_lists(30, 30)
 	MBA_ids = t[0]
 	MEng_ids = t[1]
-	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 25)
+	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
 
 	# Checking if it works with strings. It does!
 	lst_a = [1, 2, 3]
 	lst_b = [4, 5, 8]
 	lst_c = [8, 9]
-	lst_d = [10]
+	lst_d = [10, 11, 12]
 	# TODO: look into this failing case.
-	do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 4, 1)
-	#do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 2, 1)
+	#do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 4, 1)
+	#do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
 
 	# res = have_spots(output)
 	# print res
