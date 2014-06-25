@@ -191,11 +191,11 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 
 		to_return[num_teams] = [None] * team_size
 
-		# print "After running create_teams:"
-		# print "     Second student IDs is: " + str(second_ids)
-		# print "     First student IDs is: " + str(first_ids)
+		print "After running create_teams:"
+		print "     Second student IDs is: " + str(second_ids)
+		print "     First student IDs is: " + str(first_ids)
 
-		# print "     Initial solution space is: " + str(to_return)
+		print "     Initial solution space is: " + str(to_return)
 
 		return (to_return, first_ids, second_ids)
 
@@ -279,9 +279,8 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		while (empty_spots[team_to_look_at] <= 0):
 		 	team_to_look_at += 1
 		 	if (team_to_look_at > (len(output) - 1)):
-		 		print "Ended early. Output is: ",
-		 		print output
-				return output
+		 		error = 'Add students to team ended early. Output is: ' + str(output)
+		 		raise FunctionError(error)
 		
 		cur_team = output[team_to_look_at]
 
@@ -334,6 +333,73 @@ def fill_teams(all_output, first_name, second_name):
 
 	return output_solution
 
+def get_diversity_stats(fixed_output, first_name, second_name):
+	'''
+		Sums up the type of each student in each team.
+
+		Parameters
+		----------
+		N/A.
+
+		Returns
+		-------
+		A tuple of lists, in the form (result, can_swap), where
+
+			result: a list of int tuples, where result[i] = (num_a, num_b)
+					indicates that the i-th team created has num_a members
+					of student type 1 and num_b members of student type 2.
+
+			can_swap: a list of boolean tuples, where can_swap[i] = (True, False)
+					  means that the i-th team could spare at least 1 member of 
+					  student type 1 but no members of student type 2. 
+
+					  NOTE: this was created to solve issues of non-diverse teams
+					  		by swapping members with other teams. Currently not used
+					  		but that could change.
+
+	'''
+	count = 0
+	result = [None] * len(fixed_output)
+	can_swap = [[], []]
+	
+	# Filling up the result diversity list.
+	for team in fixed_output:
+		first_count = 0
+		second_count = 0
+		changed = False
+		for person in team:
+			# print "Person is " + str(person)
+			if (person != None):
+				if (person[0] == first_name):
+					first_count += 1
+					changed = True
+				elif (person[0] == second_name):
+					second_count += 1
+					changed = True
+		if (not changed):
+			result[count] = (-1, -1)
+		else:
+			result[count] = (first_count, second_count)
+		count += 1	
+
+	# Filling up the can_swap list.
+	i = 0
+	for tup in result:
+		if ((tup[0] >= 2) and (tup[1] >= 2)):
+			can_swap[0].append(i)
+			can_swap[1].append(i)
+		elif (tup[0] >= 2):
+			can_swap[0].append(i)
+		elif (tup[1] >= 2):
+			can_swap[1].append(i)
+		else:
+			pass
+		i += 1
+
+	# Result in the form (first_count, second_count)
+	return (result, can_swap)
+
+
 def is_diverse(fixed_output, first_name, second_name):
 	'''
 		Used after filling teams with the remaining students. Checks if the teams that
@@ -351,72 +417,7 @@ def is_diverse(fixed_output, first_name, second_name):
 					as specified above.
 
 	'''
-
-	def get_diversity_stats():
-		'''
-			Sums up the type of each student in each team.
-
-			Parameters
-			----------
-			N/A.
-
-			Returns
-			-------
-			A tuple of lists, in the form (result, can_swap), where
-
-				result: a list of int tuples, where result[i] = (num_a, num_b)
-						indicates that the i-th team created has num_a members
-						of student type 1 and num_b members of student type 2.
-
-				can_swap: a list of boolean tuples, where can_swap[i] = (True, False)
-						  means that the i-th team could spare at least 1 member of 
-						  student type 1 but no members of student type 2. 
-
-						  NOTE: this was created to solve issues of non-diverse teams
-						  		by swapping members with other teams. Currently not used
-						  		but that could change.
-
-		'''
-		count = 0
-		result = [None] * len(fixed_output)
-		can_swap = [(False, False)] * len(fixed_output)
-		
-		# Filling up the result diversity list.
-		for team in fixed_output:
-			first_count = 0
-			second_count = 0
-			changed = False
-			for person in team:
-				# print "Person is " + str(person)
-				if (person != None):
-					if (person[0] == first_name):
-						first_count += 1
-						changed = True
-					elif (person[0] == second_name):
-						second_count += 1
-						changed = True
-			if (not changed):
-				result[count] = (-1, -1)
-			else:
-				result[count] = (first_count, second_count)
-			count += 1	
-
-		# Filling up the can_swap list.
-		count = 0
-		for tup in result:
-			if ((tup[0] >= 2) and (tup[1] >= 2)):
-				can_swap[count] = (True, True)
-			elif (tup[0] >= 2):
-				can_swap[count] = (True, False)
-			elif (tup[1] >= 2):
-				can_swap[count] = (False, True)
-			else:
-				pass
-
-		# Result in the form (first_count, second_count)
-		return (result, can_swap)
-
-	diversity_stats_output = get_diversity_stats()
+	diversity_stats_output = get_diversity_stats(fixed_output, first_name, second_name)
 	diversity_stats = diversity_stats_output[0]
 	for tup in diversity_stats:
 		if (0 in tup):
@@ -445,6 +446,87 @@ def clean_team(filled_teams):
 		result[cur] = filtered_team
 		cur += 1
 	return [r for r in result if r != None and r!= []]
+
+def has_singletons(cleaned_teams):
+	'''
+		Checks if there exists a team with only one element.
+
+		Parameters
+		----------
+		cleaned_teams: teams after they have passed through the clean_teams function.
+					   "Clean" means that all instances of None have been removed
+					   from these teams.
+
+		Returns
+		-------
+		has_singletons: boolean. If True, then there exists at least one team with only
+								 one member.
+
+	'''
+	singletons = map(lambda team: len(team) == 1, cleaned_teams)
+	return (True in singletons)
+
+def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
+
+	def get_indices_of_singletons():
+		i = 0
+		result = []
+		for team in cleaned_teams:
+			if (len(team) == 1):
+				result.append((i, team))
+			i += 1
+		return result
+
+# Now we have tuples of the form (index, team) 
+	# Iterate through lst
+	#	
+
+
+
+	lst = get_indices_of_singletons()
+
+	if (len(lst) == 0):
+		return cleaned_teams
+	else:
+	 	stats = get_diversity_stats(fixed_teams, first_name, second_name)
+	 	can_swap = stats[1]
+	 	can_swap_fst = can_swap[0]
+	 	can_swap_snd = can_swap[1]
+	 	for tup in lst:
+	 		index_of_singleton_team_in_teams = tup[0]
+	 		print "Current index is: " + str(index_of_singleton_team_in_teams)
+	 		print "Tup is " + str(tup)
+	 		team = tup[1]
+	 		first_member = team[0]
+	 		team_name = first_member[0]
+	 		print "Team is " + str(team)
+
+	 		if (team_name == first_name):
+	 			swap_from = can_swap_snd
+	 		elif (team_name == second_name):
+	 			swap_from = can_swap_fst
+	 		else:
+	 			# Sanity check
+	 			raise FunctionError("Are there more than two types?")
+
+			print "swap_from is :" + str(swap_from)
+			if (len(swap_from) == 0):
+				r = 0
+			else:
+	 			r = random.randint(0, len(swap_from) - 1)
+	 		
+	 		team_to_take_from = cleaned_teams[r]
+
+	 		#new = 0
+	 		#cleaned_teams[index_of_singleton_team_in_teams].append(new)
+	 		print team_to_take_from
+
+
+	 		pass
+	 		
+		# Then, go to a random of the indices and filter based on the desired name being part of the tuple.
+		# Then, generate a random one of those.
+		# Then, add that to the cleaned_team that is a singleton.
 
 def are_unique(l1, l2):
 	''' 
@@ -493,8 +575,10 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 		filled = fill_teams(output, t1_name, t2_name)
 		clean = clean_team(filled)
 		print_clean(clean)
+		fix_singletons(filled, clean, t1_name, t2_name)
 		if (not (is_diverse(clean, t1_name, t2_name))):
-			raise FunctionError('From looping to create teams: output is not diverse.')
+			pass
+			#raise FunctionError('From looping to create teams: output is not diverse.')
 		print ""
 		i += 1
 	print "Success! Completed " + str(n) + " iterations."
@@ -515,11 +599,9 @@ def print_clean(solution_space):
 	'''
 	i = 1
 	for team in solution_space:
-		print "Team " + str(i) + " : ",
+		print "Team " + str(i) + ": ",
 		print team
 		i += 1
-
-
 
 if __name__ == "__main__":
 	l1 = [30, 40, 50, 60]
@@ -545,10 +627,13 @@ if __name__ == "__main__":
 	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 25)
 
 	# Checking if it works with strings. It does!
-	lst_a = ["Ameya", "James", "Daniel"]
-	lst_b = ["Todd", "Elle", "Ashley"]
+	lst_a = [1, 2, 3]
+	lst_b = [4, 5, 8]
+	lst_c = [8, 9]
+	lst_d = [10]
 	# TODO: look into this failing case.
-	do_loop_to_create_teams(lst_a, 'Old', lst_b, 'New', 4, 1)
+	do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 4, 1)
+	#do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 2, 1)
 
 	# res = have_spots(output)
 	# print res
