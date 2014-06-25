@@ -22,7 +22,7 @@ class Student(object):
 		self._was_cs_ug 		 	  = csug
 		self._type_technical_strength = tts
 		self._work_experience 	 	  = nywe
-
+		
 
 	# Defining properties
 	def get_name(self):

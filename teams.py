@@ -539,10 +539,15 @@ if __name__ == "__main__":
 	# fill_teams(o)
 	# print is_diverse(o)
 
-	t = create_IDs_from_lists(3, 4)
-	MBA_ids = t[0]
-	MEng_ids = t[1]
-	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 2)
+	# t = create_IDs_from_lists(30, 30)
+	# MBA_ids = t[0]
+	# MEng_ids = t[1]
+	# do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 2)
+
+	# Checking if it works with strings. It does!
+	lst_a = ["Ameya", "James"]
+	lst_b = ["Todd", "Elle", "Ashley"]
+	do_loop_to_create_teams(lst_a, 'Old', lst_b, 'New', 2, 1)
 
 	# res = have_spots(output)
 	# print res
