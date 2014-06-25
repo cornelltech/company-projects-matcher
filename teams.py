@@ -34,12 +34,14 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 		Parameters
 		----------
 
-		first_ids: a list of the student ids of the MBA students.
+		first_ids: a list of the student IDs of the first group of students
+				   (i.e. MBAs).
 
-		second_ids: a list of the student ids of the 3 students.
+		second_ids: a list of the student IDs of the second group of students
+					(i.e. MEngs).
 
 		team_size: the target size for teams. If there are extra students left
-					at the end, add them to teams:
+					at the end, we will add them to teams.
 					This process will create 
 						((total_num_students) mod team_size)
 					teams with (team_size + 1) students.
@@ -305,51 +307,49 @@ def fill_teams(all_output):
 
 	return output_solution
 
-def get_diversity_stats(all_output):
-	count = 0
-	output = all_output[0]
-	first_name = all_output[2]
-	second_name = all_output[4]
-	result = [None] * len(output)
-	can_swap = [(False, False)] * len(output)
-	
-	# Filling up the result diversity list.
-	for team in output:
-		first_count = 0
-		second_count = 0
-		changed = False
-		for person in team:
-			# print "Person is " + str(person)
-			if (person != None):
-				if (person[0] == first_name):
-					first_count += 1
-					changed = True
-				elif (person[0] == second_name):
-					second_count += 1
-					changed = True
-		if (not changed):
-			result[count] = (-1, -1)
-		else:
-			result[count] = (first_count, second_count)
-		count += 1	
+def is_diverse(fixed_output, first_name, second_name):
 
-	# Filling up the can_swap list.
-	count = 0
-	for tup in result:
-		if ((tup[0] >= 2) and (tup[1] >= 2)):
-			can_swap[count] = (True, True)
-		elif (tup[0] >= 2):
-			can_swap[count] = (True, False)
-		elif (tup[1] >= 2):
-			can_swap[count] = (False, True)
-		else:
-			pass
+	def get_diversity_stats():
+		count = 0
+		result = [None] * len(fixed_output)
+		can_swap = [(False, False)] * len(fixed_output)
+		
+		# Filling up the result diversity list.
+		for team in fixed_output:
+			first_count = 0
+			second_count = 0
+			changed = False
+			for person in team:
+				# print "Person is " + str(person)
+				if (person != None):
+					if (person[0] == first_name):
+						first_count += 1
+						changed = True
+					elif (person[0] == second_name):
+						second_count += 1
+						changed = True
+			if (not changed):
+				result[count] = (-1, -1)
+			else:
+				result[count] = (first_count, second_count)
+			count += 1	
 
-	# Result in the form (first, count, second_count)
-	return (result, can_swap)
+		# Filling up the can_swap list.
+		count = 0
+		for tup in result:
+			if ((tup[0] >= 2) and (tup[1] >= 2)):
+				can_swap[count] = (True, True)
+			elif (tup[0] >= 2):
+				can_swap[count] = (True, False)
+			elif (tup[1] >= 2):
+				can_swap[count] = (False, True)
+			else:
+				pass
 
-def is_diverse(unfixed_output):
-	diversity_stats_output = get_diversity_stats(unfixed_output)
+		# Result in the form (first, count, second_count)
+		return (result, can_swap)
+
+	diversity_stats_output = get_diversity_stats()
 	diversity_stats = diversity_stats_output[0]
 	for tup in diversity_stats:
 		if (0 in tup):
@@ -405,7 +405,7 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 		filled = fill_teams(output)
 		clean = clean_team(filled)
 		print_clean(clean)
-		if (not (is_diverse(output))):
+		if (not (is_diverse(clean, t1_name, t2_name))):
 			raise FunctionError('From looping to create teams, output is not diverse.')
 		print ""
 		i += 1
