@@ -447,25 +447,6 @@ def clean_team(filled_teams):
 		cur += 1
 	return [r for r in result if r != None and r!= []]
 
-def has_singletons(cleaned_teams):
-	'''
-		Checks if there exists a team with only one element.
-
-		Parameters
-		----------
-		cleaned_teams: teams after they have passed through the clean_teams function.
-					   "Clean" means that all instances of None have been removed
-					   from these teams.
-
-		Returns
-		-------
-		has_singletons: boolean. If True, then there exists at least one team with only
-								 one member.
-
-	'''
-	singletons = map(lambda team: len(team) == 1, cleaned_teams)
-	return (True in singletons)
-
 def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
 
 	def get_indices_of_singletons():
