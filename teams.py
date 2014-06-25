@@ -445,7 +445,7 @@ def clean_team(filled_teams):
 		filtered_team = [tup for tup in team if tup != None]
 		result[cur] = filtered_team
 		cur += 1
-	return [r for r in result if r != None and r!= []]
+	return [r for r in result if r != None and r!= []] 
 
 def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
 
