@@ -271,8 +271,8 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 		# Update the empty spots structure.
 		empty_spots[team_to_look_at] -= 1
 	
-	print "After adding extra students to teams, our solution space is: "
-	print "     " + str(output)
+	# print "After adding extra students to teams, our solution space is: "
+	# print "     " + str(output)
 
 	return output
 
@@ -348,8 +348,8 @@ def get_diversity_stats(all_output):
 	# Result in the form (first, count, second_count)
 	return (result, can_swap)
 
-def is_diverse(fixed_output):
-	diversity_stats_output = get_diversity_stats(fixed_output)
+def is_diverse(unfixed_output):
+	diversity_stats_output = get_diversity_stats(unfixed_output)
 	diversity_stats = diversity_stats_output[0]
 	for tup in diversity_stats:
 		if (0 in tup):
@@ -371,7 +371,7 @@ def are_unique(l1, l2):
 	'''
 	return (set(l1).intersection(set(l2)) == set([]))
 
-def do_loop_to_create_teams(t1, t2, s, n):
+def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 	'''
 		A loop that runs create_teams n times on the given input
 		lists t1 and t2. It will return a list of multiple random
@@ -384,7 +384,7 @@ def do_loop_to_create_teams(t1, t2, s, n):
 
 		t2: a list of the student ids of the second students.
 
-		s: team_size (see create_teams docs.)
+		size: team_size (see create_teams docs.)
 
 		n: number of iterations. 
 
@@ -395,10 +395,21 @@ def do_loop_to_create_teams(t1, t2, s, n):
 		formation and is therefore made up of (type * id) tuples.
 
 	'''
-	# TODO: copy the initial arrays over into a buffer.
-	# TODO: create a while loop to perform the team creation multiple times.
-	result = create_teams(t1, t2, s)
-	return (t1, t2, result)
+	i = 0
+	while (i < n):
+		print "Iteration " + str(i+1) + ":"
+		print "-------------------------------------------------------------"
+		to_use_t1 = t1[:]
+		to_use_t2 = t2[:]
+		output = create_teams(to_use_t1, t1_name, to_use_t2, t2_name, size)
+		filled = fill_teams(output)
+		clean = clean_team(filled)
+		print_clean(clean)
+		if (not (is_diverse(output))):
+			raise FunctionError('From looping to create teams, output is not diverse.')
+		print ""
+		i += 1
+	print "Completed all iterations."
 
 # NOTE: to be used after the Nones have been removed.
 def print_clean(solution_space):
@@ -423,15 +434,10 @@ if __name__ == "__main__":
 	# fill_teams(o)
 	# print is_diverse(o)
 
-	t = create_IDs_from_lists(35, 49)
-	MBA = t[0]
-	MEng = t[1]
-	o = create_teams(MBA, 'MBA', MEng, 'MEng', 3)
-	f = fill_teams(o)
-	c = clean_team(f)
-	print_clean(c)
-	# print clean_team(f)
-	print is_diverse(o)
+	t = create_IDs_from_lists(3, 4)
+	MBA_ids = t[0]
+	MEng_ids = t[1]
+	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 2)
 
 	# res = have_spots(output)
 	# print res
