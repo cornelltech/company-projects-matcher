@@ -18,7 +18,7 @@ class FunctionError(Exception):
 #		three or more teams by taking input in a list, and then
 # 		using map.
 # TODO: Make this work with more than one team size.
-# TODO: add to teams based on their technical/businessy needs.
+# TODO: Add to teams based on their technical/businessy needs.
 
 def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 	'''
