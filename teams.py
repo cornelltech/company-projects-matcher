@@ -14,14 +14,12 @@ class FunctionError(Exception):
 		return repr(self.val)
 
 # TODO: Make this work for arbitrary number of student types. 
-# TODO: Make user not have to input the actual student IDs.
-#		Can do this by picking the degree with the max
-#		number of students. Use this as a parameter to make
-#		the matrix of student IDs.
-# TODO: Make this work with more than team size.
-# TODO: Can apply these (functions that apply to two teams) apply to 
+# 		Can apply these (functions that apply to two teams) apply to 
 #		three or more teams by taking input in a list, and then
 # 		using map.
+# TODO: Make this work with more than one team size.
+# TODO: add to teams based on their technical/businessy needs.
+
 def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 	'''
 		A loop that goes through the sample space of students
@@ -38,15 +36,13 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 
 		first_ids: a list of the student ids of the MBA students.
 
-		second_ids: a list of the student ids of the MBA students.
+		second_ids: a list of the student ids of the 3 students.
 
 		team_size: the target size for teams. If there are extra students left
 					at the end, add them to teams:
 					This process will create 
 						((total_num_students) mod team_size)
 					teams with (team_size + 1) students.
-
-					TODO: add to teams based on their technical/businessy needs.
 
 		Returns
 		--------
@@ -68,6 +64,7 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 	# print len(first_ids),
 	# print "and "
 	# print len(second_ids)
+
 
 	if ((first_ids == []) | (second_ids == [])):
 		raise InputError('Student ID lists must not be empty.')
@@ -178,7 +175,7 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 				else:
 					# print "Numleft is " + str(num_left)
 					# print "Current team is " + cur_team_name
-					# print "Length of the other team is ",
+					# print "Length of the other team is ", 
 					# if (cur_team_name == first_name):
 					# 	print len(second_ids)
 					# else:
@@ -425,7 +422,6 @@ if __name__ == "__main__":
 	# o = create_teams(l1, l2, 3)
 	# fill_teams(o)
 	# print is_diverse(o)
-	print "RIght version"
 
 	t = create_IDs_from_lists(35, 49)
 	MBA = t[0]
