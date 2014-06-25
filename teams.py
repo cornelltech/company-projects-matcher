@@ -20,6 +20,13 @@ class FunctionError(Exception):
 # TODO: Make this work with more than one team size.
 # TODO: Add to teams based on their technical/businessy needs.
 
+def random_index(lst_length):
+	if (lst_length == 1):
+		r = 0
+	else:
+		r = random.randint(0, lst_length - 1)
+	return r
+
 def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 	'''
 		A loop that goes through the sample space of students
@@ -164,20 +171,7 @@ def create_teams(first_ids, first_name, second_ids, second_name, team_size):
 				else:
 					raise FunctionError('Are there more than two types of students?')
 				
-				# Protect against randint error for team of size 1.
-				if (len(cur_team) == 1):
-					r = 0
-				else:
-					# print "Numleft is " + str(num_left)
-					# print "Current team is " + cur_team_name
-					# print "Length of the other team is ", 
-					# if (cur_team_name == first_name):
-					# 	print len(second_ids)
-					# else:
-					# 	print len(first_ids)
-					# print "Length of the current team is ",
-					# print len(cur_team)
-					r = random.randint(0, len(cur_team) - 1)
+				r = random_index(len(cur_team))
 				
 				# Place the player onto our current team.
 				cur_student_id = cur_team.pop(r)
@@ -260,6 +254,8 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 					  assigned to teams.
 
 	'''
+
+
 	team_to_look_at = 0 
 	if (len(remaining_students) == 0):
 		return output
@@ -267,11 +263,8 @@ def add_students_to_team(remaining_students, s_type, output, empty_spots):
 	while (len(remaining_students) > 0):
 			
 	# Get a random student
-		if (len(remaining_students) == 1):
-			r = 0
-		else:
-			r = random.randint(0, len(remaining_students) - 1)
-
+		r = random_index(len(remaining_students))
+	
 		cur_student_id = remaining_students.pop(r)
 		new_student = (s_type, cur_student_id)
 		
@@ -484,9 +477,11 @@ def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
 
 			# print "swap_from is:" + str(swap_from)
 			if (len(swap_from) == 0):
-				r = 0
-			else:
-	 			r = random.randint(0, len(swap_from) - 1)
+				error = "There is no possible team to swap from. The existing teams are"
+				error += str(fixed_teams)
+				raise FunctionError(error)
+
+			r = random_index(len(swap_from))
 	 		# print "R is " + str(r)
 	 		team_to_take_from = cleaned_teams[r]
 	 		# print "Team to take from is " + str(team_to_take_from)
@@ -500,11 +495,8 @@ def fix_singletons(fixed_teams, cleaned_teams, first_name, second_name):
 	 		# print "Team is " + str(team)
 	 		# print "Possible indices is " + str(possible_indices)
 
-	 		if (len(possible_indices) == 1):
-				i = 0
-			else:
-	 			i = random.randint(0, len(possible_indices) - 1)
-
+	 		i = random_index(len(possible_indices))
+	
 	 		# print "i is " + str(i)
 
 	 		index_to_swap_at = possible_indices[i]
@@ -569,7 +561,7 @@ def do_loop_to_create_teams(t1, t1_name, t2, t2_name, size, n):
 	i = 0
 	while (i < n):
 		print "Iteration " + str(i+1) + ":"
-		print "-------------------------------------------------------------------------"
+		print "----------------------------------------------------------"
 		to_use_t1 = t1[:]
 		to_use_t2 = t2[:]
 		output = create_teams(to_use_t1, t1_name, to_use_t2, t2_name, size)
@@ -627,13 +619,13 @@ if __name__ == "__main__":
 	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
 
 	# Checking if it works with strings. It does!
-	lst_a = [1, 2, 3]
-	lst_b = [4, 5, 8]
+	lst_a = [1, 2, 3, 10, 11, 16]
+	lst_b = [4, 5, 6, 7, 8, 12]
 	lst_c = [8, 9]
 	lst_d = [10, 11, 12]
-	# TODO: look into this failing case.
-	#do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 4, 1)
-	#do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
+
+	#do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 2, 1)
+	do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
 
 	# res = have_spots(output)
 	# print res
