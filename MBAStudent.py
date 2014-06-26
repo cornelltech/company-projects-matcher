@@ -11,10 +11,16 @@ from student import Student
 # Random test cases for proper use of inheritance / getters and setters. 
 if __name__ == "__main__":
 
-	a = Student("Ameyayayaya", 49)
+ # 	def __init__ (self, name, ID, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
+
+	a = Student("Ameyayayaya", 2886650, 3, False, "databases", 9)
 	print a.name
-	a.coding_ability = 6
+	print a.ID
 	print a.coding_ability
+	print a.was_cs_ug
+	print a.type_technical_strength
+	print a.work_experience
+
 	# print "a's technical strength is"
 	# print a.type_technical_strength
 # 	print "setting a's technical strength to 5"
