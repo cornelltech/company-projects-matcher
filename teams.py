@@ -441,6 +441,41 @@ def clean_team(filled_teams):
 	return [r for r in result if r != None and r!= []] 
 
 # TODO: pairwise differences, to ensure that teams are balanced.
+
+# pseudocode for pairwise differences
+# create a matrix of size (len(filled_teams) x len(filled_teams))
+# If there are 3 teams, this would look like:
+#    1 2 3
+# 1  0 a b
+# 2  a 0 c
+# 3  b c 0
+# my problems with a matrix for this info:
+# 		- Redundant
+# 		- Takes up more space
+# Could do a list of lists with each list becoming smaller.
+
+# Another option:
+# 		- Only add the difference when its above one
+# 		- Then tag it (for which teams it applies to)
+# iterate through the list once (for team_1 in filled_teams)
+# 	iterate again (for team_2 in filled_teams)
+# 		if (team_1 == team_2): check if this is the proper equality check.
+# 			pass
+# 		else:
+# 			len_1 = len(team_1)
+# 			len_2 = len(team_2)
+# 			diff = abs(len1 - len_2)
+# 			add to the data structure
+# 			
+
+
+
+def get_pairwise_differences(filled_teams):
+	pass
+
+
+
+
 # TODO: if the number of remaining students is team_size - 1, just make a new team.
 # TODO: consider removing members from teams instead of adding.
 # TODO: get rid of Nones and use append. but also no, because Nones tell us who has room.
@@ -646,7 +681,7 @@ if __name__ == "__main__":
 	t = create_IDs_from_lists(30, 30)
 	MBA_ids = t[0]
 	MEng_ids = t[1]
-	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
+	#do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
 
 	# Checking if it works with strings. It does!
 	lst_a = [1, 2, 3, 10, 11, 16]
@@ -657,9 +692,13 @@ if __name__ == "__main__":
 	lst_e = [3, 6, 9, 12, 15]
 	lst_f = [30, 60, 90, 120, 150, 180]
 
+	names_one = ['Daniel', 'Ameya', 'James', 'Todd']
+	names_two = ['Elle', 'Ashley']
+
 	#do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 2, 1)
 	#do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
-	do_loop_to_create_teams(lst_e, 'MBA', lst_f, 'MEng', 4, 1)
+	#do_loop_to_create_teams(lst_e, 'MBA', lst_f, 'MEng', 4, 1)
+	#do_loop_to_create_teams(names_one, 'Old Intern', names_two, 'New Intern', 4, 1000)
 
 	# res = have_spots(output)
 	# print res
