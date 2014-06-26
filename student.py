@@ -5,7 +5,7 @@ class Student(object):
 	#__metaclass__ = abc.ABCMeta
 
 	@abc.abstractmethod
-	def __init__ (name, ID, self, ca, csug, tts, nywe):
+	def __init__ (self, name, ID, ca, csug, tts, nywe):
 		''' 
 			Parameters
 			----------
@@ -23,6 +23,8 @@ class Student(object):
 		self._type_technical_strength = tts
 		self._work_experience 	 	  = nywe
 		
+	# TODO: add a global dict that will map ints to types of technical strength.
+	# TODO: in "set_technical_strength", convert that int to a string.	
 
 	# Defining properties
 	def get_name(self):
@@ -60,12 +62,12 @@ class Student(object):
 				doc = "Get and set if student was a CS undergrad.")
 
 	def get_technical_strength(self):
-		return self._technical_strength
+		return self._type_technical_strength
 
 	def set_technical_strength(self, val):
-		self._technical_strength = val
+		self._type_technical_strength = val
 
-	technical_strength = property(get_technical_strength, set_technical_strength,
+	type_technical_strength = property(get_technical_strength, set_technical_strength,
 						doc = "Get and set the type of the student's technical strength.")
 
 	def get_work_experience(self):

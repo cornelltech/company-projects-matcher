@@ -681,7 +681,7 @@ if __name__ == "__main__":
 	t = create_IDs_from_lists(30, 30)
 	MBA_ids = t[0]
 	MEng_ids = t[1]
-	#do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
+	do_loop_to_create_teams(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
 
 	# Checking if it works with strings. It does!
 	lst_a = [1, 2, 3, 10, 11, 16]
@@ -698,7 +698,7 @@ if __name__ == "__main__":
 	#do_loop_to_create_teams(lst_a, 'MBA', lst_b, 'MEng', 2, 1)
 	#do_loop_to_create_teams(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
 	#do_loop_to_create_teams(lst_e, 'MBA', lst_f, 'MEng', 4, 1)
-	#do_loop_to_create_teams(names_one, 'Old Intern', names_two, 'New Intern', 4, 1000)
+	#do_loop_to_create_teams(names_one, 'Old Intern', names_two, 'New Intern', 3, 1000)
 
 	# res = have_spots(output)
 	# print res
