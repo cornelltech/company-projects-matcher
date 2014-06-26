@@ -1,6 +1,5 @@
 #import exceptions
 import random
-from MBAStudent import MBAStudent
 
 class InputError(Exception):
 	def __init__(self, value):
@@ -19,7 +18,6 @@ class FunctionError(Exception):
 #		three or more teams by taking input in a list, and then
 # 		using map.
 # TODO: Make this work with more than one team size.
-# TODO: Add to teams based on their technical/businessy needs.
 
 def random_index(lst_length):
 	if (lst_length == 1):
@@ -225,16 +223,17 @@ def create_random_fields_from_lists(first_num, second_num):
 		for each.
 	
 	'''
-	m = MBAStudent()
+	pass
+	# m = MBAStudent()
 
-	first_ids = range(0, first_num)
-	i = 1000
-	# To ensure there is no overlap between the two sets of IDs that we create
-	while (i <= first_num):
-		i *= 10
-	second_ids = range (1, second_num+1) # To ensure zero isn't included in both
-	second_ids = [elm * i for elm in second_ids]
-	return (first_ids, second_ids)
+	# first_ids = range(0, first_num)
+	# i = 1000
+	# # To ensure there is no overlap between the two sets of IDs that we create
+	# while (i <= first_num):
+	# 	i *= 10
+	# second_ids = range (1, second_num+1) # To ensure zero isn't included in both
+	# second_ids = [elm * i for elm in second_ids]
+	# return (first_ids, second_ids)
 
 def teams_with_empty_spots(output):
 	'''
@@ -502,7 +501,6 @@ def get_pairwise_differences(filled_teams):
 
 
 # TODO: if the number of remaining students is team_size - 1, just make a new team.
-# TODO: consider removing members from teams instead of adding.
 # TODO: get rid of Nones and use append. but also no, because Nones tell us who has room.
 # 		Could use length of lists for this.
 
