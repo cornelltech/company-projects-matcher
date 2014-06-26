@@ -1,5 +1,6 @@
 #import exceptions
 import random
+from MBAStudent import MBAStudent
 
 class InputError(Exception):
 	def __init__(self, value):
@@ -198,6 +199,34 @@ def create_IDs_from_lists(first_num, second_num):
 		Given the numbers of students in each group, generate IDs for each.
 	
 	'''
+	first_ids = range(0, first_num)
+	i = 1000
+	# To ensure there is no overlap between the two sets of IDs that we create
+	while (i <= first_num):
+		i *= 10
+	second_ids = range (1, second_num+1) # To ensure zero isn't included in both
+	second_ids = [elm * i for elm in second_ids]
+	return (first_ids, second_ids)
+
+def random_coding_ability():
+	return random.randint(0, 4)
+
+def random_cs_ug():
+	return random.randint(0, 1)
+
+def random_type_technical_strength(student):
+	r = random.randint(1, 8)
+	print r
+	pass
+
+def create_random_fields_from_lists(first_num, second_num):
+	'''
+		Given the numbers of students in each group, generate random fields
+		for each.
+	
+	'''
+	m = MBAStudent()
+
 	first_ids = range(0, first_num)
 	i = 1000
 	# To ensure there is no overlap between the two sets of IDs that we create
