@@ -1,5 +1,6 @@
 #import exceptions
 import random
+from student import Student
 
 class InputError(Exception):
 	def __init__(self, value):
@@ -12,6 +13,8 @@ class FunctionError(Exception):
 		self.val = value
 	def __str__(self):
 		return repr(self.val)
+
+used_IDs = []
 
 # TODO: Make this work for arbitrary number of student types. 
 # 		Can apply these (functions that apply to two teams) apply to 
@@ -206,25 +209,50 @@ def create_IDs_from_lists(first_num, second_num):
 	second_ids = [elm * i for elm in second_ids]
 	return (first_ids, second_ids)
 
+# TODO: make all of these functions set the values.
+def random_student_ID():
+	r = random.randint(0, 1000000)
+	if (not (r in used_IDs)):
+		used_IDs.append(r)
+		return r
+	else:
+		random_student_ID()
+
+def random_degree_pursuing():
+	return random.randint(0, 1)
+
 def random_coding_ability():
 	return random.randint(0, 4)
 
 def random_cs_ug():
 	return random.randint(0, 1)
 
-def random_type_technical_strength(student):
-	r = random.randint(1, 8)
-	print r
-	pass
+def random_type_technical_strength():
+	return random.randint(1, 8)
 
-def create_random_fields_from_lists(first_num, second_num):
+def random_yrs_work_experience():
+	return random.randint(0, 6)
+
+# TODO: supposed to take in (first_num, second_num)
+def create_random_student():
 	'''
 		Given the numbers of students in each group, generate random fields
 		for each.
 	
 	'''
-	pass
-	# m = MBAStudent()
+	# def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
+
+	i = random_student_ID()
+	d = random_degree_pursuing()
+	c = random_coding_ability()
+	cs = random_cs_ug()
+	t = random_type_technical_strength()
+	n = random_yrs_work_experience()
+
+	name = "Test"
+
+	s = Student(name, i, d, c, cs, t, n)
+	return s
 
 	# first_ids = range(0, first_num)
 	# i = 1000
@@ -234,6 +262,44 @@ def create_random_fields_from_lists(first_num, second_num):
 	# second_ids = range (1, second_num+1) # To ensure zero isn't included in both
 	# second_ids = [elm * i for elm in second_ids]
 	# return (first_ids, second_ids)
+
+def formatted_print_student_stats(a):
+	
+	try:
+		print "(",
+		print "Name: " + a.name + ",",
+		print "ID: " + str(a.ID) + ",",
+		print "Degree pursuing: " + str(a.degree_pursuing) + ",",
+		print "Coding ability: " + str(a.coding_ability) + ",",
+		print "CS Undergrad? " + str(a.was_cs_ug) + ",",
+		print "Type of technical strength: " + str(a.type_technical_strength) + ",",
+		print "Num yrs. work experience: " + str(a.work_experience) + ")"
+	except AttributeError:
+		error = "Passed a " + str(type(a)) + " to a function that expects a Student."
+		raise FunctionError(error)
+
+def print_student_stats(a):
+	try:
+		print "(",
+		print '"' + a.name + '",', 
+		print str(a.ID) + ",",
+		print str(a.degree_pursuing) + ",",
+		print str(a.coding_ability) + ",",
+		print str(a.was_cs_ug) + ",",
+		print str(a.type_technical_strength) + ",",
+		print str(a.work_experience) + ")"
+	except AttributeError:
+		error = "Passed a " + str(type(a)) + " to a function that expects a Student."
+		raise FunctionError(error)
+
+
+
+def create_random_students(n):
+	for i in range(0, n):
+		print "Student " + str(i+1) + " is:"
+		s = create_random_student()
+		#print_student_stats(s)
+		print (s.get_student_properties())
 
 def teams_with_empty_spots(output):
 	'''
@@ -684,6 +750,7 @@ def print_clean(solution_space):
 		i += 1
 
 if __name__ == "__main__":
+	used_IDs = []
 	l1 = [30, 40, 50, 60]
 	l2 = [2, 1, 6, 7, 8, 9, 10]
 
@@ -701,22 +768,22 @@ if __name__ == "__main__":
 	# fill_teams_type_id(o)
 	# print is_type_diverse(o)
 
-	t = create_IDs_from_lists(30, 30)
-	MBA_ids = t[0]
-	MEng_ids = t[1]
-	do_loop_to_create_teams_type_id(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
+	# t = create_IDs_from_lists(30, 30)
+	# MBA_ids = t[0]
+	# MEng_ids = t[1]
+	# do_loop_to_create_teams_type_id(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
 
-	# Checking if it works with strings. It does!
-	lst_a = [1, 2, 3, 10, 11, 16]
-	lst_b = [4, 5, 6, 7, 8, 12]
-	lst_c = [8, 9]
-	lst_d = [10, 11, 12]
+	# # Checking if it works with strings. It does!
+	# lst_a = [1, 2, 3, 10, 11, 16]
+	# lst_b = [4, 5, 6, 7, 8, 12]
+	# lst_c = [8, 9]
+	# lst_d = [10, 11, 12]
 
-	lst_e = [3, 6, 9, 12, 15]
-	lst_f = [30, 60, 90, 120, 150, 180]
+	# lst_e = [3, 6, 9, 12, 15]
+	# lst_f = [30, 60, 90, 120, 150, 180]
 
-	names_one = ['Daniel', 'Ameya', 'James', 'Todd']
-	names_two = ['Elle', 'Ashley']
+	# names_one = ['Daniel', 'Ameya', 'James', 'Todd']
+	# names_two = ['Elle', 'Ashley']
 
 	#do_loop_to_create_teams_type_id(lst_a, 'MBA', lst_b, 'MEng', 2, 1)
 	#do_loop_to_create_teams_type_id(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
@@ -725,6 +792,8 @@ if __name__ == "__main__":
 
 	# res = have_spots(output)
 	# print res
+
+	create_random_students(5)
 
 	# Checks for invalid input
 	# create_teams_type_id(l1, l2, 0)
