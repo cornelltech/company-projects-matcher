@@ -148,5 +148,24 @@ class Student(object):
 		
 		self._name				 	  = name
 		self._ID				 	  = ID
-		self._randomshit = "hi"
 		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp)
+
+	def get_student_properties(self):
+		tup = []
+		tup.append(self._name)
+		tup.append(self._ID)
+		tup.append(self._degree_pursuing)
+		tup.append(self._coding_ability)
+		tup.append(self._was_cs_ug)
+		tup.append(self._type_technical_strength)
+		tup.append(self._work_experience)
+		return tup
+
+
+
+
+
+
+
+
+
