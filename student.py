@@ -3,8 +3,13 @@
 vals_cs_ug = [True, False]
 vals_work_experience = range(0, 7)
 
-# 0 = lowest, 4 = most
-dict_coding_ability = range(0, 5)
+# NOTE: 0 = lowest, 4 = most
+vals_coding_ability = range(0, 5)
+
+# NOTE: Keep these organized in alphabetical order.
+vals_degree_pursuing = { 0 : "MBA",
+						 1 : "MEng"
+}
 
 vals_technical_strength = { 1 : "frontend",
 							  	2 : "backend",
@@ -28,7 +33,7 @@ class Student(object):
 
 	global vals_cs_ug
 	global vals_yrs_work_experience
-	global dict_coding_ability
+	global vals_coding_ability
 	global vals_technical_strength
 
 	#@abc.abstractmethod
@@ -57,11 +62,28 @@ class Student(object):
 
 	ID = property(get_ID, set_ID, doc = "Get and set student ID.")
 
+	def get_degree_pursuing(self):
+		return self._degree_pursuing
+
+	def set_degree_pursuing(self, val):
+		# Checks if the user is passing in the string value for degree pursuing.
+		# If not, check if the int they're passing in is included in our dict.
+		if (not(val in vals_degree_pursuing.values())):
+			self.check_valid(val, vals_degree_pursuing, 
+						s = " degree pursuing")
+			self._degree_pursuing = vals_degree_pursuing[val]
+		# If they are, set the degree pursuing
+		else:
+			self._degree_pursuing = val
+
+	degree_pursuing = property(get_degree_pursuing, set_degree_pursuing,
+					doc = "Get and set degree pursuing.")
+
 	def get_coding_ability(self):
 		return self._coding_ability
 
 	def set_coding_ability(self, val):
-		self.check_valid(val, dict_coding_ability, s = " coding ability")
+		self.check_valid(val, vals_coding_ability, s = " coding ability")
 		self._coding_ability = val
 
 	coding_ability = property(get_coding_ability, set_coding_ability,
@@ -105,14 +127,15 @@ class Student(object):
 	work_experience = property(get_work_experience, set_work_experience,
 					  doc = "Get and set the num. yrs. of work experience.")
 
-	def set_valid_properties(self, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
+	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
 		
+		self.set_degree_pursuing(degree_pursuing)
 		self.set_coding_ability(cod_abil)
 		self.set_cs_ug(cs_ug)
 		self.set_technical_strength(type_tech_stren)
 		self.set_work_experience(num_yrs_work_exp)
 
-	def __init__ (self, name, ID, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
+	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
 		''' 
 			Parameters
 			----------
@@ -125,4 +148,5 @@ class Student(object):
 		
 		self._name				 	  = name
 		self._ID				 	  = ID
-		self.set_valid_properties(cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp)
+		self._randomshit = "hi"
+		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp)

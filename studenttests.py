@@ -11,11 +11,12 @@ from student import Student
 # Random test cases for proper use of inheritance / getters and setters. 
 if __name__ == "__main__":
 
- # 	def __init__ (self, name, ID, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
+ # 	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
 
-	a = Student("Ameyayayaya", 2886650, 3, False, "databases", 9)
+	a = Student("Ameyayayaya", 2886650, 1, 3, False, "databases", 6)
 	print a.name
 	print a.ID
+	print a.degree_pursuing
 	print a.coding_ability
 	print a.was_cs_ug
 	print a.type_technical_strength
