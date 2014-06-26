@@ -6,7 +6,7 @@ vals_work_experience = range(0, 7)
 # NOTE: 0 = lowest, 4 = most
 vals_coding_ability = range(0, 5)
 
-# NOTE: Keep these organized in alphabetical order.
+# NOTE: Keep these organized in alphabetical order. 
 vals_degree_pursuing = { 0 : "MBA",
 						 1 : "MEng"
 }
