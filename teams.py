@@ -253,6 +253,17 @@ def create_random_student(d = -1):
 	# second_ids = [elm * i for elm in second_ids]
 	# return (first_ids, second_ids)
 
+def create_random_student_vector(d = -1):
+	if (d == -1):
+		d = random_degree_pursuing()
+	c = random_coding_ability()
+	cs = random_cs_ug()
+	t = random_type_technical_strength()
+	n = random_yrs_work_experience()
+
+	s = [d, c, cs, t, n]
+	return s
+
 def print_student_stats(a):
 	try:
 		print "(",
@@ -272,6 +283,16 @@ def create_random_students(n, d = -1):
 	for i in range(0, n):
 		# print "Student " + str(i+1) + " is:"
 		s = create_random_student(d)
+		#print_student_stats(s)
+		result.append(s)
+	return result
+
+
+def create_random_student_vectors(n, d = -1):
+	result = []
+	for i in range(0, n):
+		# print "Student " + str(i+1) + " is:"
+		s = create_random_student_vector(d)
 		#print_student_stats(s)
 		result.append(s)
 	return result
