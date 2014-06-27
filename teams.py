@@ -195,6 +195,178 @@ def create_teams_type_id(first_ids, first_name, second_ids, second_name, team_si
 
 		return (to_return, first_ids, second_ids)
 
+
+def create_teams_on_all_fields(first_students, first_name, second_students, second_name, team_size):
+	'''
+		A loop that goes through the sample space of students
+		and creates teams of students.
+
+		The set of teams teams adhere to our requirements:
+			- Plausibility: teams will be formed from selection without 
+			replacement (each student is assigned to exactly one team.)
+			- Size: Each team will be of a size found in team_sizes (or +- 1).
+			- Diversity: each team will have one student of each input type.
+
+		Parameters
+		----------
+
+		first_ids: a list of the student IDs of the first group of students
+				   (i.e. MBAs).
+
+		second_ids: a list of the student IDs of the second group of students
+					(i.e. MEngs).
+
+		team_size: the target size for teams. If there are extra students left
+					at the end, we will add them to teams.
+					This process will create 
+						((total_num_students) mod team_size)
+					teams with (team_size + 1) students.
+
+		Returns
+		--------
+		A tuple (teams, l1, l2), with:
+
+			teams: a list of lists that represents the current teams. Each team list will
+			contain (type * id) tuples. These teams will also contain None.
+
+			l1: the remaining members of the first group passed into create_teams_type_id.
+
+			l2: the remaining members of the second group passed into create_teams_type_id.
+
+	'''
+
+	# print "Initial size of teams is "
+	# print len(first_ids),
+	# print "and "
+	# print len(second_ids)
+
+	# Guarantee proper input.
+	if ((first_students == []) | (second_students == [])):
+		raise InputError('Student lists must not be empty.')
+
+	else:
+
+		first_student_ids = [student.ID for student in first_students]
+		second_student_ids = [student.ID for student in second_students]
+
+		if (not are_unique(first_student_ids, second_student_ids)):
+			raise InputError('Student ID lists must not overlap.')
+
+		elif (team_size == 0):
+			raise InputError('Team size cannot be zero.')
+	
+		else:
+			total_students = len(first_students) + len(second_students)
+			num_teams = total_students / team_size
+			num_teams_left = num_teams
+			# print "Num teams is " + str(num_teams)
+
+			if (num_teams == 0):
+				raise InputError('Team size is too large for given input.')
+
+			if ((len(first_students) < num_teams) | (len(second_students) < num_teams)):
+				raise InputError('Not enough members to produce balanced teams.')
+
+			# Initialize empty array to hold the final teams.
+			to_return = [None] * (num_teams + 1)
+			
+			# For each team that we need to create:
+			for i in range(0, num_teams):
+				
+				# Initialize empty tuple to hold the current team.
+				team_creating = [None] * (team_size + 1)
+				
+				# At the beginning, the team has neither MBAs nor MEngs.
+				team_has_first = False
+				team_has_second = False
+				
+				# Start adding to the beginning of the team.
+				# Initially have the entire team to fill.
+				team_index = 0
+				num_left = team_size
+				
+				# While there are empty spots left on the team:
+				while (num_left > 0):
+
+					# Generate a random number between 0 and 1.
+					rand = random.random()
+
+					# Function to pick a team in a purely random manner.
+					def rand_team_choose():
+						if (rand >= 0.5):
+							# Pick firsts first, if there are enough remaining.
+							if (len(first_students) >= num_teams_left):
+							#if (not (first_ids == [])):
+								return (first_name, first_students)
+							# Pick secondss otherwise.
+							else:
+								return (second_name, second_students)
+						else:
+							# Pick seconds first, if there are enough remaining.
+							if (len(second_students) >= num_teams_left):
+							#if (not (second_ids == [])):
+								return (second_name, second_students)
+							# Pick firsts otherwise.
+							else:
+								return (first_name, first_students)
+
+					# Logic to pick the current team to take students from.
+					def pick_cur_team():
+
+						# If the team either has both first and second students
+						# or the team has neither, we can pick the team in
+						# a purely random manner through rand_team_choose().
+						if (team_has_first == team_has_second):
+							return rand_team_choose()
+
+						# Otherwise, if the team doesn't have a first student,
+						# we will add an first student.
+						elif (not(team_has_first)):
+							return (first_name, first_students)
+						
+						# Doesn't have second, so add second.
+						else:
+							return (second_name, second_students)
+
+					# Call the above function.
+					cur_team_info = pick_cur_team()
+
+					# Extract fields.
+					cur_team_name = cur_team_info[0]
+					cur_team_students = cur_team_info[1]
+
+					if (cur_team_name == first_name):
+						team_has_first = True
+
+					elif (cur_team_name == second_name):
+						team_has_second = True
+
+					# Sanity check for when we add more student types.
+					else:
+						raise FunctionError('Are there more than two types of students?')
+					
+					r = random_index(len(cur_team_students))
+					
+					# Place the player onto our current team.
+					cur_student = cur_team_students.pop(r)
+					to_add = cur_student
+					team_creating[team_index] = to_add
+					team_index += 1
+					num_left -= 1
+
+				to_return[i] = team_creating
+				num_teams_left -= 1
+
+			to_return[num_teams] = [None] * team_size
+
+			# print "After running create_teams_type_id:"
+			# print "     Second student IDs is: " + str(second_ids)
+			# print "     First student IDs is: " + str(first_ids)
+
+			# print "     Initial solution space is: " + str(to_return)
+
+			return (to_return, first_students, second_students)
+
 def create_IDs_from_lists(first_num, second_num):
 	'''
 		Given the numbers of students in each group, generate IDs for each.
@@ -294,17 +466,19 @@ def print_student_stats(a):
 		raise FunctionError(error)
 
 def create_random_students(n, d = -1):
+	result = []
 	for i in range(0, n):
-		print "Student " + str(i+1) + " is:"
+		# print "Student " + str(i+1) + " is:"
 		s = create_random_student(d)
 		#print_student_stats(s)
-		print (s.get_student_properties())
+		result.append(s)
+	return result
 
 def create_random_MBAs(n):
-	create_random_students(n, d = 0)
+	return create_random_students(n, d = 0)
 
 def create_random_MEngs(n):
-	create_random_students(n, d = 1)
+	return create_random_students(n, d = 1)
 
 def teams_with_empty_spots(output):
 	'''
@@ -754,12 +928,28 @@ def print_clean(solution_space):
 		print team
 		i += 1
 
+def print_team_list(lst_of_lsts):
+	i = 1
+	for lst in lst_of_lsts:
+		print "Team " + str(i) + ":"
+		print "-----"
+		for student in lst:
+			if (student != None):
+				print student.get_student_properties(),
+				print ", "
+			else:
+				print student
+		print ""
+		i += 1
+
+def print_student_list(lst):
+	for student in lst:
+		print student.get_student_properties()
+
 if __name__ == "__main__":
 	used_IDs = []
 	l1 = [30, 40, 50, 60]
 	l2 = [2, 1, 6, 7, 8, 9, 10]
-
-	# TODO: find out how to do assertion tests (or equivalent) in Python.
 
 	# Checks for valid output
 
@@ -773,9 +963,9 @@ if __name__ == "__main__":
 	# fill_teams_type_id(o)
 	# print is_type_diverse(o)
 
-	t = create_IDs_from_lists(30, 25)
-	MBA_ids = t[0]
-	MEng_ids = t[1]
+	# t = create_IDs_from_lists(30, 25)
+	# MBA_ids = t[0]
+	# MEng_ids = t[1]
 	# do_loop_to_create_teams_type_id(MBA_ids, 'MBA', MEng_ids, 'MEng', 4, 1000)
 
 	# # Checking if it works with strings. It does!
@@ -799,7 +989,28 @@ if __name__ == "__main__":
 	# print res
 
 	# create_random_students(10)
-	create_random_MEngs(1000)
+	e = create_random_MEngs(10)
+	b = create_random_MBAs(10)
+
+	# print " e is",
+	# print e
+	# print " b is",
+	# print b
+	c =  create_teams_on_all_fields(e, 'MEng', b, 'MBA', 3)
+	# print c
+	results = c[0]
+	stud_1 = c[1]
+	stud_2 = c[2]
+	print " results  are " 
+	print_team_list(results)
+	#print_student_list(stud_1)
+	#print_student_list(stud_2)
+
+	print "MEng students remaining is ",
+	print_student_list(stud_1)
+	print "MBA students remaining is ",
+	print_student_list(stud_2)
+
 
 	# Checks for invalid input
 	# create_teams_type_id(l1, l2, 0)
