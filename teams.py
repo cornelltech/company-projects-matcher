@@ -738,7 +738,31 @@ def print_student_list(lst):
 		print student.get_student_properties()
 
 if __name__ == "__main__":
-	pass
+	print "25 random students:"
+	a = create_random_students(25)
+	print_student_list(a)
+	print""
+	print ""
+
+	print "50 random MBAs:"
+	MBAs = create_random_MBAs(50)
+	print_student_list(MBAs)
+	print""
+	print ""
+
+	print "50 random MEngs:"
+	print "[Name, ID, Degree pursuing, Coding ability, Cs UG or not, Type tech. strength, Yrs. work]"
+	MEngs = create_random_MEngs(50)
+	print_student_list(MEngs)
+	print""
+	print ""
+
+	d = create_teams_on_all_fields(MBAs, 'MBA', MEngs, 'MEng', 3)
+	f = fill_teams_on_all_fields(d, 'MBA', 'MEng')
+	clean = clean_team(f)
+	print_team_list (clean)
+
+
 
 
 

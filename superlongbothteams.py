@@ -1236,10 +1236,10 @@ if __name__ == "__main__":
 	# fill_teams_type_id(o)
 	# print is_type_diverse(o)
 
-	# t = create_IDs_from_lists(30, 25)
-	# MBA_ids = t[0]
-	# MEng_ids = t[1]
-	# do_loop_to_create_teams_type_id(MBA_ids, 'MBA', MEng_ids, 'MEng', 4, 1000)
+	t = create_IDs_from_lists(30, 20)
+	MBA_ids = t[0]
+	MEng_ids = t[1]
+	do_loop_to_create_teams_type_id(MBA_ids, 'MBA', MEng_ids, 'MEng', 4, 100)
 
 	# # Checking if it works with strings. It does!
 	# lst_a = [1, 2, 3, 10, 11, 16]
@@ -1262,44 +1262,44 @@ if __name__ == "__main__":
 	# print res
 
 	# create_random_students(10)
-	e = create_random_MEngs(4)
-	b = create_random_MBAs(5)
+	# e = create_random_MEngs(4)
+	# b = create_random_MBAs(5)
 
-	# print " e is",
-	# print e
-	# print " b is",
-	# print b
-	c =  create_teams_on_all_fields(e, 'MEng', b, 'MBA', 7)
-	# print c
-	results = c[0]
-	stud_1 = c[1]
-	stud_2 = c[2]
-	print " results  are " 
-	print_team_list(results)
-	#print_student_list(stud_1)
-	#print_student_list(stud_2)
+	# # print " e is",
+	# # print e
+	# # print " b is",
+	# # print b
+	# c =  create_teams_on_all_fields(e, 'MEng', b, 'MBA', 7)
+	# # print c
+	# results = c[0]
+	# stud_1 = c[1]
+	# stud_2 = c[2]
+	# print " results  are " 
+	# print_team_list(results)
+	# #print_student_list(stud_1)
+	# #print_student_list(stud_2)
 
-	print "MEng students remaining is ",
-	print_student_list(stud_1)
-	print "MBA students remaining is ",
-	print_student_list(stud_2)
+	# print "MEng students remaining is ",
+	# print_student_list(stud_1)
+	# print "MBA students remaining is ",
+	# print_student_list(stud_2)
 
-	print "Filled teams are:"
+	# print "Filled teams are:"
 
-	f = fill_teams_on_all_fields(c, 'MEng', 'MBA')
-	print_team_list(f)
+	# f = fill_teams_on_all_fields(c, 'MEng', 'MBA')
+	# print_team_list(f)
 
-	print "Clean teams are:"
-	clean = clean_team(f)
-	print_team_list(clean)
-	print "Student lists are:"
-	print_student_list(stud_1)
-	print_student_list(stud_2)
+	# print "Clean teams are:"
+	# clean = clean_team(f)
+	# print_team_list(clean)
+	# print "Student lists are:"
+	# print_student_list(stud_1)
+	# print_student_list(stud_2)
 
-	print "Fixed singletons are "
-	r = fix_singletons_on_all_fields(f, clean, 'MEng', 'MBA')
-	print len(r)
-	print_team_list(r)
+	# print "Fixed singletons are "
+	# r = fix_singletons_on_all_fields(f, clean, 'MEng', 'MBA')
+	# print len(r)
+	# print_team_list(r)
 
 
 
