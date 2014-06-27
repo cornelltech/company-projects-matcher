@@ -420,10 +420,6 @@ def get_student_type_diversity_all_fields(fixed_output, first_name, second_name)
 					  means that the i-th team could spare at least 1 member of 
 					  student type 1 but no members of student type 2. 
 
-					  NOTE: this was created to solve issues of non-diverse teams
-					  		by swapping members with other teams. Currently not used
-					  		but that could change.
-
 	'''
 	count = 0
 	result = [None] * len(fixed_output)
@@ -437,10 +433,10 @@ def get_student_type_diversity_all_fields(fixed_output, first_name, second_name)
 		for student in team:
 			# print "Person is " + str(person)
 			if (student != None):
-				if (student.name == first_name):
+				if (student.degree_pursuing == first_name):
 					first_count += 1
 					changed = True
-				elif (student.name == second_name):
+				elif (student.degree_pursuing == second_name):
 					second_count += 1
 					changed = True
 		if (not changed):
@@ -544,6 +540,20 @@ def clean_team(filled_teams):
 def get_pairwise_differences(filled_teams):
 	raise FunctionError("get_pairwise_differences has not been implemented.")
 
+def append_singles_to_other(cleaned_teams):
+	for team in cleaned_teams:
+		print "Team len is "
+		print len(team)
+		if (len(team) == 1):
+			print "Hit the team length one case. Team is "
+			print_student_list (team)
+			print "The first team used to be "
+			print_student_list (cleaned_teams[0])
+			cleaned_teams[0].append(team[0])
+			print "But now the first team is "
+			print_student_list(cleaned_teams[0])
+	return cleaned_teams
+
 def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_name):
 	'''
 		If there are teams with only one person, this will fix that problem.
@@ -564,17 +574,28 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 
 
 	'''
+	print "in fix singletons"
+	print "fixed teams is "
+	print_team_list(fixed_teams)
+
+
 
 	def get_indices_of_singletons():
 		i = 0
 		result = []
+		print "cleaned teams is "
+		print_team_list (cleaned_teams)
 		for team in cleaned_teams:
+			print "Team len is "
+			print len(team)
 			if (len(team) == 1):
 				result.append(team)
 			i += 1
 		return result
 
 	lst = get_indices_of_singletons()
+	print "The singleton list is "
+	print lst
 
 	if (len(lst) == 0):
 		return cleaned_teams
@@ -586,8 +607,7 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 	 	for team in lst:
 	 		first_member = team[0]
 	 		team_name = first_member.degree_pursuing
-	 		print "team name is "
-	 		print team_name
+
 	 		#print "Team is " + str(team)
 
 	 		if (team_name == first_name):
@@ -600,7 +620,7 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 	 			# Sanity check
 	 			raise FunctionError("Are there more than two types?")
 
-			# print "swap_from is:" + str(swap_from)
+			print "swap_from is:" + str(swap_from)
 			if (len(swap_from) == 0):
 				error = "There is no possible team to swap from. The existing teams are"
 				error += str(fixed_teams)
@@ -613,13 +633,15 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 
 	 		#new = 0
 	 		#cleaned_teams[index_of_singleton_team_in_teams].append(new)
-	 		possible_members_to_swap = filter(lambda student: student.name == other_name, team_to_take_from)
+	 		possible_members_to_swap = filter(lambda student: student.degree_pursuing == other_name, team_to_take_from)
 	 		possible_indices = map(lambda member: team_to_take_from.index(member), possible_members_to_swap)
 
 	 		# print "Possibilities is " + str(possible_members_to_swap)
 	 		# print "Team is " + str(team)
 	 		# print "Possible indices is " + str(possible_indices)
 
+	 		print "len of possible indices is "
+	 		print str(len(possible_indices))
 	 		i = random_index(len(possible_indices))
 	
 	 		# print "i is " + str(i)
@@ -628,10 +650,22 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 
 	 		# print "index to swap at is " + str(index_to_swap_at)
 	 		member_to_swap = team_to_take_from[index_to_swap_at]
+	 		
+	 		#print "member to swap is "
+	 		#print member_to_swap.get_student_properties()
 	 		# print "Member to swap is " + str(member_to_swap)
 
+	 		#print "before append, team is "
+	 		#print_student_list(team)
+
 	 		team.append(member_to_swap)
+
+	 		#print "after append, team is "
+	 		#print_student_list(team)	
 	 		# print "Team is now " + str(team)
+
+	 		#print "team to take from is "
+	 		#print_student_list(team_to_take_from)
 
 	 		try:
 	 			team_to_take_from.remove(member_to_swap)
@@ -640,7 +674,11 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 	 		except ValueError:
 	 			raise FunctionError("The member you are trying to remove is not in the given team.")
 
-	 		pass
+	 		
+	 		print " TEAM LIST IS -----------------"
+	 		print_team_list (cleaned_teams)
+
+	 		return cleaned_teams
 	 		
 		# Then, go to a random of the indices and filter based on the desired name being part of the tuple.
 		# Then, generate a random one of those.
@@ -683,14 +721,15 @@ def print_clean(solution_space):
 def print_team_list(lst_of_lsts):
 	i = 1
 	for lst in lst_of_lsts:
-		print "Team " + str(i) + ":"
-		print "-----"
-		for student in lst:
-			if (student != None):
-				print student.get_student_properties(),
-				print ", "
-			else:
-				print student
+		if (not (lst == None)):
+			print "Team " + str(i) + ":"
+			print "-----"
+			for student in lst:
+				if (student != None):
+					print student.get_student_properties(),
+					print ", "
+				else:
+					print student
 		print ""
 		i += 1
 
@@ -724,14 +763,22 @@ if __name__ == "__main__":
 	f = fill_teams_on_all_fields(c, 'MEng', 'MBA')
 	print_team_list(f)
 
-	print "Clean teams are:"
-	clean = clean_team(f)
-	print_team_list(clean)
-	print "Student lists are:"
+	print "After filling, the student lists are"
+	print stud_1
+	print stud_2
 	print_student_list(stud_1)
 	print_student_list(stud_2)
 
-	print "Fixed singletons are "
-	r = fix_singletons_on_all_fields(f, clean, 'MEng', 'MBA')
+
+	print "Clean teams are:"
+	clean = clean_team(f)
+	print_team_list(clean)
+	
+
+	# r = fix_singletons_on_all_fields(f, clean, 'MEng', 'MBA')
+	r = append_singles_to_other(clean)
+
 	print len(r)
-	print_team_list(r)
+
+
+
