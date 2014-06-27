@@ -228,7 +228,7 @@ def random_cs_ug():
 	return random.randint(0, 1)
 
 def random_type_technical_strength():
-	return random.randint(1, 8)
+	return random.randint(1, 9)
 
 def random_yrs_work_experience():
 	return random.randint(0, 6)
@@ -291,8 +291,6 @@ def print_student_stats(a):
 	except AttributeError:
 		error = "Passed a " + str(type(a)) + " to a function that expects a Student."
 		raise FunctionError(error)
-
-
 
 def create_random_students(n):
 	for i in range(0, n):
@@ -768,10 +766,10 @@ if __name__ == "__main__":
 	# fill_teams_type_id(o)
 	# print is_type_diverse(o)
 
-	# t = create_IDs_from_lists(30, 30)
-	# MBA_ids = t[0]
-	# MEng_ids = t[1]
-	# do_loop_to_create_teams_type_id(MBA_ids, 'MBA', MEng_ids, 'MEng', 3, 1000)
+	t = create_IDs_from_lists(30, 25)
+	MBA_ids = t[0]
+	MEng_ids = t[1]
+	do_loop_to_create_teams_type_id(MBA_ids, 'MBA', MEng_ids, 'MEng', 4, 1000)
 
 	# # Checking if it works with strings. It does!
 	# lst_a = [1, 2, 3, 10, 11, 16]
@@ -788,12 +786,12 @@ if __name__ == "__main__":
 	#do_loop_to_create_teams_type_id(lst_a, 'MBA', lst_b, 'MEng', 2, 1)
 	#do_loop_to_create_teams_type_id(lst_c, 'MBA', lst_d, 'MEng', 3, 1000)
 	#do_loop_to_create_teams_type_id(lst_e, 'MBA', lst_f, 'MEng', 4, 1)
-	#do_loop_to_create_teams_type_id(names_one, 'Old Intern', names_two, 'New Intern', 3, 1000)
+	# do_loop_to_create_teams_type_id(names_one, 'Old Intern', names_two, 'New Intern', 3, 1000)
 
 	# res = have_spots(output)
 	# print res
 
-	create_random_students(5)
+	#create_random_students(1000)
 
 	# Checks for invalid input
 	# create_teams_type_id(l1, l2, 0)

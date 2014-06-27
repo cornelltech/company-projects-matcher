@@ -19,6 +19,7 @@ vals_technical_strength = { 1 : "frontend",
 							   	6 : "databases",
 								7 : "algorithms",
 								8 : "graphics",
+								9 : "none"
 }
 
 class StudentFieldError(Exception):
@@ -160,12 +161,4 @@ class Student(object):
 		tup.append(self._type_technical_strength)
 		tup.append(self._work_experience)
 		return tup
-
-
-
-
-
-
-
-
 
