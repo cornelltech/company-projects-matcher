@@ -738,47 +738,7 @@ def print_student_list(lst):
 		print student.get_student_properties()
 
 if __name__ == "__main__":
-	used_IDs = []
-	l1 = [30, 40, 50, 60]
-	l2 = [2, 1, 6, 7, 8, 9, 10]
-
-	e = create_random_MEngs(4)
-	b = create_random_MBAs(5)
-
-	c =  create_teams_on_all_fields(e, 'MEng', b, 'MBA', 7)
-	# print c
-	results = c[0]
-	stud_1 = c[1]
-	stud_2 = c[2]
-	print " results  are " 
-	print_team_list(results)
-
-	print "MEng students remaining is ",
-	print_student_list(stud_1)
-	print "MBA students remaining is ",
-	print_student_list(stud_2)
-
-	print "Filled teams are:"
-
-	f = fill_teams_on_all_fields(c, 'MEng', 'MBA')
-	print_team_list(f)
-
-	print "After filling, the student lists are"
-	print stud_1
-	print stud_2
-	print_student_list(stud_1)
-	print_student_list(stud_2)
-
-
-	print "Clean teams are:"
-	clean = clean_team(f)
-	print_team_list(clean)
-	
-
-	# r = fix_singletons_on_all_fields(f, clean, 'MEng', 'MBA')
-	r = append_singles_to_other(clean)
-
-	print len(r)
+	pass
 
 
 
