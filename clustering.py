@@ -34,7 +34,7 @@ def do_preprocessing(data_array):
 
 	print "The number of values is " 
 	print enc.n_values
-	
+
 	print "The one hot data is " 
 	print one_hot_data
 	return one_hot_data
