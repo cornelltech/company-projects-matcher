@@ -16,6 +16,7 @@ class FunctionError(Exception):
 
 used_IDs = []
 
+
 # TODO: Make this work for arbitrary number of student types. 
 # 		Can apply these (functions that apply to two teams) apply to 
 #		three or more teams by taking input in a list, and then
@@ -785,9 +786,10 @@ def do_tests():
 
 if __name__ == "__main__":
 	# do_tests()
-	t = Team([2, 3], 9)
-	t2 = Team([4, 6], 9)
-	print t2.ID
+	t = Team([2, 3], 8)
+	t.ID = 100
+	t4 = Team([2, 3], 100)
+	print t4.ID
 
 	
 

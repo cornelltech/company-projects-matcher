@@ -1,7 +1,9 @@
 #import abc
 import random
 
+'''To ensure that we do not create multiple teams with the same ID.'''
 existing_team_IDs = []
+existing_student_IDs = []
 
 # Declaring valid values for all fields.
 vals_cs_ug = [True, False]
@@ -168,6 +170,11 @@ class Student(object):
 
 class Team(object):
 	def __init__(self, student_list, ID=-1):
+		for student in student_list:
+			if (student.ID in existing_student_IDs):
+				error = "Student ID " + str(student.ID) + " is already taken."
+				raise FieldError(error)
+
 		self._members = student_list
 		if (ID == -1):
 			new_id = random.randint(0, 100000)
@@ -176,13 +183,12 @@ class Team(object):
 			self._ID = new_id
 			existing_team_IDs.append(self._ID)
 		else:
-			print "Existing team IDs is :" + str(existing_team_IDs)
 			if (ID in existing_team_IDs):
-				raise FieldError("This Team ID is already taken.")
+				error = "Team ID " + str(ID) + "is already taken."
+				raise FieldError(error)
 			else:
 				self._ID = ID
 				existing_team_IDs.append(self._ID)
-				print "After add, existing team IDs is :" + str(existing_team_IDs)
 
 	def get_ID(self):
 		return self._ID
@@ -190,6 +196,7 @@ class Team(object):
 	def set_ID(self, val):
 		if (not(val in existing_team_IDs)):
 			self._ID = val
+			existing_team_IDs.append(self._ID)
 		else:
 			raise FieldError("This Team ID is already taken.")
 
@@ -200,7 +207,17 @@ class Team(object):
 		return self._members
 
 	def set_members(self, val):
-		self._members = val
+		for student in val:
+			if (student in existing_student_IDs):
+				error = "Student ID " + str(student.ID) + " is already taken."
+				raise FieldError(error)
+		else:
+			self._members = val
+			for student in self._members:
+				existing_student_IDs.append(student.ID)
 
 	members = property(get_members, set_members, 
 					   doc = "Get and set the team's members (list of Students).")
+
+	def get_existing_team_IDs():
+		return existing_team_IDs
