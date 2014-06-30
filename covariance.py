@@ -90,19 +90,17 @@ def do_mahal_distance(file, use_pseudo_inv = True):
 		print "(Pseudo) inverse of the covariance matrix is: "
 		print cov_inverse
 
-	#obs_zero = one_hot_data_preprocessed[0]
-	#obs_one = one_hot_data_preprocessed[1]
+	obs_zero = one_hot_data_preprocessed[0]
+	obs_one = one_hot_data_preprocessed[1]
 
-	#print "Mahal distance is " + str(spatial.distance.mahalanobis(obs_zero, obs_one, cov_inverse))
+	print "Mahal distance is " + str(spatial.distance.mahalanobis(obs_zero, obs_one, cov_inverse))
 
 	return (one_hot_data_preprocessed, covariance_matrix_two)
 
 if (__name__ == "__main__"):
 	np.set_printoptions(threshold=np.nan)
-	print "Set print options"
-	print "About to do mahal dist"
 
-	result = do_mahal_distance("survey_responses.csv", False)
+	result = do_mahal_distance("survey_responses.csv")
 	# data = result[0]
 	# cov  = result[1]
 	
