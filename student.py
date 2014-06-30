@@ -167,7 +167,22 @@ class Student(object):
 		return tup
 
 class Team(object):
-
+	def __init__(self, student_list, ID=-1):
+		self._members = student_list
+		if (ID == -1):
+			new_id = random.randint(0, 100000)
+			while (new_id in existing_team_IDs):
+				new_id = random.randint(0, 100000)
+			self._ID = new_id
+			existing_team_IDs.append(self._ID)
+		else:
+			print "Existing team IDs is :" + str(existing_team_IDs)
+			if (ID in existing_team_IDs):
+				raise FieldError("This Team ID is already taken.")
+			else:
+				self._ID = ID
+				existing_team_IDs.append(self._ID)
+				print "After add, existing team IDs is :" + str(existing_team_IDs)
 
 	def get_ID(self):
 		return self._ID
@@ -181,17 +196,11 @@ class Team(object):
 	ID = property(get_ID, set_ID,
 					  doc = "Get and set the team's ID, if not in the existing IDs.")
 
+	def get_members(self):
+		return self._members
 
+	def set_members(self, val):
+		self._members = val
 
-	def __init__(self, student_list, ID=-1):
-		self._members = student_list
-		if (ID == -1):
-			new_id = random.randint(0, 100000)
-			while (new_id in existing_team_IDs):
-				new_id = random.randint(0, 100000)
-			self._ID = new_id
-			existing_team_IDs.append(self._ID)
-		else:
-			self._ID = ID
-
-
+	members = property(get_members, set_members, 
+					   doc = "Get and set the team's members (list of Students).")

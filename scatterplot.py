@@ -92,7 +92,8 @@ def plot_all_colorful_data(file):
 	plot_colorful_data(group_experience, m_group_experience, 'Group experience', 'Multidisc. group experience', degree_pursuing, False)
 
 if __name__ == "__main__":
-	plot_all_colorful_data('survey_responses.csv')
+	# plot_all_colorful_data('survey_responses.csv')
+	pass
 
 
 

@@ -111,7 +111,3 @@ if (__name__ == "__main__"):
  	# matrix_square_root = linalg.sqrtm(fixed_cov)
 	# print matrix_square_root
 
-
-	
-
-# Need to do one hot encoding  on these categories first 

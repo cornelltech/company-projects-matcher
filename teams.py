@@ -786,7 +786,8 @@ def do_tests():
 if __name__ == "__main__":
 	# do_tests()
 	t = Team([2, 3], 9)
-	print t.ID
+	t2 = Team([4, 6], 9)
+	print t2.ID
 
 	
 
