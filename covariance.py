@@ -41,7 +41,7 @@ def print_det_and_error(cov_one, cov_two):
 	print "Error is: "
 	print (cov_one - cov_two)
 
-def do_mahal_distance(file, use_pseudo_inv = True):
+def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = "survey_responses.csv"):
 	data_array = clustering.__init__(file)
 	
 	# (degree_pursuing, cs_ug, type_tech_stren, cod_abil, num_yrs_work_exp)
@@ -74,12 +74,30 @@ def do_mahal_distance(file, use_pseudo_inv = True):
 	# obs_one = one_hot_data_preprocessed[1]
 	# print "Mahal distance is " + str(spatial.distance.mahalanobis(obs_zero, obs_one, cov_inverse))
 
+	# TODO: should return the Mahalanobis distance between the data at the two indices.
+	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
 	return (one_hot_data_preprocessed, covariance_matrix_two)
+
+# Pass in team of Students.
+# TODO: make a Team ID, and return (Team_ID, result.)
+def average_mahal_distance_team(team):
+	result = []
+	for mem_one in team:
+		for mem_two in team:
+			if (not(mem_one.ID == mem_two.ID)):
+				result.append(do_mahal_distance(mem_one, mem_two))
+	return np.mean(result)
+
+def do_and_sort_all_mahal_dists(set_of_teams):
+	result = []
+	for team in set_of_teams:
+		result.append(average_mahal_distance_team)
+	return result.sort()
 
 if (__name__ == "__main__"):
 	np.set_printoptions(threshold=np.nan)
 
-	result = do_mahal_distance("survey_responses.csv")
+	result = do_mahal_distance(0, 1)
 	data = result[0]
 	fixed_cov  = result[1]
 	
