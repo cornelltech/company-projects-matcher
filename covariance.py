@@ -4,6 +4,9 @@ import pandas as pd
 from sklearn import preprocessing
 from scipy import linalg
 from scipy import spatial
+import statsmodels
+from statsmodels import stats
+from statsmodels.stats import correlation_tools
 import clustering
 
 def preprocess_random_data(data):
@@ -33,7 +36,9 @@ def is_positive_semidefinite(matrix):
 	def check_row(row):
 		return [entry for entry in row if entry < 0]
 	res = [row for row in matrix if not (check_row(row) == [])]
-	return res == []
+	print "Result of is_positive_semidefinite is "
+	print res
+	return len(res) == 0
 
 def do_mahal_distance(file, use_pseudo_inv = True):
 	data_array = clustering.__init__(file)
@@ -41,44 +46,54 @@ def do_mahal_distance(file, use_pseudo_inv = True):
 	# After preprocessing, the vector is
 	# (degree_pursuing, cs_ug, type_tech_stren, cod_abil, num_yrs_work_exp)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
-	return one_hot_data_preprocessed
-	
+
 	covariance_matrix = np.cov(one_hot_data_preprocessed)
-	print "Covariance matrix is: "
-	print covariance_matrix
+	#print "Covariance matrix is: "
+	#print covariance_matrix
 
 	if (not (is_positive_semidefinite(covariance_matrix))):
-		error = ("Covariance matrix of data is not positive semidefinite, i.e., there exist ",
-				 "negative eigenvalues. Fix this by applying a linear translation to input.")
-		raise teams.FunctionError(error)
+		#error = ("Covariance matrix of data is not positive semidefinite, i.e., there exist " +
+		#		 "negative eigenvalues. Fix this by applying a linear translation to input.")
+		#raise teams.FunctionError(error)
+		print "The NEAREST covariance matrix is "
+		covariance_matrix_two = correlation_tools.cov_nearest(covariance_matrix)
+		print covariance_matrix_two
+		#print "THE ERROR is "
+		#e =  covariance_matrix - covariance_matrix_two
+		#print e
+		pass
 
 	# Calculate the inverse of the covariance matrix.
 	if (not(use_pseudo_inv)):
 		cov_inverse = linalg.inv(covariance_matrix)
-		print "(Real) inverse of the covariance matrix is: "
-		print cov_inverse
+		#print "(Real) inverse of the covariance matrix is: "
+		#print cov_inverse
 
 	# Calculate the pseudoinverse of a matrix.
 	else:
 		# TODO: Eventually want to use the matrix square root at some pt
 		#  cov_inverse = linalg.pinv(matrix_square_root)
 		cov_inverse = linalg.pinv(covariance_matrix)
-		print "(Pseudo) inverse of the covariance matrix is: "
-		print cov_inverse
+		#print "(Pseudo) inverse of the covariance matrix is: "
+		#print cov_inverse
 
-	obs_zero = one_hot_data_preprocessed[0]
-	obs_one = one_hot_data_preprocessed[1]
+	#obs_zero = one_hot_data_preprocessed[0]
+	#obs_one = one_hot_data_preprocessed[1]
 
-	
+	#print "Mahal distance is " + str(spatial.distance.mahalanobis(obs_zero, obs_one, cov_inverse))
 
-	#spatial.distance.mahalanobis()
+	return (one_hot_data_preprocessed, covariance_matrix)
 
 if (__name__ == "__main__"):
 	np.set_printoptions(threshold=np.nan)
+	print "Set print options"
+	print "About to do mahal dist"
 
-	r = do_mahal_distance("survey_responses.csv")
+	result = do_mahal_distance("survey_responses.csv")
+	data = result[0]
+	cov  = result[1]
 	
-	print is_positive_semidefinite(r)
+	print is_positive_semidefinite(cov)
 
 	# check_positive_definite(np.array([[-1, -2], [5, 6]]))
 	

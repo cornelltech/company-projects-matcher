@@ -27,16 +27,16 @@ def do_preprocessing(data_array):
 	#For 'survey_responses.csv,' this produces a 49 x 15 matrix. The last 4 columns are our quantitative data.
 	one_hot_data = enc.transform(data_array).toarray()
 
-	print "The parameters are: " + str(enc.get_params())
+	#print "The parameters are: " + str(enc.get_params())
 	
-	print "The feature indices are: "
-	print enc.feature_indices_
+	#print "The feature indices are: "
+	#print enc.feature_indices_
 
-	print "The number of values is " 
-	print enc.n_values
+	#print "The number of values is " 
+	#print enc.n_values
 
-	print "The one hot data is " 
-	print one_hot_data
+	#print "The one hot data is " 
+	#print one_hot_data
 	return one_hot_data
 
 def do_normalize(data_array):
