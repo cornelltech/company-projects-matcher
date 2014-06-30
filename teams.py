@@ -1,6 +1,6 @@
 #import exceptions
 import random
-from student import Student
+from student import Student, Team
 
 class InputError(Exception):
 	def __init__(self, value):
@@ -758,7 +758,7 @@ def print_student_list(lst):
 	for student in lst:
 		print student.get_student_properties()
 
-if __name__ == "__main__":
+def do_tests():
 	print "25 random students:"
 	a = create_random_students(25)
 	print_student_list(a)
@@ -783,7 +783,12 @@ if __name__ == "__main__":
 	clean = clean_team(f)
 	print_team_list (clean)
 
+if __name__ == "__main__":
+	# do_tests()
+	t = Team([2, 3], 9)
+	print t.ID
 
+	
 
 
 

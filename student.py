@@ -1,5 +1,9 @@
 #import abc
+import random
 
+existing_team_IDs = []
+
+# Declaring valid values for all fields.
 vals_cs_ug = [True, False]
 vals_work_experience = range(0, 7)
 
@@ -22,7 +26,7 @@ vals_technical_strength = { 1 : "frontend",
 								9 : "none"
 }
 
-class StudentFieldError(Exception):
+class FieldError(Exception):
 	def __init__(self, value):
 		self.val = value
 	def __str__(self):
@@ -39,11 +43,11 @@ class Student(object):
 
 	#@abc.abstractmethod
 
-	# Defining checks and properties.
+	# Defining checks for setting properties.
 	def check_valid(self, val, lst, s=""):
 		if (not (val in lst)):
 		 	error = "Invalid input " + str(val) + " for student " + str(self._ID) + " for field" + s + "."
-		 	raise StudentFieldError(error)
+		 	raise FieldError(error)
 		else:
 		 	pass
 
@@ -161,4 +165,33 @@ class Student(object):
 		tup.append(self._type_technical_strength)
 		tup.append(self._work_experience)
 		return tup
+
+class Team(object):
+
+
+	def get_ID(self):
+		return self._ID
+
+	def set_ID(self, val):
+		if (not(val in existing_team_IDs)):
+			self._ID = val
+		else:
+			raise FieldError("This Team ID is already taken.")
+
+	ID = property(get_ID, set_ID,
+					  doc = "Get and set the team's ID, if not in the existing IDs.")
+
+
+
+	def __init__(self, student_list, ID=-1):
+		self._members = student_list
+		if (ID == -1):
+			new_id = random.randint(0, 100000)
+			while (new_id in existing_team_IDs):
+				new_id = random.randint(0, 100000)
+			self._ID = new_id
+			existing_team_IDs.append(self._ID)
+		else:
+			self._ID = ID
+
 
