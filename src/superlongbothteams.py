@@ -1219,7 +1219,7 @@ def print_student_list(lst):
 	for student in lst:
 		print student.get_student_properties()
 
-if __name__ == "__main__":
+def do_tests():
 	used_IDs = []
 	l1 = [30, 40, 50, 60]
 	l2 = [2, 1, 6, 7, 8, 9, 10]
@@ -1301,8 +1301,6 @@ if __name__ == "__main__":
 	# print len(r)
 	# print_team_list(r)
 
-
-
 	# Checks for invalid input
 	# create_teams_type_id(l1, l2, 0)
 	# create_teams_type_id(l2, l1, 0)
@@ -1313,24 +1311,6 @@ if __name__ == "__main__":
 	# create_teams_type_id([5], [], 8)
 	# create_teams_type_id([8], [9, 0], 4)
 	# create_teams_type_id ([0], [8, 9], 4)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	###
 	# Test cases that weren't working in teams.py
@@ -1365,13 +1345,15 @@ if __name__ == "__main__":
 	# print_student_list(stud_1)
 	# print_student_list(stud_2)
 
-
 	# print "Clean teams are:"
 	# clean = clean_team(f)
 	# print_team_list(clean)
 	
-
 	# # r = fix_singletons_on_all_fields(f, clean, 'MEng', 'MBA')
 	# r = append_singles_to_other(clean)
 
 	# print len(r)
+
+if __name__ == "__main__":
+	do_tests()
+	
