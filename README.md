@@ -15,10 +15,6 @@ docs:
 	link_to_survey.txt: survey.
 	Types of Regression.txt: notes on various types of regression that I could have used.
 
-minirank-master:
-	FORKED FROM Github user fabianp at https://github.com/fabianp/minirank.
-				 Ranking and ordinal regression algorithms in Python.
-
 results:
 	Multinomial Logit Results.txt
 	OLS Results.txt
