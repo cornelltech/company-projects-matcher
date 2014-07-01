@@ -7,7 +7,9 @@ from matplotlib import pyplot
 from sklearn import preprocessing
 from sklearn.cluster import k_means_
 
-def __init__(file):
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
+
+def __init__(file = default_file):
 	# print the full array instead of truncating
 	# np.set_printoptions(threshold=np.nan)
 	
@@ -99,7 +101,7 @@ def print_data(enc, transformed, kmeans):
 
 
 if __name__ == "__main__":
-	data_array = __init__('survey_responses.csv')
+	data_array = __init__()
 	print "Length of data array is "
 	print len(data_array)
 	pre_processed = do_preprocessing(data_array)

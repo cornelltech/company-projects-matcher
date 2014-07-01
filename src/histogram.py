@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
+
  
 def make_hist(file):
 	# Extract data
@@ -26,4 +28,4 @@ def make_hist(file):
 	plt.show()
 
 if __name__ == "__main__":
-	make_hist('survey_responses.csv')
+	make_hist(default_file)

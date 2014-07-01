@@ -5,7 +5,9 @@ import pandas as pd
 import random
 from matplotlib import pyplot as plt
 
-def plot_all_data(file):
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
+
+def plot_all_data(file = default_file):
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 
@@ -63,7 +65,7 @@ def plot_colorful_data(xlist, ylist, xlabel, ylabel, shader, is_ug_major = True)
 	plt.show()
 	plt.close()
 
-def plot_all_colorful_data(file):
+def plot_all_colorful_data(file = default_file):
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 
@@ -92,7 +94,7 @@ def plot_all_colorful_data(file):
 	plot_colorful_data(group_experience, m_group_experience, 'Group experience', 'Multidisc. group experience', degree_pursuing, False)
 
 if __name__ == "__main__":
-	# plot_all_colorful_data('survey_responses.csv')
+	plot_all_colorful_data()
 	pass
 
 

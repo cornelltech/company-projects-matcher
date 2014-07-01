@@ -1,7 +1,9 @@
 import pandas as pd 
 import numpy as np 
 import statsmodels.api as sm
-import statsmodels.discrete as disc  
+import statsmodels.discrete as disc 
+
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
 
 def do_all_linear_regressions(ug, ca, dp, we, ge, mge, data):
 
@@ -139,7 +141,7 @@ if __name__ == "__main__":
 	''' Perform multinomial logistic regression with undergraduate major and degree pursuing as the
 		dependent variables. '''
 
-	ug, ca, dp, we, ge, mge, data = extract_columns('survey_responses.csv')
+	ug, ca, dp, we, ge, mge, data = extract_columns(default_file)
 	
 	do_all_linear_regressions(ug, ca, dp, we, ge, mge, data)
 	

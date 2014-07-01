@@ -7,6 +7,8 @@ from scipy import spatial
 from statsmodels.stats import correlation_tools
 import clustering
 
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
+
 def preprocess_random_data(data):
 	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, True, False])
 	enc.fit(data)
@@ -41,7 +43,7 @@ def print_det_and_error(cov_one, cov_two):
 	print "Error is: "
 	print (cov_one - cov_two)
 
-def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = "survey_responses.csv"):
+def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = default_file):
 	data_array = clustering.__init__(file)
 	
 	# (degree_pursuing, cs_ug, type_tech_stren, cod_abil, num_yrs_work_exp)
