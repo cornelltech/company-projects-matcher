@@ -1,4 +1,3 @@
-#import abc
 import random
 
 '''To ensure that we do not create multiple teams with the same ID.'''
@@ -17,6 +16,8 @@ vals_degree_pursuing = { 0 : "MBA",
 						 1 : "MEng"
 }
 
+vals_valid_projects = range(0, 50)
+
 class FieldError(Exception):
 	def __init__(self, value):
 		self.val = value
@@ -25,13 +26,10 @@ class FieldError(Exception):
 
 class Student(object):
 
-	#__metaclass__ = abc.ABCMeta
-
 	global vals_cs_ug
 	global vals_yrs_work_experience
 	global vals_coding_ability
-
-	#@abc.abstractmethod
+	global vals_valid_projects
 
 	# Defining checks for setting properties.
 	def check_valid(self, val, lst, s=""):
@@ -104,26 +102,46 @@ class Student(object):
 	work_experience = property(get_work_experience, set_work_experience,
 					  doc = "Get and set the num. yrs. of work experience.")
 
-	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp):
+	def get_project_rankings(self):
+		return self._project_rankings
+
+	def set_project_rankings(self, val):
+		# Because val is a list and we want to check if each of the projects 
+		# has a valid ID
+		try:
+			for elm in val:
+				self.check_valid(elm, vals_valid_projects, s = " project ID")
+		except TypeError:
+			raise FieldError("Project rankings must be inputted as a list.")
+		self._project_rankings = val
+
+	project_rankings = property(get_project_rankings, set_project_rankings,
+					  doc = "Get and set the project rankings.")
+
+	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst):
 		
 		self.set_degree_pursuing(degree_pursuing)
 		self.set_coding_ability(cod_abil)
 		self.set_cs_ug(cs_ug)
 		self.set_work_experience(num_yrs_work_exp)
+		self.set_project_rankings(project_lst)
 
-	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp):
+
+	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst):
 		''' 
 			Parameters
 			----------
 			ca    = coding ability. Int from 0 to 4, inclusive.
 			csug  = was cs undergrad. Boolean.
 			nywe  = num. years of work experience. Int from 0 to 6 (6 = 6+).
+			project_lst = an integer list size 10. Ints are the project IDs. 
+						  The position of the int determines what rank it is.
 
 		'''
 		
 		self._name				 	  = name
 		self._ID				 	  = ID
-		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp)
+		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst)
 
 	def get_student_properties(self):
 		tup = []
