@@ -17,17 +17,6 @@ vals_degree_pursuing = { 0 : "MBA",
 						 1 : "MEng"
 }
 
-vals_technical_strength = { 1 : "frontend",
-							  	2 : "backend",
-							  	3 : "UX",
-							   	4 : "mobile",
-							   	5 : "systems/hardware",
-							   	6 : "databases",
-								7 : "algorithms",
-								8 : "graphics",
-								9 : "none"
-}
-
 class FieldError(Exception):
 	def __init__(self, value):
 		self.val = value
@@ -41,7 +30,6 @@ class Student(object):
 	global vals_cs_ug
 	global vals_yrs_work_experience
 	global vals_coding_ability
-	global vals_technical_strength
 
 	#@abc.abstractmethod
 
@@ -106,24 +94,6 @@ class Student(object):
 	was_cs_ug = property(get_cs_ug, set_cs_ug,
 				doc = "Get and set if student was a CS undergrad.")
 
-	# TODO: should this be the int or the value?
-	def get_technical_strength(self):
-		return self._type_technical_strength
-
-	def set_technical_strength(self, val):
-		# Checks if the user is passing in the string value for technical strength.
-		# If not, check if the int they're passing in is included in our dict.
-		if (not(val in vals_technical_strength.values())):
-			self.check_valid(val, vals_technical_strength, 
-						s = " type of technical strength")
-			self._type_technical_strength = vals_technical_strength[val]
-		# If they are, set the technical strength
-		else:
-			self._type_technical_strength = val
-
-	type_technical_strength = property(get_technical_strength, set_technical_strength,
-						doc = "Get and set the type of the student's technical strength.")
-
 	def get_work_experience(self):
 		return self._work_experience
 
@@ -134,28 +104,26 @@ class Student(object):
 	work_experience = property(get_work_experience, set_work_experience,
 					  doc = "Get and set the num. yrs. of work experience.")
 
-	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
+	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp):
 		
 		self.set_degree_pursuing(degree_pursuing)
 		self.set_coding_ability(cod_abil)
 		self.set_cs_ug(cs_ug)
-		self.set_technical_strength(type_tech_stren)
 		self.set_work_experience(num_yrs_work_exp)
 
-	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
+	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp):
 		''' 
 			Parameters
 			----------
 			ca    = coding ability. Int from 0 to 4, inclusive.
 			csug  = was cs undergrad. Boolean.
-			tts   = type of technical strength. TechnicalStrength class/enum.
 			nywe  = num. years of work experience. Int from 0 to 6 (6 = 6+).
 
 		'''
 		
 		self._name				 	  = name
 		self._ID				 	  = ID
-		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp)
+		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp)
 
 	def get_student_properties(self):
 		tup = []
@@ -164,7 +132,6 @@ class Student(object):
 		tup.append(self._degree_pursuing)
 		tup.append(self._coding_ability)
 		tup.append(self._was_cs_ug)
-		tup.append(self._type_technical_strength)
 		tup.append(self._work_experience)
 		return tup
 
