@@ -8,15 +8,21 @@ existing_student_IDs = []
 vals_cs_ug = [True, False]
 vals_work_experience = range(0, 7)
 
-# NOTE: 0 = lowest, 4 = most
+# 0 = lowest, 4 = most
 vals_coding_ability = range(0, 5)
 
-# NOTE: Keep these organized in alphabetical order. 
+# Keep these organized in alphabetical order. 
 vals_degree_pursuing = { 0 : "MBA",
 						 1 : "MEng"
 }
 
+# Valid IDs for our projects.
 vals_valid_projects = map(lambda x: x * 65, range(16, 66))
+
+degree_weight = 0.25
+cs_ug_weight = 0.25
+coding_ability_weight = 0.25
+work_experience_weight = 0.25
 
 class FieldError(Exception):
 	def __init__(self, value):
@@ -172,6 +178,12 @@ class Student(object):
 		return tup
 
 class Team(object):
+
+	global degree_weight
+	global cs_ug_weight
+	global coding_ability_weight
+	global work_experience_weight
+
 	def __init__(self, student_list, ID=-1):
 		for student in student_list:
 			if (student.ID in existing_student_IDs):
@@ -230,3 +242,44 @@ class Team(object):
 	def print_team(self):
 		for student in self._members:
 			print student.get_student_properties()
+
+	# TODO: move this from the Team class to somewhere it actually belongs.
+	def avg_list(self, lst):
+		return (sum(lst) * 1.0)/len(lst)
+
+	def calculate_technical_rating(self):
+		degrees = [student.degree_pursuing for student in self._members]
+		csugs = [student.was_cs_ug for student in self._members]
+		coding_abilities = [student.coding_ability for student in self._members]
+		work_experiences = [student.work_experience for student in self._members]
+
+		print "Degrees is " + str(degrees)
+		print "Csugs is " + str(csugs)
+		print "Coding_abilities is " + str(coding_abilities)
+		print "Work experience is " + str(work_experiences)
+
+		degrees_avg = self.avg_list(degrees)
+		csugs_avg = self.avg_list(csugs)
+		coding_abilities_avg = self.avg_list(coding_abilities)
+		work_experience_avg = self.avg_list(work_experiences)
+
+		# Hack because these var names are too long to fit on one line...
+		tech_rating_x = degree_weight*degrees_avg + cs_ug_weight*csugs_avg 
+		tech_rating_y = coding_ability_weight*coding_abilities_avg
+		tech_rating_z = work_experience_weight*work_experience_avg
+
+		print tech_rating_x + tech_rating_y + tech_rating_z
+		return tech_rating_x + tech_rating_y + tech_rating_z
+
+
+
+
+
+
+
+
+
+
+
+
+

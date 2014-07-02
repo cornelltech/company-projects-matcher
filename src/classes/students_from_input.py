@@ -51,11 +51,8 @@ def read_input(file, use_range = False):
 		students_lst.append(a)
 
 	t = Team(students_lst)
-	Team.print_team(t)
-
-
-	for a in students_lst:
-		print a.get_student_properties()
+	#Team.print_team(t)
+	Team.calculate_technical_rating(t)
 
 def normalize_bet_zero_and_one(lst):
 	lst_max = lst.max()
