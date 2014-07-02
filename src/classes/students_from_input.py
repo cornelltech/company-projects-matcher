@@ -12,7 +12,7 @@ class CompError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
-def read_input(file):
+def read_input(file, use_range = False):
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 	shape = data_array.shape
@@ -22,8 +22,16 @@ def read_input(file):
 	all_coding_abilities = data_array[:,3]
 	all_work_experience = data_array[:,4]
 
-	scaled_coding_abilities = scale_inputs(all_coding_abilities)
-	scaled_yrs_work_experience = scale_inputs(all_work_experience)
+	if (use_range):
+		scaled_coding_abilities = scale_inputs_based_on_range(all_coding_abilities)
+		scaled_yrs_work_experience = scale_inputs_based_on_range(all_work_experience)
+
+	else:
+		print "Using new new scaling property, coding abilities is:"
+		scaled_coding_abilities = normalize_bet_zero_and_one(all_coding_abilities)
+		scaled_yrs_work_experience = normalize_bet_zero_and_one(all_work_experience)
+		#scaled_coding_abilities = calc_z_score(all_coding_abilities)
+		#scaled_yrs_work_experience = calc_z_score(all_work_experience)
 	
 	# TODO: why won't this reset things? find out.
 	# TODO: maybe don't care. Just use the values from temp, in our student creation.
@@ -48,8 +56,19 @@ def read_input(file):
 	for a in students_lst:
 		print a.get_student_properties()
 
-# Scales all inputs to a common scale between 0 and 1.
-def scale_inputs(lst):
+def normalize_bet_zero_and_one(lst):
+	lst_max = lst.max()
+	lst_min = lst.min()
+	den = lst_max - lst_min
+	num = [elm - lst_min for elm in lst]
+	if (den == 0):
+		raise CompError("In normalizing our quantitative variables, all values are the same.")
+	final = [(elm * 1.0) / den for elm in num]
+	print final
+	return final
+
+# Scales based on range between -1 and 1.
+def scale_inputs_based_on_range(lst):
 	b = lst.max() - lst.min()
 	if (b == 0):
 		raise CompError("In normalizing our quantitative variables, all values are the same.")
@@ -60,6 +79,12 @@ def scale_inputs(lst):
 	normalized = a / b
 	print normalized
 	return normalized
+
+# Scales between -1 and 1, with mean 0 and variance 1.
+def calc_z_score(lst):
+	m = lst.mean()
+	sd = np.std(lst)
+	return (lst - m) / sd
 
 if __name__ == "__main__":
 	read_input("new_name.csv")
