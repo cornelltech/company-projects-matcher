@@ -135,7 +135,7 @@ class Student(object):
 		self.set_project_rankings(project_lst)
 
 
-	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks):
+	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks, is_normalized=False):
 		''' 
 			Parameters
 			----------
@@ -146,10 +146,19 @@ class Student(object):
 						  The position of the int determines what rank it is.
 
 		'''
-		
 		self._name				 	  = name
 		self._ID				 	  = ID
-		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_rnks)
+		
+		if (not(is_normalized)):
+			self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_rnks)
+
+		# If the data is already normalized, then we don't want to check membership with the above lists. 
+		else:
+			self._degree_pursuing = degree_pursuing
+			self._coding_ability = cod_abil
+			self._was_cs_ug = cs_ug
+			self._work_experience = num_yrs_work_exp
+			self._project_rankings = project_rnks
 
 	def get_student_properties(self):
 		tup = []
