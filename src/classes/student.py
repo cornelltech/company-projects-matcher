@@ -176,7 +176,7 @@ class Student(object):
 		tup.append(self._project_rankings)
 		return tup
 
-	def get_interest(self, project_id):
+	def get_ranking(self, project_id):
 		try:
 			rankings = (self._project_rankings).tolist()
 			ind = rankings.index(project_id)
@@ -185,6 +185,9 @@ class Student(object):
 			error_one = "Project " + str(project_id) + " is not in student "
 			error_two = "'s ranking list."
 			raise FieldError(error_one + self._ID.astype('|S10') + error_two)
+
+	def get_interest_from_ranking(self, rank):
+		return abs(11 - rank)
 
 class Team(object):
 
