@@ -114,8 +114,12 @@ class Student(object):
 		except TypeError:
 			raise FieldError("Project rankings must be inputted as a list.")
 
+		past = []
 		for elm in val:
 			self.check_valid(elm, vals_valid_projects, s = " project ID")
+			if (elm in past):
+				raise FieldError("Each project can only be entered once.")
+			past.append(elm)
 	
 		self._project_rankings = val
 
@@ -131,7 +135,7 @@ class Student(object):
 		self.set_project_rankings(project_lst)
 
 
-	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst):
+	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_lst):
 		''' 
 			Parameters
 			----------
