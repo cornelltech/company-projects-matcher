@@ -177,8 +177,10 @@ class Team(object):
 			if (student.ID in existing_student_IDs):
 				error = "Student ID " + str(student.ID) + " is already taken."
 				raise FieldError(error)
-
-		self._members = student_list
+		if ((len(student_list) == 4) or (len(student_list) == 5)):
+			self._members = student_list
+		else:
+			raise FieldError("Team size must be 4 or 5.")
 		if (ID == -1):
 			new_id = random.randint(0, 100000)
 			while (new_id in existing_team_IDs):
@@ -224,3 +226,7 @@ class Team(object):
 
 	def get_existing_team_IDs():
 		return existing_team_IDs
+
+	def print_team(self):
+		for student in self._members:
+			print student.get_student_properties()

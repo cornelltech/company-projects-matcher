@@ -6,6 +6,8 @@ import sklearn
 from student import Student
 from student import Team
 
+student_ids = []
+
 class CompError(Exception):
 	def __init__(self, value):
 		self.val = value
@@ -27,22 +29,18 @@ def read_input(file, use_range = False):
 		scaled_yrs_work_experience = scale_inputs_based_on_range(all_work_experience)
 
 	else:
-		print "Using new new scaling property, coding abilities is:"
 		scaled_coding_abilities = normalize_bet_zero_and_one(all_coding_abilities)
 		scaled_yrs_work_experience = normalize_bet_zero_and_one(all_work_experience)
-		#scaled_coding_abilities = calc_z_score(all_coding_abilities)
-		#scaled_yrs_work_experience = calc_z_score(all_work_experience)
 	
-	# TODO: why won't this reset things? find out.
-	# TODO: maybe don't care. Just use the values from temp, in our student creation.
-	
-
 	students_lst = []
 
 	# Extract rows
 	for i in range(0, num_rows):
 		student = data_array[i,:]
 		ID 	= student[0]
+		if (ID in student_ids):
+			raise CompError("Student IDs must be unique.")
+		student_ids.append(ID)
 		degree_pursuing = student[1]
 		cs_ug = student[2]
 		coding_ability = scaled_coding_abilities[i]
@@ -51,6 +49,9 @@ def read_input(file, use_range = False):
  
 		a = Student("Test", ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings, True)
 		students_lst.append(a)
+
+	t = Team(students_lst)
+	Team.print_team(t)
 
 
 	for a in students_lst:
@@ -64,7 +65,6 @@ def normalize_bet_zero_and_one(lst):
 	if (den == 0):
 		raise CompError("In normalizing our quantitative variables, all values are the same.")
 	final = [(elm * 1.0) / den for elm in num]
-	print final
 	return final
 
 # Scales based on range between -1 and 1.
@@ -77,7 +77,6 @@ def scale_inputs_based_on_range(lst):
 
 	# print (lst - lst.mean()) / (lst.max() - lst.min())
 	normalized = a / b
-	print normalized
 	return normalized
 
 # Scales between -1 and 1, with mean 0 and variance 1.
