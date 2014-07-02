@@ -16,7 +16,7 @@ vals_degree_pursuing = { 0 : "MBA",
 						 1 : "MEng"
 }
 
-vals_valid_projects = range(0, 50)
+vals_valid_projects = map(lambda x: x * 65, range(16, 66))
 
 class FieldError(Exception):
 	def __init__(self, value):
@@ -109,10 +109,14 @@ class Student(object):
 		# Because val is a list and we want to check if each of the projects 
 		# has a valid ID
 		try:
-			for elm in val:
-				self.check_valid(elm, vals_valid_projects, s = " project ID")
+			if (not (len(val) == 10)):
+				raise FieldError("There must be 10 project rankings.")
 		except TypeError:
 			raise FieldError("Project rankings must be inputted as a list.")
+
+		for elm in val:
+			self.check_valid(elm, vals_valid_projects, s = " project ID")
+	
 		self._project_rankings = val
 
 	project_rankings = property(get_project_rankings, set_project_rankings,
