@@ -54,6 +54,8 @@ def read_input(file, use_range = False):
 	#Team.print_team(t)
 	Team.calculate_technical_rating(t)
 
+	print students_lst[0].get_interest(2665)
+
 def normalize_bet_zero_and_one(lst):
 	lst_max = lst.max()
 	lst_min = lst.min()

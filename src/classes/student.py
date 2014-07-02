@@ -140,7 +140,6 @@ class Student(object):
 		self.set_work_experience(num_yrs_work_exp)
 		self.set_project_rankings(project_lst)
 
-
 	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks, is_normalized=False):
 		''' 
 			Parameters
@@ -176,6 +175,16 @@ class Student(object):
 		tup.append(self._work_experience)
 		tup.append(self._project_rankings)
 		return tup
+
+	def get_interest(self, project_id):
+		try:
+			rankings = (self._project_rankings).tolist()
+			ind = rankings.index(project_id)
+			return ind
+		except(ValueError):
+			error_one = "Project " + str(project_id) + " is not in student "
+			error_two = "'s ranking list."
+			raise FieldError(error_one + self._ID.astype('|S10') + error_two)
 
 class Team(object):
 
