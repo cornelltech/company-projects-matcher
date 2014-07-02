@@ -135,7 +135,7 @@ class Student(object):
 		self.set_project_rankings(project_lst)
 
 
-	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_lst):
+	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks):
 		''' 
 			Parameters
 			----------
@@ -149,7 +149,7 @@ class Student(object):
 		
 		self._name				 	  = name
 		self._ID				 	  = ID
-		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst)
+		self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_rnks)
 
 	def get_student_properties(self):
 		tup = []
@@ -159,6 +159,7 @@ class Student(object):
 		tup.append(self._coding_ability)
 		tup.append(self._was_cs_ug)
 		tup.append(self._work_experience)
+		tup.append(self._project_rankings)
 		return tup
 
 class Team(object):
