@@ -74,37 +74,39 @@ def read_input(file, use_range = False, normalize=True):
 
 
 
-	t.pretty_print_properties()
+	# t.pretty_print_properties()
 
-	print "The technical rating was calculated using each student's coding ability, undergraduate major (CS or not),"
-	print "number of years of work experience, and degree pursuing. "
-	print ""
+	# print "The technical rating was calculated using each student's coding ability, undergraduate major (CS or not),"
+	# print "number of years of work experience, and degree pursuing. "
+	# print ""
 
-	print "This team's technical rating is:", 
-	print Team.calculate_technical_rating(t)
+	# print "This team's technical rating is:", 
+	# print Team.calculate_technical_rating(t)
 
-	print ""
-	print ""
+	# print ""
+	# print ""
 
-	print "The average interest rating for a project was calculated based on how high each student ranked the "
-	print "project, and averaging these values together."
+	# print "The average interest rating for a project was calculated based on how high each student ranked the "
+	# print "project, and averaging these values together."
 
-	print "For project with ID 2665, this team's average interest rating is:",
+	# print "For project with ID 2665, this team's average interest rating is:",
 
-	print t.calculate_interest_rating(2665)
+	# print t.calculate_interest_rating(2665)
 
-	print ""
+	# print ""
 
-	print "For project with ID 3250, this team's average interest rating is:",
+	# print "For project with ID 3250, this team's average interest rating is:",
 
-	print t.calculate_interest_rating(3250)
+	# print t.calculate_interest_rating(3250)
 
-	print ""
+	# print ""
 
-	print "Process completed."
+	# print "Process completed."
 
-	print ""
-	print ""
+	# print ""
+	# print ""
+
+	print t.calculate_pairwise_differences([0, 1, 1, 0])
 
 
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
@@ -139,4 +141,5 @@ def calc_z_score(lst):
 if __name__ == "__main__":
 	#read_input("new_name.csv", normalize = False)
 	read_input("new_name.csv")
+
 

@@ -320,8 +320,6 @@ class Team(object):
 
 	def calculate_technical_rating(self):
 		degrees = [student.degree_pursuing for student in self._members]
-		print "Degrees is "
-		print degrees
 		csugs = [student.was_cs_ug for student in self._members]
 		coding_abilities = [student.coding_ability for student in self._members]
 		work_experiences = [student.work_experience for student in self._members]
@@ -338,6 +336,41 @@ class Team(object):
 
 		return tech_rating_x + tech_rating_y + tech_rating_z
 
+	def calculate_all_pairwise_differences(self):
+		degrees = [student.degree_pursuing for student in self._members]
+		csugs = [student.was_cs_ug for student in self._members]
+		coding_abilities = [student.coding_ability for student in self._members]
+		work_experiences = [student.work_experience for student in self._members]
+
+		diff_degrees = self.calculate_pairwise_differences(degrees, False)
+		diff_csugs = self.calculate_pairwise_differences(csugs)
+		diff_coding_abilities = self.calculate_pairwise_differences(coding_abilities)
+		diff_work_experiences = self.calculate_pairwise_differences(work_experiences)
+
+		pass
+
+	# Sub =  we should subtract the values from a pair of students
+	# Not sub = we should just check if those values are different
+	def calculate_pairwise_differences(self, lst, sub = True):
+		if (sub):
+			ret = 0
+			used_indices = []
+			index_one = 0
+			index_two = 0
+			for mem_one in lst:
+				for mem_two in lst:
+					diff = abs(mem_one - mem_two)
+					tup_one = (index_one, index_two)
+					tup_two = (index_two, index_one)
+					if (tup_one in used_indices or tup_two in used_indices):
+						pass
+					else:
+						ret += diff
+						used_indices.append((index_one, index_two))
+					index_two += 1
+				index_one += 1
+				index_two = 0
+			return ret
 
 	def calculate_interest_rating(self, project_id):
 		rankings = [student.get_ranking(project_id) for student in self._members]
