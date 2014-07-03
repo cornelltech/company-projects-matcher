@@ -71,6 +71,16 @@ class Student(object):
 	def get_degree_pursuing(self):
 		return self._degree_pursuing
 
+	def get_numer_degree_pursuing(self):
+		if (self._degree_pursuing == 0 or self._degree_pursuing == 1):
+			return self._degree_pursuing
+		elif(self._degree_pursuing == "MBA"):
+			return 0
+		elif(self._degree_pursuing == "MEng"):
+			return 1
+		else:
+			raise FieldError("What is this degree you're pursuing?")
+
 	def set_degree_pursuing(self, val):
 		# Checks if the user is passing in the string value for degree pursuing.
 		# If not, check if the int they're passing in is included in our dict.
@@ -266,16 +276,55 @@ class Team(object):
 	def avg_list(self, lst):
 		return (sum(lst) * 1.0)/len(lst)
 
+	def pretty_print_properties(self):
+
+		print "**************************************************************************"
+		print "Stats for team ",
+		print str(self._ID) + " are :"
+		print ""
+
+
+		print "Degrees pursuing"
+		print "-----------------"
+		for student in self._members:
+			print "Student " + str(student.ID) + ": ",
+			print student.degree_pursuing
+		print ""
+
+
+		print "CS Undergrad?"
+		print "-----------------"
+		for student in self._members:
+			print "Student " + str(student.ID) + ": ",
+			print student.was_cs_ug
+		print ""
+
+
+		print "Coding ability"
+		print "-----------------"
+		for student in self._members:
+			print "Student " + str(student.ID) + ": ",
+			print student.coding_ability
+		print ""
+
+		print "Work experience"
+		print "-----------------"
+		for student in self._members:
+			print "Student " + str(student.ID) + ": ",
+			print student.work_experience
+		print ""
+
+
+		print "**************************************************************************"
+
+
 	def calculate_technical_rating(self):
 		degrees = [student.degree_pursuing for student in self._members]
+		print "Degrees is "
+		print degrees
 		csugs = [student.was_cs_ug for student in self._members]
 		coding_abilities = [student.coding_ability for student in self._members]
 		work_experiences = [student.work_experience for student in self._members]
-
-		print "Degrees is " + str(degrees)
-		print "Csugs is " + str(csugs)
-		print "Coding_abilities is " + str(coding_abilities)
-		print "Work experience is " + str(work_experiences)
 
 		degrees_avg = self.avg_list(degrees)
 		csugs_avg = self.avg_list(csugs)
@@ -287,8 +336,8 @@ class Team(object):
 		tech_rating_y = coding_ability_weight*coding_abilities_avg
 		tech_rating_z = work_experience_weight*work_experience_avg
 
-		print tech_rating_x + tech_rating_y + tech_rating_z
 		return tech_rating_x + tech_rating_y + tech_rating_z
+
 
 	def calculate_interest_rating(self, project_id):
 		rankings = [student.get_ranking(project_id) for student in self._members]
@@ -297,15 +346,9 @@ class Team(object):
 			cur_interest = self._members[i].get_interest_from_ranking(rankings[i])
 			interests.append(cur_interest)	
 
-		print "Interests for Team ",
-		print self._ID
-		print "for project id "
-		print project_id
-		print "is ",
-		print interests
 		normalized_interests = self.normalize_bet_zero_and_one(interests)
 		avg_interests = self.avg_list(normalized_interests)
-		print avg_interests
+		return avg_interests
 
 	def normalize_bet_zero_and_one(self, lst):
 

@@ -773,7 +773,8 @@ def print_student_list(lst):
 		print student.get_student_properties()
 
 def add_remaining(first_students, second_students, clean):
-	last_index = len(clean) - 1
+	#last_index = len(clean) - 1
+	last_index = 0
 
 	# Fill remaining first students to teams.
 	cur = len(first_students) - 1
@@ -873,16 +874,16 @@ if __name__ == "__main__":
 	(MBAs, MEngs) = do_tests_two()
 	
 	# Create teams of size 3
-	do_tests_three(MBAs, MEngs, 3)
+	#do_tests_three(MBAs, MEngs, 3)
 
 	# Create teams of size 4
-	do_tests_three(MBAs, MEngs, 4)
+	#do_tests_three(MBAs, MEngs, 4)
 
 	# Create teams of size 10
-	do_tests_three(MBAs, MEngs, 10)
+	#do_tests_three(MBAs, MEngs, 10)
 
 	# Create teams of size 6
-	#do_tests_three(MBAs, MEngs, 6)
+	do_tests_three(MBAs, MEngs, 6)
 
 
 
