@@ -30,6 +30,13 @@ class FieldError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
+class CompError(Exception):
+	def __init__(self, value):
+		self.val = value
+	def __str__(self):
+		return repr(self.val)
+
+
 class Student(object):
 
 	global vals_cs_ug
@@ -170,8 +177,8 @@ class Student(object):
 		tup.append(self._name)
 		tup.append(self._ID)
 		tup.append(self._degree_pursuing)
-		tup.append(self._coding_ability)
 		tup.append(self._was_cs_ug)
+		tup.append(self._coding_ability)
 		tup.append(self._work_experience)
 		tup.append(self._project_rankings)
 		return tup
@@ -187,7 +194,7 @@ class Student(object):
 			raise FieldError(error_one + self._ID.astype('|S10') + error_two)
 
 	def get_interest_from_ranking(self, rank):
-		return abs(11 - rank)
+		return abs(10 - rank)
 
 class Team(object):
 
@@ -282,6 +289,38 @@ class Team(object):
 
 		print tech_rating_x + tech_rating_y + tech_rating_z
 		return tech_rating_x + tech_rating_y + tech_rating_z
+
+	def calculate_interest_rating(self, project_id):
+		rankings = [student.get_ranking(project_id) for student in self._members]
+		interests = []
+		for i in range(0, len(rankings)):
+			cur_interest = self._members[i].get_interest_from_ranking(rankings[i])
+			interests.append(cur_interest)	
+
+		print "Interests for Team ",
+		print self._ID
+		print "for project id "
+		print project_id
+		print "is ",
+		print interests
+		normalized_interests = self.normalize_bet_zero_and_one(interests)
+		avg_interests = self.avg_list(normalized_interests)
+		print avg_interests
+
+	def normalize_bet_zero_and_one(self, lst):
+
+		lst_max = max (lst)
+		lst_min = min (lst)
+		den = lst_max - lst_min
+		num = [elm - lst_min for elm in lst]
+		if (den == 0):
+			raise CompError("In normalizing our quantitative variables, all values are the same.")
+		final = [(elm * 1.0) / den for elm in num]
+		return final
+
+	def val_objective_function(self):
+		# tech_rating = self.calculate_technical_rating()
+		pass
 
 
 

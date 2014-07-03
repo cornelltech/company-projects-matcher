@@ -5,14 +5,9 @@ import sklearn
 
 from student import Student
 from student import Team
+from student import CompError
 
 student_ids = []
-
-class CompError(Exception):
-	def __init__(self, value):
-		self.val = value
-	def __str__(self):
-		return repr(self.val)
 
 def read_input(file, use_range = False):
 	data = pd.read_csv(file)
@@ -56,6 +51,9 @@ def read_input(file, use_range = False):
 
 	print students_lst[0].get_ranking(2665)
 
+	print t.calculate_interest_rating(2665)
+
+# NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):
 	lst_max = lst.max()
 	lst_min = lst.min()
@@ -86,3 +84,4 @@ def calc_z_score(lst):
 
 if __name__ == "__main__":
 	read_input("new_name.csv")
+	# DONT WANT TO NORMALIZE THE RANKINGS DIRECTLY

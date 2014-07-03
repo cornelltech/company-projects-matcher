@@ -218,31 +218,44 @@ def random_coding_ability():
 def random_cs_ug():
 	return random.randint(0, 1)
 
-def random_type_technical_strength():
-	return random.randint(1, 9)
+def random_project_ranks():
+	projects_used = []
+	project_ranks = []
+	# length of vals valid projects is 50
+	vals_valid_projects = map(lambda x: x * 65, range(16, 66))
+	for i in range(0, 10):
+		random_index = random.randint(0, 49)
+		random_project = vals_valid_projects[random_index]
+		while (random_project in projects_used):
+			random_index = random.randint(0, 49)
+			random_project = vals_valid_projects[random_index]
+		projects_used.append(random_project)
+		project_ranks.append(random_project)
+	# print project_ranks
+	return project_ranks
 
 def random_yrs_work_experience():
 	return random.randint(0, 6)
 
 def create_random_student(d = -1):
+	# 	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks, is_normalized=False):
 	'''
 		Given the numbers of students in each group, generate random fields
 		for each.
 	
 	'''
-	# def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, type_tech_stren, num_yrs_work_exp):
 
 	i = random_student_ID()
 	if (d == -1):
 		d = random_degree_pursuing()
-	c = random_coding_ability()
 	cs = random_cs_ug()
-	t = random_type_technical_strength()
+	c = random_coding_ability()
 	n = random_yrs_work_experience()
+	rnks = random_project_ranks()
 
 	name = "Test"
 
-	s = Student(name, i, d, c, cs, t, n)
+	s = Student(name, i, d, cs, c, n, rnks)
 	return s
 
 	# first_ids = range(0, first_num)
@@ -254,16 +267,16 @@ def create_random_student(d = -1):
 	# second_ids = [elm * i for elm in second_ids]
 	# return (first_ids, second_ids)
 
-def create_random_student_vector(d = -1):
-	if (d == -1):
-		d = random_degree_pursuing()
-	c = random_coding_ability()
-	cs = random_cs_ug()
-	t = random_type_technical_strength()
-	n = random_yrs_work_experience()
+# def create_random_student_vector(d = -1):
+# 	if (d == -1):
+# 		d = random_degree_pursuing()
+# 	c = random_coding_ability()
+# 	cs = random_cs_ug()
+# 	t = random_type_technical_strength()
+# 	n = random_yrs_work_experience()
 
-	s = [d, c, cs, t, n]
-	return s
+# 	s = [d, c, cs, t, n]
+# 	return s
 
 def print_student_stats(a):
 	try:
@@ -289,14 +302,14 @@ def create_random_students(n, d = -1):
 	return result
 
 
-def create_random_student_vectors(n, d = -1):
-	result = []
-	for i in range(0, n):
-		# print "Student " + str(i+1) + " is:"
-		s = create_random_student_vector(d)
-		#print_student_stats(s)
-		result.append(s)
-	return result
+# def create_random_student_vectors(n, d = -1):
+# 	result = []
+# 	for i in range(0, n):
+# 		# print "Student " + str(i+1) + " is:"
+# 		s = create_random_student_vector(d)
+# 		#print_student_stats(s)
+# 		result.append(s)
+# 	return result
 
 def create_random_MBAs(n):
 	return create_random_students(n, d = 0)
@@ -759,13 +772,37 @@ def print_student_list(lst):
 	for student in lst:
 		print student.get_student_properties()
 
-def do_tests():
-	print "25 random students:"
-	a = create_random_students(25)
+def add_remaining(first_students, second_students, clean):
+	last_index = len(clean) - 1
+
+	# Fill remaining first students to teams.
+	cur = len(first_students) - 1
+	while (len(first_students) > 0):
+		clean[last_index].append(first_students[cur])
+		cur -= 1
+
+	# Fill remaining second students to teams.
+	cur = len(second_students) - 1
+	while (len(second_students) > 0):
+		clean[last_index].append(second_students[cur])
+		cur -= 1
+
+def do_loop_to_create_teams(first_students, first_name, second_students, second_name, team_size, n):
+	# def create_teams_on_all_fields(first_students, first_name, second_students, second_name, team_size):
+	while (n > 0):
+		d = create_teams_on_all_fields(first_students, first_name, second_students, second_name, team_size)
+		f = fill_teams_on_all_fields(d, first_name, second_name)
+		clean = clean_team(f)
+		print_team_list (clean)
+
+def do_test_one():
+	print "50 random students:"
+	a = create_random_students(50)
 	print_student_list(a)
 	print""
 	print ""
 
+def do_tests_two():
 	print "50 random MBAs:"
 	MBAs = create_random_MBAs(50)
 	print_student_list(MBAs)
@@ -779,19 +816,74 @@ def do_tests():
 	print""
 	print ""
 
-	d = create_teams_on_all_fields(MBAs, 'MBA', MEngs, 'MEng', 3)
+	return (MBAs, MEngs)
+
+def do_tests_three(MBAs, MEngs, team_size):
+	d = create_teams_on_all_fields(MBAs, 'MBA', MEngs, 'MEng', team_size)
 	f = fill_teams_on_all_fields(d, 'MBA', 'MEng')
 	clean = clean_team(f)
-	print_team_list (clean)
+	# print_team_list (clean)
+	# print clean
+
+ 	# print "Remaining MEngs are :" 
+ 	# print_student_list(MEngs)
+ 	# print "Remaining MBAs are :" 
+ 	# print_student_list(MBAs)
+
+ 	add_remaining(MBAs, MEngs, clean)
+ 	# print "Added remaining students to teams"
+ 	print_team_list(clean)
+
+ 	print "Remaining MEngs are :" 
+ 	print_student_list(MEngs)
+ 	print "Remaining MBAs are :" 
+ 	print_student_list(MBAs)
+
+
+# TODO: Running this says that input teams are empty.
+# def do_new_tests():
+	
+# 	print "Our students are:"
+# 	print "MBAs:"
+# 	MBAs = create_random_MBAs(50)
+# 	print_student_list(MBAs)
+# 	print""
+# 	print ""
+
+# 	print "MEngs:"
+# 	MEngs = create_random_MEngs(50)
+# 	print_student_list(MEngs)
+# 	print""
+# 	print ""
+
+
+# 	do_loop_to_create_teams(MBAs, 'MBA', MEngs, 'MEng', 3, 1)
+
+# 	print "Remaining MEngs are :" 
+# 	print_student_list(MEngs)
+# 	print "Remaining MBAs are :" 
+# 	print_student_list(MBAs)
+
 
 if __name__ == "__main__":
-	# do_tests()
-	t = Team([2, 3], 8)
-	t.ID = 100
-	t4 = Team([2, 3], 100)
-	print t4.ID
+	# 50 Random students	
+	#do_test_one()
 
+	# Create 50 Random MBAs, and 50 Random MEngs.
+	(MBAs, MEngs) = do_tests_two()
 	
+	# Create teams of size 3
+	do_tests_three(MBAs, MEngs, 3)
+
+	# Create teams of size 4
+	do_tests_three(MBAs, MEngs, 4)
+
+	# Create teams of size 10
+	do_tests_three(MBAs, MEngs, 10)
+
+	# Create teams of size 6
+	#do_tests_three(MBAs, MEngs, 6)
+
 
 
 
