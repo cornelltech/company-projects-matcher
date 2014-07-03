@@ -106,7 +106,8 @@ def read_input(file, use_range = False, normalize=True):
 	# print ""
 	# print ""
 
-	print t.calculate_pairwise_differences([0, 1, 1, 0])
+	#print t.calculate_pairwise_differences([0, 1, 1, 0])
+	print t.calculate_pairwise_differences([3, 0, 2, 1], False)
 
 
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.

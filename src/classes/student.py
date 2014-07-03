@@ -352,25 +352,30 @@ class Team(object):
 	# Sub =  we should subtract the values from a pair of students
 	# Not sub = we should just check if those values are different
 	def calculate_pairwise_differences(self, lst, sub = True):
-		if (sub):
-			ret = 0
-			used_indices = []
-			index_one = 0
-			index_two = 0
-			for mem_one in lst:
-				for mem_two in lst:
+		ret = 0
+		used_indices = []
+		index_one = 0
+		index_two = 0
+		for mem_one in lst:
+			for mem_two in lst:
+				if (sub):
 					diff = abs(mem_one - mem_two)
-					tup_one = (index_one, index_two)
-					tup_two = (index_two, index_one)
-					if (tup_one in used_indices or tup_two in used_indices):
-						pass
+				else:
+					if (mem_one == mem_two):
+						diff = 0
 					else:
-						ret += diff
-						used_indices.append((index_one, index_two))
-					index_two += 1
-				index_one += 1
-				index_two = 0
-			return ret
+						diff = 1
+				tup_one = (index_one, index_two)
+				tup_two = (index_two, index_one)
+				if (tup_one in used_indices or tup_two in used_indices):
+					pass
+				else:
+					ret += diff
+					used_indices.append((index_one, index_two))
+				index_two += 1
+			index_one += 1
+			index_two = 0
+		return ret
 
 	def calculate_interest_rating(self, project_id):
 		rankings = [student.get_ranking(project_id) for student in self._members]
