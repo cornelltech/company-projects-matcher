@@ -1,7 +1,5 @@
 import numpy as np 
 import pandas as pd 
-import random
-import sklearn
 
 from student import Student
 from student import Team
@@ -40,6 +38,8 @@ def read_input(file, use_range = False, normalize=True):
 			degree_pursuing = student[1]
 			cs_ug = student[2]
 			coding_ability = scaled_coding_abilities[i]
+			
+			# TODO: check the raw input against our validity checks for Student values before scaling.
 			num_yrs_work_exp = scaled_yrs_work_experience[i]
 			rankings = student[5:15]
 	 
@@ -74,7 +74,6 @@ def read_input(file, use_range = False, normalize=True):
 
 
 
-	# t.pretty_print_properties()
 
 	# print "The technical rating was calculated using each student's coding ability, undergraduate major (CS or not),"
 	# print "number of years of work experience, and degree pursuing. "
@@ -107,7 +106,10 @@ def read_input(file, use_range = False, normalize=True):
 	# print ""
 
 	#print t.calculate_pairwise_differences([0, 1, 1, 0])
-	print t.calculate_pairwise_differences([3, 0, 2, 1], False)
+	
+	#t.pretty_print_properties()
+	t.do_diversity_calculation()
+	#t.calculate_and_normalize_all_pairwise_differences()
 
 
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
@@ -140,7 +142,6 @@ def calc_z_score(lst):
 	return (lst - m) / sd
 
 if __name__ == "__main__":
-	#read_input("new_name.csv", normalize = False)
-	read_input("new_name.csv")
+	read_input("new_name.csv", normalize = True)
 
 

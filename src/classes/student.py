@@ -336,19 +336,6 @@ class Team(object):
 
 		return tech_rating_x + tech_rating_y + tech_rating_z
 
-	def calculate_all_pairwise_differences(self):
-		degrees = [student.degree_pursuing for student in self._members]
-		csugs = [student.was_cs_ug for student in self._members]
-		coding_abilities = [student.coding_ability for student in self._members]
-		work_experiences = [student.work_experience for student in self._members]
-
-		diff_degrees = self.calculate_pairwise_differences(degrees, False)
-		diff_csugs = self.calculate_pairwise_differences(csugs)
-		diff_coding_abilities = self.calculate_pairwise_differences(coding_abilities)
-		diff_work_experiences = self.calculate_pairwise_differences(work_experiences)
-
-		pass
-
 	# Sub =  we should subtract the values from a pair of students
 	# Not sub = we should just check if those values are different
 	def calculate_pairwise_differences(self, lst, sub = True):
@@ -376,6 +363,51 @@ class Team(object):
 			index_one += 1
 			index_two = 0
 		return ret
+
+	def calculate_all_pairwise_differences(self):
+		degrees = [student.degree_pursuing for student in self._members]
+		csugs = [student.was_cs_ug for student in self._members]
+		coding_abilities = [student.coding_ability for student in self._members]
+		work_experiences = [student.work_experience for student in self._members]
+
+		diff_degrees = self.calculate_pairwise_differences(degrees, False)
+		diff_csugs = self.calculate_pairwise_differences(csugs, False)
+		diff_coding_abilities = self.calculate_pairwise_differences(coding_abilities)
+		diff_work_experiences = self.calculate_pairwise_differences(work_experiences)
+		
+		print "Deg:",
+		print diff_degrees
+		print "Csug:",
+		print diff_csugs
+		print "Coding abilities:",
+		print diff_coding_abilities
+		print "Work experience:",
+		print diff_work_experiences
+
+		return [diff_degrees, diff_csugs, diff_coding_abilities, diff_work_experiences]
+
+	def do_diversity_calculation(self):
+		pairwise_differences = self.calculate_all_pairwise_differences()
+		
+		normal_avg = self.avg_list(pairwise_differences)
+
+		degree_weight = 0.5
+		csug_weight = 0.1
+		coding_weight = 0.3
+		work_weight = 0.1
+
+		deg = pairwise_differences[0]
+		cs = pairwise_differences[1]
+		cod = pairwise_differences[2]
+		work = pairwise_differences[3]
+
+		weighted_avg = degree_weight*deg + coding_weight*cod + csug_weight*cs + work_weight*work
+
+		print "Normal sum is",
+		print normal_avg
+		print "Weighted sum is",
+		print weighted_avg
+
 
 	def calculate_interest_rating(self, project_id):
 		rankings = [student.get_ranking(project_id) for student in self._members]
