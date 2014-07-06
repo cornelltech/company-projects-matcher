@@ -7,7 +7,7 @@ from student import CompError
 
 student_ids = []
 
-def read_input(file, use_range = False, normalize=True):
+def read_input(file, normalize=True):
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 	shape = data_array.shape
@@ -17,13 +17,8 @@ def read_input(file, use_range = False, normalize=True):
 	all_coding_abilities = data_array[:,3]
 	all_work_experience = data_array[:,4]
 
-	if (use_range):
-		scaled_coding_abilities = scale_inputs_based_on_range(all_coding_abilities)
-		scaled_yrs_work_experience = scale_inputs_based_on_range(all_work_experience)
-
-	else:
-		scaled_coding_abilities = normalize_bet_zero_and_one(all_coding_abilities)
-		scaled_yrs_work_experience = normalize_bet_zero_and_one(all_work_experience)
+	scaled_coding_abilities = normalize_bet_zero_and_one(all_coding_abilities)
+	scaled_yrs_work_experience = normalize_bet_zero_and_one(all_work_experience)
 	
 	students_lst = []
 
@@ -35,25 +30,16 @@ def read_input(file, use_range = False, normalize=True):
 			raise CompError("Student IDs must be unique.")
 		student_ids.append(ID)
 		
-		# Takes care of the case where input comes in as String instead of int.
-		if (student[1] == "MBA" or student[1] == 0):
-			degree_pursuing = 0
-		elif(student[1] == "MEng" or student[1] == 1):
-			degree_pursuing = 1
-
+		degree_pursuing = student[1]
 		cs_ug = student[2]
-
 		coding_ability = student[3]
 		num_yrs_work_exp = student[4]
+		rankings = student[5:15]
 
 		scaled_coding_ability = scaled_coding_abilities[i]
 		scaled_num_yrs_work_exp = scaled_yrs_work_experience[i]
 
-		# TODO: check the raw input against our validity checks for Student values before scaling.
-		rankings = student[5:15]
-
 		a = Student("Test", ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
-		a.check_valid_all()
 
 		if (normalize):
 			a = Student("Test", ID, degree_pursuing, cs_ug, scaled_coding_ability, scaled_num_yrs_work_exp, rankings, True)
