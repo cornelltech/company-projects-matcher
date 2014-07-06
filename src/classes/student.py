@@ -52,6 +52,25 @@ class Student(object):
 		else:
 		 	pass
 
+	def check_degree_pursuing(self, val):
+		if (not(val in vals_degree_pursuing.values())):
+			self.check_valid(val, vals_degree_pursuing, 
+						s = " degree pursuing")
+		else:
+			pass
+
+	def check_valid_all(self, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks):
+
+		#def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst):
+		
+
+		# Checking degree pursuing
+		self.check_degree_pursuing(degree_pursuing)
+		self.check_valid(cs_ug, vals_cs_ug, s = " was cs undergrad")
+		self.check_valid(cod_abil, vals_coding_ability, s = " coding ability")
+		self.check_valid(num_yrs_work_exp, vals_work_experience, s = " num yrs. work experience")
+		self.check_valid_project_rankings(project_rnks)
+
 	def get_name(self):
 		return self._name
 
@@ -128,7 +147,7 @@ class Student(object):
 	def get_project_rankings(self):
 		return self._project_rankings
 
-	def set_project_rankings(self, val):
+	def check_valid_project_rankings(self, val):
 		# Because val is a list and we want to check if each of the projects 
 		# has a valid ID
 		try:
@@ -143,7 +162,9 @@ class Student(object):
 			if (elm in past):
 				raise FieldError("Each project can only be entered once.")
 			past.append(elm)
-	
+
+	def set_project_rankings(self, val):
+		self.check_valid_project_rankings(val)
 		self._project_rankings = val
 
 	project_rankings = property(get_project_rankings, set_project_rankings,
