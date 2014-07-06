@@ -28,51 +28,39 @@ def read_input(file, use_range = False, normalize=True):
 	students_lst = []
 
 	# Extract rows
-	if (normalize):
-		for i in range(0, num_rows):
-			student = data_array[i,:]
-			ID 	= student[0]
-			if (ID in student_ids):
-				raise CompError("Student IDs must be unique.")
-			student_ids.append(ID)
-			degree_pursuing = student[1]
-			cs_ug = student[2]
-			coding_ability = scaled_coding_abilities[i]
-			
-			# TODO: check the raw input against our validity checks for Student values before scaling.
-			num_yrs_work_exp = scaled_yrs_work_experience[i]
-			rankings = student[5:15]
-	 
-			a = Student("Test", ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings, True)
-			students_lst.append(a)
+	for i in range(0, num_rows):
+		student = data_array[i,:]
+		ID 	= student[0]
+		if (ID in student_ids):
+			raise CompError("Student IDs must be unique.")
+		student_ids.append(ID)
+		
+		# Takes care of the case where input comes in as String instead of int.
+		if (student[1] == "MBA" or student[1] == 0):
+			degree_pursuing = 0
+		elif(student[1] == "MEng" or student[1] == 1):
+			degree_pursuing = 1
 
-		t = Team(students_lst)
+		cs_ug = student[2]
 
-	else:
+		coding_ability = student[3]
+		num_yrs_work_exp = student[4]
 
-	# Extract rows
-		for i in range(0, num_rows):
-			student = data_array[i,:]
-			ID 	= student[0]
-			if (ID in student_ids):
-				raise CompError("Student IDs must be unique.")
-			student_ids.append(ID)
-			if (student[1] == "MBA"):
-				degree_pursuing = 0
-			# TODO: fix this (unstable)
-			else:
-				degree_pursuing = 1
-			cs_ug = student[2]
-			coding_ability = student[3]
-			num_yrs_work_exp = student[4]
-			rankings = student[5:15]
-	 
-			a = Student("Test", ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
-			students_lst.append(a)
+		scaled_coding_ability = scaled_coding_abilities[i]
+		scaled_num_yrs_work_exp = scaled_yrs_work_experience[i]
 
-		t = Team(students_lst)
+		# TODO: check the raw input against our validity checks for Student values before scaling.
+		rankings = student[5:15]
 
+		a = Student("Test", ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
+		a.check_valid_all()
 
+		if (normalize):
+			a = Student("Test", ID, degree_pursuing, cs_ug, scaled_coding_ability, scaled_num_yrs_work_exp, rankings, True)
+
+		students_lst.append(a)
+
+	t = Team(students_lst)
 
 
 	# print "The technical rating was calculated using each student's coding ability, undergraduate major (CS or not),"
@@ -109,8 +97,6 @@ def read_input(file, use_range = False, normalize=True):
 	
 	#t.pretty_print_properties()
 	t.do_diversity_calculation()
-	#t.calculate_and_normalize_all_pairwise_differences()
-
 
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):
@@ -142,6 +128,6 @@ def calc_z_score(lst):
 	return (lst - m) / sd
 
 if __name__ == "__main__":
-	read_input("new_name.csv", normalize = True)
+	read_input("new_name.csv")
 
 

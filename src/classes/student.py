@@ -59,10 +59,14 @@ class Student(object):
 		else:
 			pass
 
-	def check_valid_all(self, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks):
+	def check_valid_all(self):
 
 		#def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst):
-		
+		degree_pursuing = self._degree_pursuing
+		cs_ug = self._was_cs_ug
+		cod_abil = self._coding_ability 
+		num_yrs_work_exp = self._work_experience
+		project_rnks = self._project_rankings
 
 		# Checking degree pursuing
 		self.check_degree_pursuing(degree_pursuing)
