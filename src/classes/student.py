@@ -36,7 +36,6 @@ class CompError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
-
 class Student(object):
 
 	global vals_cs_ug
@@ -215,7 +214,7 @@ class Team(object):
 	global coding_ability_weight
 	global work_experience_weight
 
-	def __init__(self, student_list, ID=-1):
+	def __init__(self, student_list, ID=-1, project_ID = 0):
 		for student in student_list:
 			if (student.ID in existing_student_IDs):
 				error = "Student ID " + str(student.ID) + " is already taken."
@@ -238,6 +237,21 @@ class Team(object):
 				self._ID = ID
 				existing_team_IDs.append(self._ID)
 
+		self._project_ID = project_ID
+
+	def get_project_ID(self):
+		return self._project_ID
+
+	def set_project_ID(self, val):
+		if (not(val in vals_valid_projects)):
+			error = str(val) + " is not a valid project ID for team " + str(self._ID)
+			raise FieldError(error)
+		else:
+			self._project_ID
+
+	project_ID = property(get_project_ID, set_project_ID,
+					  doc = "Get and set the team's project ID.")
+	
 	def get_ID(self):
 		return self._ID
 
@@ -372,24 +386,27 @@ class Team(object):
 		coding_abilities = [student.coding_ability for student in self._members]
 		work_experiences = [student.work_experience for student in self._members]
 
+		print "Deg:",
+		print degrees
+		print "Csug:",
+		print csugs
+		print "Coding abilities:",
+		print coding_abilities
+		print "Work experience:",
+		print work_experiences
+
+
 		diff_degrees = self.calculate_pairwise_differences(degrees, False)
 		diff_csugs = self.calculate_pairwise_differences(csugs, False)
 		diff_coding_abilities = self.calculate_pairwise_differences(coding_abilities)
 		diff_work_experiences = self.calculate_pairwise_differences(work_experiences)
 		
-		print "Deg:",
-		print diff_degrees
-		print "Csug:",
-		print diff_csugs
-		print "Coding abilities:",
-		print diff_coding_abilities
-		print "Work experience:",
-		print diff_work_experiences
-
 		return [diff_degrees, diff_csugs, diff_coding_abilities, diff_work_experiences]
 
 	def do_diversity_calculation(self):
 		pairwise_differences = self.calculate_all_pairwise_differences()
+		print "Pairwise differences is",
+		print pairwise_differences
 		
 		normal_avg = self.avg_list(pairwise_differences)
 
@@ -398,10 +415,10 @@ class Team(object):
 		coding_weight = 0.3
 		work_weight = 0.1
 
-		deg = pairwise_differences[0]
-		cs = pairwise_differences[1]
-		cod = pairwise_differences[2]
-		work = pairwise_differences[3]
+		deg = (pairwise_differences[0] * 1.0) / 4
+		cs = (pairwise_differences[1] * 1.0) / 4
+		cod = (pairwise_differences[2] * 1.0) / 4
+		work = (pairwise_differences[3] * 1.0) / 4
 
 		weighted_avg = degree_weight*deg + coding_weight*cod + csug_weight*cs + work_weight*work
 
@@ -409,6 +426,8 @@ class Team(object):
 		print normal_avg
 		print "Weighted sum is",
 		print weighted_avg
+
+		return weighted_avg
 
 
 	def calculate_interest_rating(self, project_id):
@@ -436,16 +455,3 @@ class Team(object):
 	def val_objective_function(self):
 		# tech_rating = self.calculate_technical_rating()
 		pass
-
-
-
-
-
-
-
-
-
-
-
-
-

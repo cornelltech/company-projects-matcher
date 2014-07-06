@@ -83,6 +83,10 @@ def read_input(file, normalize=True):
 	
 	#t.pretty_print_properties()
 	t.do_diversity_calculation()
+	#print "If we divide by 4 the weighted average is",
+	#print (weighted_avg * 1.0)/4
+
+
 
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):
@@ -114,6 +118,6 @@ def calc_z_score(lst):
 	return (lst - m) / sd
 
 if __name__ == "__main__":
-	read_input("new_name.csv")
+	read_input("new_name.csv", True)
 
 
