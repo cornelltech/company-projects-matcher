@@ -1,8 +1,9 @@
 import random
 
-'''To ensure that we do not create multiple teams with the same ID.'''
-existing_team_IDs = []
+'''To ensure that we do not create multiple students, teams, or projects with the same ID.'''
 existing_student_IDs = []
+existing_team_IDs = []
+existing_project_IDs = []
 
 # Declaring valid values for all fields.
 vals_cs_ug = [True, False]
@@ -455,3 +456,57 @@ class Team(object):
 	def val_objective_function(self):
 		# tech_rating = self.calculate_technical_rating()
 		pass
+
+class Project(object):
+	def check_valid_student_nums(self, num_students):
+		try:
+			if(num_students < 0):
+				error = "Number of required MBAs and MEngs must be positive."
+				raise FieldError(error)
+		except(TypeError):
+			error = "Number of required MBAs and MEngs must be integers."
+			raise FieldError(error)
+
+	def __init__(self, ID, num_MBAs, num_MEngs):
+		self.set_ID(ID)
+		self.set_num_MBAs(num_MBAs)
+		self.set_num_MEngs(num_MEngs)
+
+	def get_ID(self):
+		return self._ID
+
+	def set_ID(self, val):
+		if (val in existing_project_IDs):
+			error = "ID " + str(val) + " is already taken."
+			raise FieldError(error)
+		elif(not(val in vals_valid_projects)):
+			error = "ID " + str(val) + " is not valid."
+			raise FieldError(error)
+		else:
+			self._ID = val
+			existing_project_IDs.append(val)
+
+	ID = property(get_ID, set_ID,
+				  doc = "Get and set the team's ID, if not in the existing IDs.")
+
+	def get_num_MBAs(self):
+		return self._num_MBAs
+
+	def set_num_MBAs(self, val):
+		self.check_valid_student_nums(val)
+		self._num_MBAs = val
+
+	num_MBAs = property(get_num_MBAs, set_num_MBAs,
+				  doc = "Get and set the number of MBAs that this team requires.")
+
+	def get_num_MEngs(self):
+		return self._num_MEngs
+
+	def set_num_MEngs(self, val):
+		self.check_valid_student_nums(val)
+		self._num_MEngs = val
+
+	num_MEngs = property(get_num_MEngs, set_num_MEngs,
+				  doc = "Get and set the number of MEngs that this team requires.")
+
+

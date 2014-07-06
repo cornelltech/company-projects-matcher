@@ -3,6 +3,7 @@ import pandas as pd
 
 from student import Student
 from student import Team
+from student import Project
 from student import CompError
 
 student_ids = []
@@ -85,6 +86,12 @@ def read_input(file, normalize=True):
 	t.do_diversity_calculation()
 	#print "If we divide by 4 the weighted average is",
 	#print (weighted_avg * 1.0)/4
+
+	# 		def __init__(self, ID, num_MBAs, num_MEngs):
+	p = Project(1300, 4, 4)
+	print p.ID
+	print p.num_MEngs
+	print p.num_MBAs
 
 
 
