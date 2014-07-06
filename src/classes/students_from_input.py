@@ -1,10 +1,10 @@
 import numpy as np 
 import pandas as pd 
 
-from student import Student
-from student import Team
-from student import Project
-from student import CompError
+from classes import Student
+from classes import Team
+from classes import Project
+from classes import CompError
 
 student_ids = []
 
@@ -92,8 +92,6 @@ def read_input(file, normalize=True):
 	print p.ID
 	print p.num_MEngs
 	print p.num_MBAs
-
-
 
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):

@@ -471,6 +471,10 @@ class Project(object):
 		self.set_ID(ID)
 		self.set_num_MBAs(num_MBAs)
 		self.set_num_MEngs(num_MEngs)
+		self._num_MBAs_remaining = num_MBAs
+		self._num_MEngs_remaining = num_MEngs
+		self._MBA_list  = []
+		self._MEng_list = []
 
 	def get_ID(self):
 		return self._ID
@@ -508,5 +512,38 @@ class Project(object):
 
 	num_MEngs = property(get_num_MEngs, set_num_MEngs,
 				  doc = "Get and set the number of MEngs that this team requires.")
+
+	def has_remaining_MBA_spots(self):
+		return (self._num_MBAs > 0)
+
+	def has_remaining_MEngs_spots(self):
+		return (self._num_MEngs > 0)
+
+	# TODO: Add a way to check that ID doesnt exist on another team.
+	def add_student_to_MBAs(self, student):
+		if (self._num_MBAs_remaining <= 0):
+			error = "There are no remaining MBA spots for project " + str(self._ID) + "."
+			raise FieldError(error)
+		MBA_IDs  = [s.ID for s in self._MBA_list]
+		MEng_IDs = [s.ID for s in self._MEng_list]
+		if (student.ID in MBA_IDs or student.ID in MEng_IDs):
+			error = "ID " + str(student.ID) + "is already on this project."
+			raise FieldError(error)
+		student._MBA_list.append(student)
+		self._num_MBAs_remaining -= 1
+
+	def add_student_to_MEngs(self, student):
+		if (self._num_MEngs_remaining <= 0):
+			error = "There are no remaining MEng spots for project " + str(self._ID) + "."
+			raise FieldError(error)
+		MBA_IDs  = [s.ID for s in self._MBA_list]
+		MEng_IDs = [s.ID for s in self._MEng_list]
+		if (student.ID in MBA_IDs or student.ID in MEng_IDs):
+			error = "ID " + str(student.ID) + "is already on this project."
+			raise FieldError(error)
+		student._MEng_list.append(student)
+		self._num_MEngs_remaining -= 1
+
+	
 
 
