@@ -238,7 +238,34 @@ class Team(object):
 				self._ID = ID
 				existing_team_IDs.append(self._ID)
 
+		num_MBAs = len(filter(lambda x: x.degree_pursuing == 0, self._members))
+		num_MEngs = len(filter(lambda x: x.degree_pursuing == 1, self._members))
+
 		self._project_ID = project_ID
+		self._num_MBAs = num_MBAs
+		print "num_MBAs is " + str(self._num_MBAs)
+		self._num_MEngs = num_MEngs
+		print "num_MEngs is " + str(self._num_MEngs)
+
+	def get_num_MBAs(self):
+		return self._num_MBAs
+
+	# TODO: change this.
+	def set_num_MBAs(self, val):
+		raise FieldError("In team, cannot set number of MBAs.")
+
+	num_MBAs = property(get_num_MBAs, set_num_MBAs,
+				  doc = "Get and set the number of MBAs that this team requires.")
+
+	def get_num_MEngs(self):
+		return self._num_MEngs
+
+	# TODO: change this.
+	def set_num_MEngs(self, val):
+		raise FieldError("In team, cannot set number of MEngs.")
+
+	num_MEngs = property(get_num_MEngs, set_num_MEngs,
+				  doc = "Get and set the number of MEngs that this team requires.")
 
 	def get_project_ID(self):
 		return self._project_ID
@@ -563,9 +590,6 @@ class Project(object):
 	def has_remaining_MEng_spots(self):
 		return (self._remaining_MEng_spots > 0)
 
-	def add_student(self):
-		pass
-
 	# TODO: Add a way to check that ID doesnt exist on another team.
 	def add_student_to_MBAs(self, student):
 		# TODO: change this if we start storing degree pursuing as a string.
@@ -577,7 +601,6 @@ class Project(object):
 			error = "In add " + str(student.ID) + ", there are no remaining MBA spots for project " + str(self._ID) + "."
 			raise FieldError(error)
 		else:
-		# TODO: should only check one team  because we won't put an MBA on the MEng number right?
 			MBA_IDs  = [s.ID for s in self._MBA_list]
 			if (student.ID in MBA_IDs):
 				error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
@@ -595,10 +618,33 @@ class Project(object):
 			error = "In add " + str(student.ID) + ", there are no remaining MEng spots for project " + str(self._ID) + "."
 			raise FieldError(error)
 		else:
-		# TODO: should only check one team  because we won't put an MBA on the MEng number right?
 			MEng_IDs  = [s.ID for s in self._MEng_list]
 			if (student.ID in MEng_IDs):
 				error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
 				raise FieldError(error)
 		self._MEng_list.append(student)
 		self._remaining_MEng_spots -= 1
+
+	def add_student(self, student):
+		if (student.degree_pursuing == 0):
+			self.add_student_to_MBAs(student)
+		elif (student.degree_pursuing == 1):
+			self.add_student_to_MEngs(student)
+		else:
+			raise FieldError("Are there more than two types?")
+
+	def is_empty(self):
+		return (self._remaining_MEng_spots == self._num_MEngs and self.remaining_MBA_spots == self._num_MBAs)
+
+	def add_team(self, team):
+		# Check if team is an appropriate fit for the project.
+		if (not(team.num_MBAs == self._num_MBAs and team.num_MEngs == self._num_MEngs)):
+			error = "Team specs are (" + str(team.num_MBAs) + ", " + str(team.num_MEngs) + "). "
+			error_two = "Project specs are (" + str(self._num_MBAs) + ", " + str(self._num_MEngs) + ")."
+			raise FieldError("Team specs do not match project specs. " + error + error_two)
+		elif (self.is_empty()):
+			for student in team.members:
+				self.add_student(student)
+		else:
+			raise FieldError("There are already members on this project. Would you like to proceed and erase these members?")
+
