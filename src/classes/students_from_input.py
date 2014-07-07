@@ -18,6 +18,8 @@ def read_input(file, normalize=True):
 	all_coding_abilities = data_array[:,3]
 	all_work_experience = data_array[:,4]
 
+	# TODO: instead of normalizing, should just scale it out of 1.
+	# Normalization is too dependent on the values it's passed in with.
 	scaled_coding_abilities = normalize_bet_zero_and_one(all_coding_abilities)
 	scaled_yrs_work_experience = normalize_bet_zero_and_one(all_work_experience)
 	
@@ -48,6 +50,7 @@ def read_input(file, normalize=True):
 		students_lst.append(a)
 
 	t = Team(students_lst)
+	Team.print_team(t)
 
 
 	# print "The technical rating was calculated using each student's coding ability, undergraduate major (CS or not),"
@@ -83,15 +86,25 @@ def read_input(file, normalize=True):
 	#print t.calculate_pairwise_differences([0, 1, 1, 0])
 	
 	#t.pretty_print_properties()
-	t.do_diversity_calculation()
+	#t.do_diversity_calculation()
 	#print "If we divide by 4 the weighted average is",
 	#print (weighted_avg * 1.0)/4
 
 	# 		def __init__(self, ID, num_MBAs, num_MEngs):
-	p = Project(1300, 4, 4)
+	p = Project(1300, 4, 2)
 	print p.ID
 	print p.num_MEngs
 	print p.num_MBAs
+	print "p has " + str(p.remaining_MEng_spots) + " MEng spots remaining."
+	p.add_student_to_MEngs(students_lst[0])
+	print "After add, p has " + str(p.remaining_MEng_spots) + " MEng spots remaining."
+	print [s.get_student_properties() for s in p.MEng_list]
+
+	#p.add_student_to_MEngs(students_lst[0])
+	p.add_student_to_MEngs(students_lst[1])
+	p.add_student_to_MEngs(students_lst[3])
+	print [s.get_student_properties() for s in p.MEng_list]
+	print len(p.MEng_list)
 
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):
@@ -99,6 +112,7 @@ def normalize_bet_zero_and_one(lst):
 	lst_min = lst.min()
 	den = lst_max - lst_min
 	num = [elm - lst_min for elm in lst]
+	# TODO: get rid of this stupid error.
 	if (den == 0):
 		raise CompError("In normalizing our quantitative variables, all values are the same.")
 	final = [(elm * 1.0) / den for elm in num]

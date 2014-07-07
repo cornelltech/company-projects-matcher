@@ -404,6 +404,7 @@ class Team(object):
 		
 		return [diff_degrees, diff_csugs, diff_coding_abilities, diff_work_experiences]
 
+
 	def do_diversity_calculation(self):
 		pairwise_differences = self.calculate_all_pairwise_differences()
 		print "Pairwise differences is",
@@ -416,17 +417,20 @@ class Team(object):
 		coding_weight = 0.3
 		work_weight = 0.1
 
-		deg = (pairwise_differences[0] * 1.0) / 4
-		cs = (pairwise_differences[1] * 1.0) / 4
-		cod = (pairwise_differences[2] * 1.0) / 4
-		work = (pairwise_differences[3] * 1.0) / 4
+		deg = (pairwise_differences[0] * 1.0)
+		cs = (pairwise_differences[1] * 1.0)
+		cod = (pairwise_differences[2] * 1.0)
+		work = (pairwise_differences[3] * 1.0)
 
 		weighted_avg = degree_weight*deg + coding_weight*cod + csug_weight*cs + work_weight*work
 
-		print "Normal sum is",
+		print "Normal avg is",
 		print normal_avg
-		print "Weighted sum is",
+		print "Weighted avg is",
 		print weighted_avg
+		print "Average on a scale of 0 to 1 is",
+		print weighted_avg/4
+		print "Going to return weighted average."
 
 		return weighted_avg
 
@@ -471,8 +475,8 @@ class Project(object):
 		self.set_ID(ID)
 		self.set_num_MBAs(num_MBAs)
 		self.set_num_MEngs(num_MEngs)
-		self._num_MBAs_remaining = num_MBAs
-		self._num_MEngs_remaining = num_MEngs
+		self._remaining_MBA_spots = num_MBAs
+		self._remaining_MEng_spots = num_MEngs
 		self._MBA_list  = []
 		self._MEng_list = []
 
@@ -513,37 +517,88 @@ class Project(object):
 	num_MEngs = property(get_num_MEngs, set_num_MEngs,
 				  doc = "Get and set the number of MEngs that this team requires.")
 
-	def has_remaining_MBA_spots(self):
-		return (self._num_MBAs > 0)
+	def get_MEng_list(self):
+		return self._MEng_list
 
-	def has_remaining_MEngs_spots(self):
-		return (self._num_MEngs > 0)
+	def set_MEng_list(self, val):
+		error = "Cannot manually set the MEng list. Must add students via add_student function."
+		raise FieldError(error)
+
+	MEng_list = property(get_MEng_list, set_MEng_list,
+				  doc = "Get and set the MEng list on this project.")
+
+	def get_MBA_list(self):
+		return self._MBA_list
+
+	def set_MBA_list(self, val):
+		error = "Cannot manually set the MBA list. Must add students via add_student function."
+		raise FieldError(error)
+
+	MBA_list = property(get_MBA_list, set_MBA_list,
+				  doc = "Get and set the MBA list on this project.")
+
+	def get_remaining_MBA_spots(self):
+		return self._remaining_MBA_spots
+
+	def set_remaining_MBA_spots(self, val):
+		error = "Cannot manually set the remaining MBA spots."
+		raise FieldError(error)
+
+	remaining_MBA_spots = property(get_remaining_MBA_spots, set_remaining_MBA_spots,
+				  doc = "Get and set the remaining MBA spots on this project.")
+
+	def get_remaining_MEng_spots(self):
+		return self._remaining_MEng_spots
+
+	def set_remaining_MEng_spots(self, val):
+		error = "Cannot manually set the remaining MEng spots."
+		raise FieldError(error)
+
+	remaining_MEng_spots = property(get_remaining_MEng_spots, set_remaining_MEng_spots,
+				  doc = "Get and set the remaining MEng spots on this project.")
+
+	def has_remaining_MBA_spots(self):
+		return (self._remaining_MBA_spots > 0)
+
+	def has_remaining_MEng_spots(self):
+		return (self._remaining_MEng_spots > 0)
+
+	def add_student(self):
+		pass
 
 	# TODO: Add a way to check that ID doesnt exist on another team.
 	def add_student_to_MBAs(self, student):
-		if (self._num_MBAs_remaining <= 0):
-			error = "There are no remaining MBA spots for project " + str(self._ID) + "."
+		# TODO: change this if we start storing degree pursuing as a string.
+		if (not(student.degree_pursuing == 0)):
+			error = "Student " + str(student.ID) + " is not an MBA student. Cannot add to MBAs on project " + str(self._ID) + ".'"
 			raise FieldError(error)
-		MBA_IDs  = [s.ID for s in self._MBA_list]
-		MEng_IDs = [s.ID for s in self._MEng_list]
-		if (student.ID in MBA_IDs or student.ID in MEng_IDs):
-			error = "ID " + str(student.ID) + "is already on this project."
+		# TODO: assumes that there are only two types of students
+		elif (not(self.has_remaining_MBA_spots())):
+			error = "In add " + str(student.ID) + ", there are no remaining MBA spots for project " + str(self._ID) + "."
 			raise FieldError(error)
-		student._MBA_list.append(student)
-		self._num_MBAs_remaining -= 1
+		else:
+		# TODO: should only check one team  because we won't put an MBA on the MEng number right?
+			MBA_IDs  = [s.ID for s in self._MBA_list]
+			if (student.ID in MBA_IDs):
+				error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
+				raise FieldError(error)
+		self._MBA_list.append(student)
+		self._remaining_MBA_spots -= 1
 
 	def add_student_to_MEngs(self, student):
-		if (self._num_MEngs_remaining <= 0):
-			error = "There are no remaining MEng spots for project " + str(self._ID) + "."
+		# TODO: change this if we start storing degree pursuing as a string.
+		if (not(student.degree_pursuing == 1)):
+			error = "Student " + str(student.ID) + " is not an MEng student. Cannot add to MEngs on project " + str(self._ID) + ".'"
 			raise FieldError(error)
-		MBA_IDs  = [s.ID for s in self._MBA_list]
-		MEng_IDs = [s.ID for s in self._MEng_list]
-		if (student.ID in MBA_IDs or student.ID in MEng_IDs):
-			error = "ID " + str(student.ID) + "is already on this project."
+		# TODO: assumes that there are only two types of students
+		elif (not(self.has_remaining_MEng_spots())):
+			error = "In add " + str(student.ID) + ", there are no remaining MEng spots for project " + str(self._ID) + "."
 			raise FieldError(error)
-		student._MEng_list.append(student)
-		self._num_MEngs_remaining -= 1
-
-	
-
-
+		else:
+		# TODO: should only check one team  because we won't put an MBA on the MEng number right?
+			MEng_IDs  = [s.ID for s in self._MEng_list]
+			if (student.ID in MEng_IDs):
+				error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
+				raise FieldError(error)
+		self._MEng_list.append(student)
+		self._remaining_MEng_spots -= 1
