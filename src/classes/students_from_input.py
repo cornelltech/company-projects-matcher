@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd 
 
 import classes
+import teams
 from classes import Student
 from classes import Team
 from classes import Project
@@ -9,7 +10,6 @@ from classes import CompError
 from classes import FieldError
 
 student_ids = []
-projects = []
 
 def read_input(file, normalize=True):
 	data = pd.read_csv(file)
@@ -56,7 +56,7 @@ def read_input(file, normalize=True):
 	Team.print_team(t)
 
 	
-	p = Project(1300, 2, 3)
+	#p = Project(1300, 2, 3)
 	# # Test 1
 	# print p.ID
 	# print p.num_MEngs
@@ -87,8 +87,14 @@ def read_input(file, normalize=True):
 
 	# Test 3
 	# p.add_team(t)
+	projects = generate_all_projects()
+	IDs = [p.ID for p in projects]
+	print IDs
+	greedy_match(students_lst, projects)
 
-
+	for p in projects:
+		p.print_project_members()
+	
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):
 	lst_max = lst.max()
@@ -126,7 +132,7 @@ def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 		projects_lst.append(p)
 	return projects_lst
 
-def get_project(ID):
+def get_project_from_ID(ID, projects):
 	matching_ID_lst = filter(lambda x: x.ID == ID, projects)
 	if (len(matching_ID_lst) == 0):
 		error = "ID " + str(ID) + " does not match to a valid project."
@@ -139,10 +145,39 @@ def get_project(ID):
 	else:
 		return matching_ID_lst[0]
 
+def greedy_match(students_lst, projects):
+	while(len(students_lst) > 0):
+		print "Students list is " + str([s.get_student_properties() for s in students_lst])
+		r = teams.random_index(len(students_lst))
+		print "Current index is: " + str(r)
+		cur_student = students_lst[r]
+		print "Student " + str(cur_student.ID) + "'s list is ",
+		print cur_student.project_rankings
+
+		# Current spot in the student's ranking
+		cur_spot = 0
+		matched = False
+
+		while (not(matched)):
+			ranks = cur_student.project_rankings
+			if (cur_spot >= len(ranks)):
+				error = "Student " + str(cur_student.ID) + " could not match to any of its desired projects."
+				raise CompError(error)
+			cur_spot_proj_ID = ranks[cur_spot]
+			print "cur_spot_proj_ID is " + str(cur_spot_proj_ID)
+			top_project = get_project_from_ID(cur_spot_proj_ID, projects)
+
+			matched = top_project.add_student(cur_student)
+			print "Matched is " + str(matched)
+			if (not(matched)):
+				cur_spot += 1
+			else:
+				students_lst.pop(r)	
+
 if __name__ == "__main__":
-	projects = generate_all_projects()
-	#read_input("new_name.csv", True)
+	read_input("new_name.csv")
 	# print len(generate_all_projects())
-	print get_project(3250)
+	#print get_project_from_ID(3250)
+
 
 

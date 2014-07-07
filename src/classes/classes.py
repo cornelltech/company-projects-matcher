@@ -595,12 +595,14 @@ class Project(object):
 	def add_student_to_MBAs(self, student):
 		# TODO: change this if we start storing degree pursuing as a string.
 		if (not(student.degree_pursuing == 0)):
-			error = "Student " + str(student.ID) + " is not an MBA student. Cannot add to MBAs on project " + str(self._ID) + ".'"
-			raise FieldError(error)
+			# error = "Student " + str(student.ID) + " is not an MBA student. Cannot add to MBAs on project " + str(self._ID) + ".'"
+			# raise FieldError(error)
+			return False
 		# TODO: assumes that there are only two types of students
 		elif (not(self.has_remaining_MBA_spots())):
-			error = "In add " + str(student.ID) + ", there are no remaining MBA spots for project " + str(self._ID) + "."
-			raise FieldError(error)
+			# error = "In add " + str(student.ID) + ", there are no remaining MBA spots for project " + str(self._ID) + "."
+			# raise FieldError(error)
+			return False
 		else:
 			MBA_IDs  = [s.ID for s in self._MBA_list]
 			if (student.ID in MBA_IDs):
@@ -608,16 +610,21 @@ class Project(object):
 				raise FieldError(error)
 		self._MBA_list.append(student)
 		self._remaining_MBA_spots -= 1
+		return True
 
+	# NOTE: returns a boolean!!!!
 	def add_student_to_MEngs(self, student):
+		# TODO: decide if we want to raise errors or keep booleans.
 		# TODO: change this if we start storing degree pursuing as a string.
 		if (not(student.degree_pursuing == 1)):
-			error = "Student " + str(student.ID) + " is not an MEng student. Cannot add to MEngs on project " + str(self._ID) + ".'"
-			raise FieldError(error)
+			# error = "Student " + str(student.ID) + " is not an MEng student. Cannot add to MEngs on project " + str(self._ID) + ".'"
+			# raise FieldError(error)
+			return False
 		# TODO: assumes that there are only two types of students
 		elif (not(self.has_remaining_MEng_spots())):
-			error = "In add " + str(student.ID) + ", there are no remaining MEng spots for project " + str(self._ID) + "."
-			raise FieldError(error)
+			# error = "In add " + str(student.ID) + ", there are no remaining MEng spots for project " + str(self._ID) + "."
+			# raise FieldError(error)
+			return False
 		else:
 			MEng_IDs  = [s.ID for s in self._MEng_list]
 			if (student.ID in MEng_IDs):
@@ -625,12 +632,13 @@ class Project(object):
 				raise FieldError(error)
 		self._MEng_list.append(student)
 		self._remaining_MEng_spots -= 1
+		return True
 
 	def add_student(self, student):
 		if (student.degree_pursuing == 0):
-			self.add_student_to_MBAs(student)
+			return self.add_student_to_MBAs(student)
 		elif (student.degree_pursuing == 1):
-			self.add_student_to_MEngs(student)
+			return self.add_student_to_MEngs(student)
 		else:
 			raise FieldError("Are there more than two types?")
 
@@ -648,4 +656,18 @@ class Project(object):
 				self.add_student(student)
 		else:
 			raise FieldError("There are already members on this project. Would you like to proceed and erase these members?")
+
+	def print_project_members(self):
+		if (not (self._MEng_list == [] and self._MBA_list == [])):
+				print "For project " + str(self._ID) + ":"
+				print "MEngs:",
+				for stud in self._MEng_list:
+					print stud.get_student_properties()
+				if (len(self._MEng_list) == 0):
+					print "None"
+				print "MBAs:",
+				for stud in self._MBA_list:
+					print stud.get_student_properties()
+				if (len(self._MBA_list) == 0):
+					print "None"
 
