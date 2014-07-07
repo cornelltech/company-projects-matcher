@@ -1,12 +1,15 @@
 import numpy as np 
 import pandas as pd 
 
+import classes
 from classes import Student
 from classes import Team
 from classes import Project
 from classes import CompError
+from classes import FieldError
 
 student_ids = []
+projects = []
 
 def read_input(file, normalize=True):
 	data = pd.read_csv(file)
@@ -116,7 +119,30 @@ def calc_z_score(lst):
 	sd = np.std(lst)
 	return (lst - m) / sd
 
+def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
+	projects_lst = []
+	for ID in classes.vals_valid_projects:
+		p = Project(ID, num_MBAs, num_MEngs)
+		projects_lst.append(p)
+	return projects_lst
+
+def get_project(ID):
+	matching_ID_lst = filter(lambda x: x.ID == ID, projects)
+	if (len(matching_ID_lst) == 0):
+		error = "ID " + str(ID) + " does not match to a valid project."
+		raise FieldError(error)
+	elif (len(matching_ID_lst) > 1):
+		error = "There is more than one matching project. Problem!"
+		raise FieldError(error)
+	
+	# Otherwise, there is one element in the list and it matches our desired ID.
+	else:
+		return matching_ID_lst[0]
+
 if __name__ == "__main__":
-	read_input("new_name.csv", True)
+	projects = generate_all_projects()
+	#read_input("new_name.csv", True)
+	# print len(generate_all_projects())
+	print get_project(3250)
 
 

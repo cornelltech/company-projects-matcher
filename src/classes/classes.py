@@ -1,5 +1,6 @@
 import random
 
+# TODO: move these to a globals file.
 '''To ensure that we do not create multiple students, teams, or projects with the same ID.'''
 existing_student_IDs = []
 existing_team_IDs = []
