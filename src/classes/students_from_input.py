@@ -40,7 +40,9 @@ def read_input(file, normalize=True):
 		cs_ug = student[2]
 		coding_ability = student[3]
 		num_yrs_work_exp = student[4]
-		rankings = student[5:15]
+
+		# Only take the desired number of project rankings that we want.
+		rankings = student[5:(5 + classes.number_project_rankings)]
 
 		scaled_coding_ability = scaled_coding_abilities[i]
 		scaled_num_yrs_work_exp = scaled_yrs_work_experience[i]
@@ -90,12 +92,30 @@ def read_input(file, normalize=True):
 	# p.add_team(t)
 	
 	projects = generate_all_projects()
-	IDs = [p.ID for p in projects]
-	print IDs
-	greedy_match(students_lst, projects)
+	simple_greedy_match(students_lst, projects)
 
 	for p in projects:
-		p.print_project_members()
+		students = p.MBA_list + p.MEng_list
+		if (not(len(students) == 0)):
+			print "For project " + str(p.ID) + ":"
+			for s in students:
+				print "Student " + str(s.ID) + " has interest",
+				rank = s.get_ranking(p.ID)
+				print s.get_interest_from_ranking(rank)
+		#student_list = p.MBA_list + p.MEng_list
+		#print "Length of student list is " + str(len(student_list))
+
+	# Test 4
+	# for p in projects:
+	# 	lst_one = p.MBA_list + p.MEng_list
+	# 	if (len(lst_one) > 0):	
+	# 		print lst_one
+	# 	p.remove_student_from_project(2006650)
+	# 	lst_two = p.MBA_list + p.MEng_list
+	# 	if (len(lst_two) > 0 and not(len(lst_one) == len(lst_two))):	
+	# 		print lst_two
+
+	rearrange_spots(students_lst, projects)
 	
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):
@@ -147,14 +167,14 @@ def get_project_from_ID(ID, projects):
 	else:
 		return matching_ID_lst[0]
 
-def greedy_match(students_lst, projects):
+def simple_greedy_match(students_lst, projects):
 	while(len(students_lst) > 0):
-		print "Students list is " + str([s.get_student_properties() for s in students_lst])
+		print "Students list is " + str([s.ID for s in students_lst])
 		r = teams.random_index(len(students_lst))
-		print "Current index is: " + str(r)
 		cur_student = students_lst[r]
-		print "Student " + str(cur_student.ID) + "'s list is ",
-		print cur_student.project_rankings
+		print "Current student is: " + str(cur_student.ID)
+		#print "Student " + str(cur_student.ID) + "'s list is ",
+		#print cur_student.project_rankings
 
 		# Current spot in the student's ranking
 		cur_spot = 0
@@ -166,18 +186,87 @@ def greedy_match(students_lst, projects):
 				error = "Student " + str(cur_student.ID) + " could not match to any of its desired projects."
 				raise CompError(error)
 			cur_spot_proj_ID = ranks[cur_spot]
-			print "cur_spot_proj_ID is " + str(cur_spot_proj_ID)
+			#print "Current student's " + str(cur_spot) + " choice project is " + str(cur_spot_proj_ID)
 			top_project = get_project_from_ID(cur_spot_proj_ID, projects)
 
+			# print "Current student's type is: ",
+			# if (cur_student.degree_pursuing == 0):
+			# 	print "MBA"
+			# else:
+			# 	print "MEng"
+			#print "Before add: choice project's members are",
+			top_project.print_project_members()
+
 			matched = top_project.add_student(cur_student)
-			print "Matched is " + str(matched)
+			#print "After add: choice project's members are",
+			#top_project.print_project_members()
+
+			#print "Matched is " + str(matched)
 			if (not(matched)):
 				cur_spot += 1
 			else:
-				students_lst.pop(r)	
+				students_lst.pop(r)
+	return projects
+
+def rearrange_spots(students_lst, projects):
+	print "In rearrange spots:"
+	unfilled_projects = []
+	unfilled_students = []
+	for x in projects:
+		remaining_spots = x.remaining_MEng_spots + x.remaining_MBA_spots
+		if (remaining_spots > 0):
+			unfilled_projects.append((remaining_spots, x))
+	for tup in unfilled_projects:
+		proj = tup[1]
+		student_list = proj.MBA_list + proj.MEng_list
+		for s in student_list:
+			unfilled_students.append(s)
+	unfilled_projects.sort()
+
+	unfilled_projects = [x for x in projects if (x.remaining_MEng_spots + x.remaining_MBA_spots) > 0]
+	# for p in unfilled_projects:
+	# 	students_lst = p.MBA_list + p.MEng_list
+	# 	if (len(students_lst) > 0):
+	# 		print "For team " + str(p.ID) + ":",
+	# 	for s in students_lst:
+	# 		print s.ID
+
+	# Find other students that ranked this project
+	for proj in unfilled_projects:
+		students = proj.MBA_list + proj.MEng_list
+		# The students who are already on the project
+		students_IDs = [s.ID for s in students]
+		ranked_students = []
+		if (len(students_IDs) > 0):
+			print "For project " + str(proj.ID) + ":"
+		for student in unfilled_students:
+			# Find the students not already on the team who ranked this project
+			if (proj.ID in student.project_rankings and student.ID not in students_IDs):
+				print "Student " + str(student.ID) + " ranked it " + str(student.get_ranking(proj.ID))
+				ranked_students.append((student.get_ranking(proj.ID), student))
+		ranked_students.sort()
+		if (len(ranked_students) > 0):
+			print [s[1].ID for s in ranked_students]
+		cur_index = 0
+		while (proj.has_remaining_MBA_spots() or proj.has_remaining_MEng_spots()):
+			if (cur_index >= len(ranked_students)):
+				break
+				# TODO: do something above
+			else:
+				cur_student = (ranked_students[cur_index])[1]
+				if (proj.add_student(cur_student)):
+					unfilled_students.remove(cur_student)
+				cur_index += 1
+	
+	for proj in unfilled_projects:
+		students = proj.MBA_list + proj.MEng_list
+		print [s.ID for s in students]
+
+
 
 if __name__ == "__main__":
-	read_input("new_name.csv")
+	#read_input("new_name.csv")
+	read_input("tests.csv")
 
 
 

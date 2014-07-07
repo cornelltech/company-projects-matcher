@@ -26,6 +26,8 @@ cs_ug_weight = 0.25
 coding_ability_weight = 0.25
 work_experience_weight = 0.25
 
+number_project_rankings = 5
+
 class FieldError(Exception):
 	def __init__(self, value):
 		self.val = value
@@ -44,6 +46,7 @@ class Student(object):
 	global vals_yrs_work_experience
 	global vals_coding_ability
 	global vals_valid_projects
+	global number_project_rankings
 
 	# Defining checks for setting properties.
 	def check_valid(self, val, lst, s=""):
@@ -133,8 +136,9 @@ class Student(object):
 		# Because val is a list and we want to check if each of the projects 
 		# has a valid ID
 		try:
-			if (not (len(val) == 10)):
-				raise FieldError("There must be 10 project rankings.")
+			if (not (len(val) == number_project_rankings)):
+				error = "There must be " + str(number_project_rankings) + " project rankings."
+				raise FieldError(error)
 		except TypeError:
 			raise FieldError("Project rankings must be inputted as a list.")
 
@@ -142,7 +146,7 @@ class Student(object):
 		for elm in val:
 			self.check_valid(elm, vals_valid_projects, s = " project ID")
 			if (elm in past):
-				raise FieldError("Each project can only be entered once.")
+				raise FieldError("Current student ID is " + str(self._ID) + ". Each project can only be entered once.")
 			past.append(elm)
 
 	def set_project_rankings(self, val):
@@ -167,7 +171,7 @@ class Student(object):
 			ca    = coding ability. Int from 0 to 4, inclusive.
 			csug  = was cs undergrad. Boolean.
 			nywe  = num. years of work experience. Int from 0 to 6 (6 = 6+).
-			project_lst = an integer list size 10. Ints are the project IDs. 
+			project_lst = an integer list size number_project_rankings. Ints are the project IDs. 
 						  The position of the int determines what rank it is.
 
 		'''
@@ -659,6 +663,7 @@ class Project(object):
 
 	def print_project_members(self):
 		if (not (self._MEng_list == [] and self._MBA_list == [])):
+				print ""
 				print "For project " + str(self._ID) + ":"
 				print "MEngs:",
 				for stud in self._MEng_list:
@@ -670,4 +675,42 @@ class Project(object):
 					print stud.get_student_properties()
 				if (len(self._MBA_list) == 0):
 					print "None"
+				print ""
+		else:
+			print "None"
+
+	def create_team_from_project(self):
+		student_list = self._MBA_list + self._MEng_list
+		print "Project ID " + str(self._ID)
+		print "Length of student list is " + str(len(student_list))
+		for s in student_list:
+			print s.get_student_properties()
+		if (not(len(student_list) == 4)):
+			return
+		t = Team(student_list, project_ID = self._ID)
+		return t
+		# project: def __init__(self, ID, num_MBAs, num_MEngs):
+		# team:  def __init__(self, student_list, ID=-1, project_ID = 0):
+
+	def remove_student_from_project(self, student_ID):
+		student_list = self._MBA_list + self._MEng_list
+		student_IDs = [s.ID for s in student_list]
+		if (not (student_ID in student_IDs)):
+			# error = "Student " + str(student_ID) + " is not on project "
+			# error_two = str(self._ID) + "."
+			# raise CompError(error + error_two)
+			pass
+		else:
+			# list of the student who has this ID 
+			# TODO: unstable because the list will only have one element.
+			matching_ID_lst = filter(lambda x: x.ID == student_ID, student_list)
+			matching_student = matching_ID_lst[0]
+			if (matching_student.degree_pursuing == 0):
+				self._MBA_list.remove(matching_student)
+			elif (matching_student.degree_pursuing == 1):
+				self._MEng_list.remove(matching_student)
+			else:
+				raise FieldError("Are there more than two degrees pursuing?")
+
+
 
