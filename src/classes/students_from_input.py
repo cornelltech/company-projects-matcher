@@ -52,8 +52,9 @@ def read_input(file, normalize=True):
 
 		students_lst.append(a)
 
-	t = Team(students_lst)
-	Team.print_team(t)
+	# TODO: Fix this error (team size must be 4 or 5.)
+	# t = Team(students_lst)
+	# Team.print_team(t)
 
 	
 	#p = Project(1300, 2, 3)
@@ -87,6 +88,7 @@ def read_input(file, normalize=True):
 
 	# Test 3
 	# p.add_team(t)
+	
 	projects = generate_all_projects()
 	IDs = [p.ID for p in projects]
 	print IDs
@@ -176,8 +178,6 @@ def greedy_match(students_lst, projects):
 
 if __name__ == "__main__":
 	read_input("new_name.csv")
-	# print len(generate_all_projects())
-	#print get_project_from_ID(3250)
 
 
 
