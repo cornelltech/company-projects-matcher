@@ -36,92 +36,98 @@ def exhaustive(projects, students):
 	insufficient_IDs = []
 	for p in projects:
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
-		print "For project " + str(p.ID) + ":"
-		print [s.ID for s in matched]
+	#	print "For project " + str(p.ID) + ":"
+		#print [s.ID for s in matched]
 		MBAs_ranked = [s for s in matched if s.degree_pursuing == 0]
 		MEngs_ranked = [s for s in matched if s.degree_pursuing == 1]
-		print [s.ID for s in MBAs_ranked]
-		print [s.ID for s in MEngs_ranked]
+	#	print [s.ID for s in MBAs_ranked]
+	#	print [s.ID for s in MEngs_ranked]
 
 	 	if (len(MBAs_ranked) < 2 or len(MEngs_ranked) < 2):
-	 		print "NOT ENOUGH MBAS OR MENGS"
+	 	#	print "NOT ENOUGH MBAS OR MENGS"
 	 		insufficient_IDs.append(p.ID)
 
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
-	print [p.ID for p in projects]
+	#print [p.ID for p in projects]
 
 	def get_project_interest_from_rankings(p):
 		overall_interest = 0
 
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
-		print "For project " + str(p.ID) + ":"
-		print [s.ID for s in matched]
+	#	print "For project " + str(p.ID) + ":"
+		#print [s.ID for s in matched]
 		for s in matched:
  			rank = s.get_ranking(p.ID)
 			interest = s.get_interest_from_ranking(rank)
-		 	print "Interest is "
+		 	#print "Interest is "
 		 	overall_interest = overall_interest + interest
 		return overall_interest
 
 
 	# Sort projects in order of highest demand to lowest demand.
 	projects.sort(key = lambda p: get_project_interest_from_rankings(p), reverse = True)
-	print [p.ID for p in projects]
+	#print [p.ID for p in projects]
 
 	for p in projects:
+		print "For project " + str(p.ID) + ":"
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
 		MBAs_ranked = [s for s in matched if s.degree_pursuing == 0]
 		MEngs_ranked = [s for s in matched if s.degree_pursuing == 1]
 		# Generate all possible pairs of MBAs.		
 		iter_MBA_pairs = itertools.combinations(MBAs_ranked, 2)
-		print "MBA pair IDS"
+		#print "MBA pair IDS"
 		MBA_pairs = []
 		for s in iter_MBA_pairs:
 			MBA_pairs.append(s)
-			(x, y) = s
-			print x.ID,
-			print y.ID
+			#(x, y) = s
+			#print x.ID,
+			#print y.ID
 		# Generate all possible pairs of MEngs.
 		iter_MEng_pairs = itertools.combinations(MEngs_ranked, 2)
-		print "MEng pair IDS"
+		#print "MEng pair IDS"
 		MEng_pairs = []
 		for s in iter_MEng_pairs:
 			MEng_pairs.append(s)
-			(x, y) = s
-			print x.ID,
-			print y.ID
-		print "MEng pairs is is "
-		print MEng_pairs
-		print "MBA pairs is "
-		print MBA_pairs
+			#(x, y) = s
+			#print x.ID,
+		#	print y.ID
+		#print "MEng pairs is is "
+		#print MEng_pairs
+		#print "MBA pairs is "
+		#print MBA_pairs
 
-		print "Len MBA pairs",
-		print len(MBA_pairs)
-		print "Len MEng pairs",
-		print len(MEng_pairs)
+		#print "Len MBA pairs",
+		#print len(MBA_pairs)
+		#print "Len MEng pairs",
+		#print len(MEng_pairs)
 
+		print "There are",
+		print len(MBA_pairs),
+		print "MBA pairs and",
+		print len(MEng_pairs),
+		print "MEng pairs."
 		# Generate combinations of the MBAs and the MEngs.
 		all_possible_teams = []
 		for x in MBA_pairs:
 			for y in MEng_pairs:
 				all_possible_teams.append((x, y))
 
-		print len(all_possible_teams)
+		#print len(all_possible_teams)
 
 		all_possible_teams_with_values = []
 		for t in all_possible_teams:
 			overall_interest = 0
 			((x, y), (a, b)) = t
 			members = [x, y, a, b]
-			print "(",
-			print x.ID,
-			print ",",
-			print y.ID,
-			print ",",
-			print a.ID,
-			print ",",
-			print b.ID,
-			print ")",
+			# print "(",
+			# print x.ID,
+			# print ",",
+			# print y.ID,
+			# print ",",
+			# print a.ID,
+			# print ",",
+			# print b.ID,
+			# print ")",
 			for mem in members:
 				rank = mem.get_ranking(p.ID)
 				interest = mem.get_interest_from_ranking(rank)
@@ -133,42 +139,43 @@ def exhaustive(projects, students):
 		# 	print type(a[1])
 		# 	print str(a[1].ID) + ")"
 		print ""
-		print ""
 
-		print all_possible_teams_with_values
+		#print all_possible_teams_with_values
 		all_possible_teams_with_values.sort(key = lambda tup: tup[0], reverse = True)
-		print all_possible_teams_with_values
+		#print all_possible_teams_with_values
 
 		if (len(all_possible_teams_with_values) > 0):
 			happiest_team_combo = (all_possible_teams_with_values[0])[1]
+			proceed = True
 		else:
-			# Should never reach this point.
-			raise FieldError("There are no viable teams for project " + str(p.ID) + ".")
+			#raise FieldError("There are no viable teams for project " + str(p.ID) + ".")
+			proceed = False
 
-		print "Happiest team combo is"
-		print happiest_team_combo
+		if (proceed):
+			#print "Happiest team combo is"
+			#print happiest_team_combo
 
-		print type(happiest_team_combo)
+			#print "Before removing, len of students is",
+			#print len(students)
+			for tup in happiest_team_combo:
+				for stud in tup:
+					p.add_student(stud)
+					for s in students:
+						if (s.ID == stud.ID):
+							students.remove(s)
+							#print "Removed"
+			#print "After removing, len of students is",
+			#print len(students)
 
-		print "Before removing, len of students is",
-		print len(students)
-		for tup in happiest_team_combo:
-			for stud in tup:
-				for s in students:
-					if (s.ID == stud.ID):
-						students.remove(s)
-						print "Removed"
-		print "After removing, len of students is",
-		print len(students)
+			# for a in all_possible_teams_with_values:
+			# 	print "(" + str(a[0]) + ","
+			# 	print str(a[1].ID) + ")"
 
-		# for a in all_possible_teams_with_values:
-		# 	print "(" + str(a[0]) + ","
-		# 	print str(a[1].ID) + ")"
+			print "After add projects are:"
+			p.print_student_IDs()
+			#print [(b, e) for b in MBA_pairs for e in MEng_pairs]
+			print ""
 
-		print "Projects currently are:"
-		print projects
-		#print [(b, e) for b in MBA_pairs for e in MEng_pairs]
-		pass
 
 
 
