@@ -720,5 +720,9 @@ class Project(object):
 	 			print s.ID,
 	 		print""
 
+	def get_students(self):
+	 	return self._MBA_list + self._MEng_list
+
+
 
 
