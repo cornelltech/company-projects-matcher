@@ -93,19 +93,33 @@ def read_input(file, normalize=True):
 	
 	projects = generate_all_projects()
 	simple_greedy_match(students_lst, projects)
-
 	for p in projects:
-		students = p.MBA_list + p.MEng_list
-		if (not(len(students) == 0)):
-			print "For project " + str(p.ID) + ":"
-			for s in students:
-				print "Student " + str(s.ID) + " has interest",
-				rank = s.get_ranking(p.ID)
-				print s.get_interest_from_ranking(rank)
+		p.print_student_IDs()
+
+	rearrange_spots(students_lst, projects)
+
+	# def do():
+	# 	filterable = []
+	# 	for p in projects:
+	# 		rem_spots = p.remaining_MEng_spots + p.remaining_MBA_spots
+	# 		if (rem_spots > 0 and not (rem_spots == 4)):
+	# 			filterable.append(p)
+	# 	while (len(filterable) > 0):
+	# 		rearrange_spots(students_lst, projects)
+
+	# do()
+
+	# Test 4
+	# for p in projects:
+	# 	students = p.MBA_list + p.MEng_list
+	# 	if (not(len(students) == 0)):
+	# 		for s in students:
+	# 			rank = s.get_ranking(p.ID)
+	# 			print s.get_interest_from_ranking(rank)
 		#student_list = p.MBA_list + p.MEng_list
 		#print "Length of student list is " + str(len(student_list))
 
-	# Test 4
+	# Test 5
 	# for p in projects:
 	# 	lst_one = p.MBA_list + p.MEng_list
 	# 	if (len(lst_one) > 0):	
@@ -115,7 +129,6 @@ def read_input(file, normalize=True):
 	# 	if (len(lst_two) > 0 and not(len(lst_one) == len(lst_two))):	
 	# 		print lst_two
 
-	rearrange_spots(students_lst, projects)
 	
 # NOTE: this exact code is duplicated in student.py. If you make changes here, change there as well.
 def normalize_bet_zero_and_one(lst):
@@ -169,10 +182,10 @@ def get_project_from_ID(ID, projects):
 
 def simple_greedy_match(students_lst, projects):
 	while(len(students_lst) > 0):
-		print "Students list is " + str([s.ID for s in students_lst])
+		#print "Students list is " + str([s.ID for s in students_lst])
 		r = teams.random_index(len(students_lst))
 		cur_student = students_lst[r]
-		print "Current student is: " + str(cur_student.ID)
+		#print "Current student is: " + str(cur_student.ID)
 		#print "Student " + str(cur_student.ID) + "'s list is ",
 		#print cur_student.project_rankings
 
@@ -195,7 +208,7 @@ def simple_greedy_match(students_lst, projects):
 			# else:
 			# 	print "MEng"
 			#print "Before add: choice project's members are",
-			top_project.print_project_members()
+			#top_project.print_project_members()
 
 			matched = top_project.add_student(cur_student)
 			#print "After add: choice project's members are",
@@ -209,59 +222,68 @@ def simple_greedy_match(students_lst, projects):
 	return projects
 
 def rearrange_spots(students_lst, projects):
-	print "In rearrange spots:"
+
+	def has_empty_spot(x):
+		return ((x.remaining_MEng_spots + x.remaining_MBA_spots) > 0)
+
+	#print "In rearrange spots:"
 	unfilled_projects = []
 	unfilled_students = []
 	for x in projects:
-		remaining_spots = x.remaining_MEng_spots + x.remaining_MBA_spots
-		if (remaining_spots > 0):
-			unfilled_projects.append((remaining_spots, x))
+		num_remaining_spots = x.remaining_MEng_spots + x.remaining_MBA_spots
+		if (num_remaining_spots > 0):
+			unfilled_projects.append((num_remaining_spots, x))
 	for tup in unfilled_projects:
 		proj = tup[1]
 		student_list = proj.MBA_list + proj.MEng_list
 		for s in student_list:
 			unfilled_students.append(s)
-	unfilled_projects.sort()
 
-	unfilled_projects = [x for x in projects if (x.remaining_MEng_spots + x.remaining_MBA_spots) > 0]
-	# for p in unfilled_projects:
-	# 	students_lst = p.MBA_list + p.MEng_list
-	# 	if (len(students_lst) > 0):
-	# 		print "For team " + str(p.ID) + ":",
-	# 	for s in students_lst:
-	# 		print s.ID
+	# Sort by least spots left first.
+	projects.sort(key = lambda x: x.remaining_MEng_spots + x.remaining_MBA_spots)
 
-	# Find other students that ranked this project
-	for proj in unfilled_projects:
-		students = proj.MBA_list + proj.MEng_list
-		# The students who are already on the project
-		students_IDs = [s.ID for s in students]
-		ranked_students = []
-		if (len(students_IDs) > 0):
-			print "For project " + str(proj.ID) + ":"
-		for student in unfilled_students:
-			# Find the students not already on the team who ranked this project
-			if (proj.ID in student.project_rankings and student.ID not in students_IDs):
-				print "Student " + str(student.ID) + " ranked it " + str(student.get_ranking(proj.ID))
-				ranked_students.append((student.get_ranking(proj.ID), student))
-		ranked_students.sort()
-		if (len(ranked_students) > 0):
-			print [s[1].ID for s in ranked_students]
-		cur_index = 0
-		while (proj.has_remaining_MBA_spots() or proj.has_remaining_MEng_spots()):
-			if (cur_index >= len(ranked_students)):
-				break
-				# TODO: do something above
-			else:
-				cur_student = (ranked_students[cur_index])[1]
-				if (proj.add_student(cur_student)):
-					unfilled_students.remove(cur_student)
-				cur_index += 1
+	print "Before matching the extras:"
+	for p in projects:
+		p.print_student_IDs()
+
+	print "Unfilled students is:"
+	print unfilled_students
+
+	for proj in projects:
+		if (has_empty_spot(proj)):
+			students = proj.MBA_list + proj.MEng_list
+			# The students who are already on the project
+			existing_students_IDs = [s.ID for s in students]
+			ranked_students = []
+			for student in unfilled_students:
+				# Find the students not already on the team who ranked this project
+				if (proj.ID in student.project_rankings and student.ID not in existing_students_IDs):
+					ranked_students.append((student.get_ranking(proj.ID), student))
+			ranked_students.sort()
+			cur_index = 0
+			while (proj.has_remaining_MBA_spots() or proj.has_remaining_MEng_spots()):
+				if (cur_index >= len(ranked_students)):
+					break
+					# TODO: do something above
+				else:
+					cur_student = (ranked_students[cur_index])[1]
+					if (proj.add_student(cur_student)):
+						unfilled_students.remove(cur_student)
+					cur_index += 1
+
+
+	print "After matching the extras:"
+	for p in projects:
+		p.print_student_IDs()
+
+	print "Unfilled students is now:"
+	print unfilled_students
+
+
 	
-	for proj in unfilled_projects:
-		students = proj.MBA_list + proj.MEng_list
-		print [s.ID for s in students]
-
+	# for proj in unfilled_projects:
+	# 	students = proj.MBA_list + proj.MEng_list
+	# 	print [s.ID for s in students]
 
 
 if __name__ == "__main__":

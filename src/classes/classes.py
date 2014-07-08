@@ -712,5 +712,13 @@ class Project(object):
 			else:
 				raise FieldError("Are there more than two degrees pursuing?")
 
+	def print_student_IDs(self):
+	 	students = self._MBA_list + self._MEng_list
+	 	if (len(students) > 0):
+	 		print "Project " + str(self._ID) + ":"
+	 		for s in students:
+	 			print s.ID,
+	 		print""
+
 
 
