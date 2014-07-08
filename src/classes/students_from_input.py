@@ -56,21 +56,22 @@ def read_input(file, normalize=True):
 
 		# Only take the desired number of project rankings that we want.
 		rankings = student[5:(5 + classes.number_project_rankings)]
+		name = student[10]
 
 		scaled_coding_ability = scaled_coding_abilities[i]
 		scaled_num_yrs_work_exp = scaled_yrs_work_experience[i]
 
-		a = Student("Test", ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
+		a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
 
 		if (normalize):
-			a = Student("Test", ID, degree_pursuing, cs_ug, scaled_coding_ability, scaled_num_yrs_work_exp, rankings, True)
+			a = Student(name, ID, degree_pursuing, cs_ug, scaled_coding_ability, scaled_num_yrs_work_exp, rankings, True)
 
 		students_lst.append(a)
 
 	print "Our student IDs are: "
 	print "---------------------"
 	for s in students_lst:
-		print s.ID
+		print str(s.ID) + ": " + s.name
 	
 
 	# TODO: Fix this error (team size must be 4 or 5.)
@@ -122,7 +123,7 @@ def read_input(file, normalize=True):
 		students = p.MBA_list + p.MEng_list
 		if (len(students) > 0):
 			print str(names_projects[p.ID]) + ":"
-			p.print_student_IDs(num=False)
+			p.print_student_IDs(num=False, name = True)
 			print ""
 
 
