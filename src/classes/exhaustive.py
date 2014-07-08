@@ -62,6 +62,13 @@ def exhaustive(projects, students):
 	 		insufficient_IDs.append(p.ID)
 
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
+
+	print "The viable projects to match to are:"
+	print "-------------------------------------"
+
+	for p in projects:
+		print names_projects[p.ID]
+	print ""
 	#print [p.ID for p in projects]
 
 	def get_project_interest_from_rankings(p):
