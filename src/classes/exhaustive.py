@@ -12,6 +12,20 @@ from classes import FieldError
 
 student_ids = []
 
+names_projects = {3705: 'Goldman Sachs',
+				2990: 'American Express',
+				4225: 'Google',
+				2860: 'Facebook',
+				2145: '500px',
+				1820: 'FlightCar',
+				3055: 'Flatiron',
+				1040: 'Realize',
+				1950: 'Shapeways',
+				1625: 'charity:water',
+				3445: 'Bonobos',
+				3900: 'Bloomberg'}
+
+
 def normalize_bet_zero_and_one(lst):
 	lst_max = lst.max()
 	lst_min = lst.min()
@@ -68,8 +82,10 @@ def exhaustive(projects, students):
 	projects.sort(key = lambda p: get_project_interest_from_rankings(p), reverse = True)
 	#print [p.ID for p in projects]
 
+	added_projects = []
+
 	for p in projects:
-		print "For project " + str(p.ID) + ":"
+		print "For " + names_projects[p.ID] + " project:"
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
 		MBAs_ranked = [s for s in matched if s.degree_pursuing == 0]
 		MEngs_ranked = [s for s in matched if s.degree_pursuing == 1]
@@ -171,14 +187,19 @@ def exhaustive(projects, students):
 			# 	print "(" + str(a[0]) + ","
 			# 	print str(a[1].ID) + ")"
 
-			print "After add projects are:"
-			p.print_student_IDs()
+			#print "After add:"
+			#p.print_student_IDs(num = False, name = True, dct = names_projects)
 			#print [(b, e) for b in MBA_pairs for e in MEng_pairs]
+			added_projects.append(p)
+		#	print "After add remaining students are:"
+		#	print [s.ID for s in students]
+		#	print ""
 
-			print "After add remaining students are:"
-			print [s.ID for s in students]
-			print ""
+	for stud in added_projects:
+		stud.print_student_IDs(num = False, name = True, dct = names_projects)
 
+	print "Remaining students are",
+	print [s.name for s in students]
 
 
 
@@ -256,14 +277,15 @@ def read_input(file, normalize=True):
 
 		# Only take the desired number of project rankings that we want.
 		rankings = student[5:(5 + classes.number_project_rankings)]
+		name = student[10]
 
 		scaled_coding_ability = scaled_coding_abilities[i]
 		scaled_num_yrs_work_exp = scaled_yrs_work_experience[i]
 
-		a = Student("Test", ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
+		a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
 
 		if (normalize):
-			a = Student("Test", ID, degree_pursuing, cs_ug, scaled_coding_ability, scaled_num_yrs_work_exp, rankings, True)
+			a = Student(name, ID, degree_pursuing, cs_ug, scaled_coding_ability, scaled_num_yrs_work_exp, rankings, True)
 
 		students_lst.append(a)
 

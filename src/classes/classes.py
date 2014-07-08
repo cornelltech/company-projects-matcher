@@ -713,11 +713,13 @@ class Project(object):
 				raise FieldError("Are there more than two degrees pursuing?")
 
 	# num: should we print the project number?
-	def print_student_IDs(self, num = True, name = False):
+	def print_student_IDs(self, num = True, name = False, dct = ""):
 	 	students = self._MBA_list + self._MEng_list
 	 	if (len(students) > 0):
 	 		if (num):
 	 			print "Project " + str(self._ID) + ":"
+	 		else:
+	 			print dct[self._ID] + " project:"
 	 		if (not(name)):
 	 			for s in students:
 	 				print s.ID,
