@@ -12,6 +12,19 @@ from classes import FieldError
 student_ids = []
 
 def read_input(file, normalize=True):
+	names_projects = {3705: 'Goldman Sachs',
+				2990: 'American Express',
+				4225: 'Google',
+				2860: 'Facebook',
+				2145: '500px',
+				1820: 'FlightCar',
+				3055: 'Flatiron',
+				1040: 'Realize',
+				1950: 'Shapeways',
+				1625: 'charity:water',
+				3445: 'Bonobos',
+				3900: 'Bloomberg'}
+
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 	shape = data_array.shape
@@ -100,13 +113,18 @@ def read_input(file, normalize=True):
 	projects = generate_all_projects()
 
 	simple_greedy_match(students_lst, projects)
+	rearrange_spots(students_lst, projects)
+
 	print ""
 	print "After matching, we have:"
 	print "---------------------"
 	for p in projects:
-		p.print_student_IDs()
+		students = p.MBA_list + p.MEng_list
+		if (len(students) > 0):
+			print str(names_projects[p.ID]) + ":"
+			p.print_student_IDs(num=False)
+			print ""
 
-	rearrange_spots(students_lst, projects)
 
 
 	# TODO: Fix this error (team size must be 4 or 5.)
@@ -292,12 +310,12 @@ def rearrange_spots(students_lst, projects):
 	# Sort by least spots left first.
 	projects.sort(key = lambda x: x.remaining_MEng_spots + x.remaining_MBA_spots)
 
-	print "Before matching the extras:"
-	for p in projects:
-		p.print_student_IDs()
+	# print "Before matching the extras:"
+	# for p in projects:
+	# 	p.print_student_IDs()
 
-	print "Unfilled students is:"
-	print unfilled_students
+	# print "Unfilled students is:"
+	# print unfilled_students
 
 	for proj in projects:
 		if (has_empty_spot(proj)):
@@ -322,12 +340,12 @@ def rearrange_spots(students_lst, projects):
 					cur_index += 1
 
 
-	print "After matching the extras:"
-	for p in projects:
-		p.print_student_IDs()
+	# print "After matching the extras:"
+	# for p in projects:
+	# 	p.print_student_IDs()
 
-	print "Unfilled students is now:"
-	print unfilled_students
+	# print "Unfilled students is now:"
+	# print unfilled_students
 
 
 	
