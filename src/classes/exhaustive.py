@@ -201,50 +201,6 @@ def exhaustive(projects, students):
 	print "Remaining students are",
 	print [s.name for s in students]
 
-
-
-
-
-# 	def get_ranking(self, project_id):
-# 	def get_interest_from_ranking(self, rank):
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def read_input(file, normalize=True):
 	data = pd.read_csv(file)
 	data_array = np.array(data)

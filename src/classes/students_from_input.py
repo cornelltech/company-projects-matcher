@@ -121,9 +121,9 @@ def read_input(file, normalize=True):
 	print "---------------------"
 	for p in projects:
 		students = p.MBA_list + p.MEng_list
-		if (len(students) > 0):
-			print str(names_projects[p.ID]) + ":"
-			p.print_student_IDs(num=False, name = True)
+		if (len(students) > 0 and p.ID in names_projects.keys()):
+			#print str(names_projects[p.ID]) + ":"
+			p.print_student_IDs(num=False, name = True, dct = names_projects)
 			print ""
 
 
