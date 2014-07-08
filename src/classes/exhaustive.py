@@ -174,7 +174,11 @@ def exhaustive(projects, students):
 			print "After add projects are:"
 			p.print_student_IDs()
 			#print [(b, e) for b in MBA_pairs for e in MEng_pairs]
+
+			print "After add remaining students are:"
+			print [s.ID for s in students]
 			print ""
+
 
 
 

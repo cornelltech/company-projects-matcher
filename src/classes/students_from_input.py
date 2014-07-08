@@ -54,6 +54,12 @@ def read_input(file, normalize=True):
 
 		students_lst.append(a)
 
+	print "Our student IDs are: "
+	print "---------------------"
+	for s in students_lst:
+		print s.ID
+	
+
 	# TODO: Fix this error (team size must be 4 or 5.)
 	# t = Team(students_lst)
 	# Team.print_team(t)
@@ -92,11 +98,55 @@ def read_input(file, normalize=True):
 	# p.add_team(t)
 	
 	projects = generate_all_projects()
+
 	simple_greedy_match(students_lst, projects)
+	print ""
+	print "After matching, we have:"
+	print "---------------------"
 	for p in projects:
 		p.print_student_IDs()
 
 	rearrange_spots(students_lst, projects)
+
+
+	# TODO: Fix this error (team size must be 4 or 5.)
+	# t = Team(students_lst)
+	# Team.print_team(t)
+
+	
+	#p = Project(1300, 2, 3)
+	# # Test 1
+	# print p.ID
+	# print p.num_MEngs
+	# print p.num_MBAs
+	# print "p has " + str(p.remaining_MEng_spots) + " MEng spots remaining."
+	# p.add_student_to_MEngs(students_lst[0])
+	# print "After add, p has " + str(p.remaining_MEng_spots) + " MEng spots remaining."
+	# print [s.get_student_properties() for s in p.MEng_list]
+
+	# #p.add_student_to_MEngs(students_lst[0])
+	# p.add_student_to_MEngs(students_lst[1])
+	# p.add_student_to_MEngs(students_lst[3])
+	# print [s.get_student_properties() for s in p.MEng_list]
+	# print len(p.MEng_list)
+
+	# Test 2
+
+	# print p.is_empty()
+
+	# for student in students_lst:
+	# 	print "Student " + str(student.ID) + "'s type is " + str(student.degree_pursuing)
+	# 	p.add_student(student)
+	# 	print "Adding student to project"
+	# 	print p.is_empty()
+
+	# print p.MEng_list
+	# print p.MBA_list
+
+	# Test 3
+	# p.add_team(t)
+	
+
 
 	# def do():
 	# 	filterable = []
