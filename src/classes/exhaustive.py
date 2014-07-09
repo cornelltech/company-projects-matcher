@@ -103,6 +103,7 @@ def exhaustive(projects, students):
 		iter_MBA_pairs = itertools.combinations(MBAs_ranked, 2)
 		#print "MBA pair IDS"
 		MBA_pairs = []
+		#Creating a list
 		for s in iter_MBA_pairs:
 			MBA_pairs.append(s)
 			#(x, y) = s
