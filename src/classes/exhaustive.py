@@ -44,24 +44,39 @@ def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 		projects_lst.append(p)
 	return projects_lst
 
-def remove_infeasible_projects(projects, students):
-		# Filter out projects with insufficient rankings to get matched.
+# Filter out projects with insufficient rankings to get matched.
+def remove_infeasible_projects(students):
 	insufficient_IDs = []
+	projects = generate_all_projects()
 	for p in projects:
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
-	#	print "For project " + str(p.ID) + ":"
+		#print "For project " + str(p.ID) + ":"
 		#print [s.ID for s in matched]
 		MBAs_ranked = [s for s in matched if s.degree_pursuing == 0]
 		MEngs_ranked = [s for s in matched if s.degree_pursuing == 1]
-	#	print [s.ID for s in MBAs_ranked]
-	#	print [s.ID for s in MEngs_ranked]
+		#print [s.ID for s in MBAs_ranked]
+		#print [s.ID for s in MEngs_ranked]
 
 	 	if (len(MBAs_ranked) < 2 or len(MEngs_ranked) < 2):
-	 	#	print "NOT ENOUGH MBAS OR MENGS"
+	 		#print "NOT ENOUGH MBAS OR MENGS"
 	 		insufficient_IDs.append(p.ID)
 
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
 	return projects
+
+
+def get_project_interest_from_rankings(p, students):
+	overall_interest = 0
+
+	matched = filter(lambda x: p.ID in x.project_rankings, students)
+#	print "For project " + str(p.ID) + ":"
+	#print [s.ID for s in matched]
+	for s in matched:
+		rank = s.get_ranking(p.ID)
+		interest = s.get_interest_from_ranking(rank)
+	 	#print "Interest is "
+	 	overall_interest = overall_interest + interest
+	return overall_interest
 
 
 def exhaustive(projects, students):
@@ -73,22 +88,8 @@ def exhaustive(projects, students):
 	print ""
 	#print [p.ID for p in projects]
 
-	def get_project_interest_from_rankings(p):
-		overall_interest = 0
-
-		matched = filter(lambda x: p.ID in x.project_rankings, students)
-	#	print "For project " + str(p.ID) + ":"
-		#print [s.ID for s in matched]
-		for s in matched:
- 			rank = s.get_ranking(p.ID)
-			interest = s.get_interest_from_ranking(rank)
-		 	#print "Interest is "
-		 	overall_interest = overall_interest + interest
-		return overall_interest
-
-
 	# Sort projects in order of highest demand to lowest demand.
-	projects.sort(key = lambda p: get_project_interest_from_rankings(p), reverse = True)
+	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students), reverse = True)
 	#print [p.ID for p in projects]
 
 	added_projects = []
@@ -259,8 +260,7 @@ def get_students_from_input(file, normalize=True):
 
 def do_tests():
 	students_lst = get_students_from_input("tests.csv")
-	projects = generate_all_projects()
-	projects_filtered = remove_infeasible_projects(projects, students_lst)
+	projects_filtered = remove_infeasible_projects(students_lst)
 	exhaustive(projects_filtered, students_lst)
 
 if (__name__ == "__main__"):
