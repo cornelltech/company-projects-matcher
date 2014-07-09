@@ -44,9 +44,8 @@ def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 		projects_lst.append(p)
 	return projects_lst
 
-def exhaustive(projects, students):
-
-	# Filter out projects with insufficient rankings to get matched.
+def remove_infeasible_projects(projects, students):
+		# Filter out projects with insufficient rankings to get matched.
 	insufficient_IDs = []
 	for p in projects:
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
@@ -62,7 +61,10 @@ def exhaustive(projects, students):
 	 		insufficient_IDs.append(p.ID)
 
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
+	return projects
 
+
+def exhaustive(projects, students):
 	print "The viable projects to match to are:"
 	print "-------------------------------------"
 
@@ -255,17 +257,11 @@ def get_students_from_input(file, normalize=True):
 	return students_lst
 
 
-def do_tests(students_lst):
-
+def do_tests():
+	students_lst = get_students_from_input("tests.csv")
 	projects = generate_all_projects()
-
-	for p in projects:
-		p.print_student_IDs()
-
-	exhaustive(projects, students_lst)
+	projects_filtered = remove_infeasible_projects(projects, students_lst)
+	exhaustive(projects_filtered, students_lst)
 
 if (__name__ == "__main__"):
-	students_lst = get_students_from_input("tests.csv")
-	do_tests(students_lst)
-
-	
+	do_tests()
