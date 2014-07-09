@@ -208,7 +208,7 @@ def exhaustive(projects, students):
 	print "Remaining students are",
 	print [s.name for s in students]
 
-def read_input(file, normalize=True):
+def get_students_from_input(file, normalize=True):
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 	shape = data_array.shape
@@ -252,6 +252,11 @@ def read_input(file, normalize=True):
 
 		students_lst.append(a)
 
+	return students_lst
+
+
+def do_tests(students_lst):
+
 	projects = generate_all_projects()
 
 	for p in projects:
@@ -260,4 +265,7 @@ def read_input(file, normalize=True):
 	exhaustive(projects, students_lst)
 
 if (__name__ == "__main__"):
-		read_input("tests.csv")
+	students_lst = get_students_from_input("tests.csv")
+	do_tests(students_lst)
+
+	
