@@ -225,10 +225,10 @@ class Team(object):
 			if (student.ID in existing_student_IDs):
 				error = "Student ID " + str(student.ID) + " is already taken."
 				raise FieldError(error)
-		if ((len(student_list) == 4) or (len(student_list) == 5)):
-			self._members = student_list
-		else:
-			raise FieldError("Team size must be 4 or 5.")
+		#if ((len(student_list) == 4) or (len(student_list) == 5)):
+		self._members = student_list
+		#else:
+			#raise FieldError("Team size must be 4 or 5.")
 		if (ID == -1):
 			new_id = random.randint(0, 100000)
 			while (new_id in existing_team_IDs):
@@ -714,6 +714,7 @@ class Project(object):
 
 	# num: should we print the project number?
 	def print_student_IDs(self, num = True, name = False, dct = ""):
+		lst = []
 	 	students = self._MBA_list + self._MEng_list
 	 	if (len(students) > 0):
 	 		if (num):
@@ -726,8 +727,19 @@ class Project(object):
 	 			print""
 	 		else:
 	 			for s in students:
-	 				print s.name
-	 			print ""
+	 				print s.name,
+	 				if (s.degree_pursuing == 0):
+	 					deg = "MBA"
+	 				else:
+	 					deg = "MEng"
+	 				msg = "(Degree: " + deg + ", "
+	 				msg += "rank: " + str(s.get_ranking(self._ID) + 1) + ")"
+					lst.append(s.get_ranking(self._ID))
+	 				print msg
+	 		lst = [1.0 * (elm + 1) for elm in lst]
+	 		print "On average, students got their",
+	 		print str(sum(lst) / len(lst)) + " pick."
+	 		print ""
 
 	def get_students(self):
 	 	return self._MBA_list + self._MEng_list

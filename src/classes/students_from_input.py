@@ -68,11 +68,12 @@ def read_input(file, normalize=True):
 
 		students_lst.append(a)
 
-	print "Our student IDs are: "
-	print "---------------------"
-	for s in students_lst:
-		print str(s.ID) + ": " + s.name
-	
+	# for s in students_lst:
+	# 	print s.name + ":"
+	# 	print "---------"
+	# 	for rank in s.project_rankings:
+	# 		print names_projects[rank]
+	# 	print ""
 
 	# TODO: Fix this error (team size must be 4 or 5.)
 	# t = Team(students_lst)
@@ -117,14 +118,21 @@ def read_input(file, normalize=True):
 	rearrange_spots(students_lst, projects)
 
 	print ""
-	print "After matching, we have:"
-	print "---------------------"
+	print "Students matched with first choices:"
+	print "------------------------------------"
 	for p in projects:
 		students = p.MBA_list + p.MEng_list
 		if (len(students) > 0 and p.ID in names_projects.keys()):
 			#print str(names_projects[p.ID]) + ":"
 			p.print_student_IDs(num=False, name = True, dct = names_projects)
 			print ""
+
+	# TODO: look at Ryder/Ariana spots 1 and 2 being assigned twice.
+
+	# for p in projects:
+	# 	t = p.create_team_from_project()
+	# 	print t
+		#t.print_team()
 
 
 
