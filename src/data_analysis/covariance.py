@@ -32,13 +32,13 @@ def preprocess_random_data(data):
 def is_positive_semidefinite(cov_matrix):
 	(eigenvalues, eigenvectors) = linalg.eig(cov)
 	res = []
-	print type(eigenvalues)
-	print eigenvalues.shape
+	#print type(eigenvalues)
+	#print eigenvalues.shape
 	for e in eigenvalues:
-		print e
+		#print e
  		if (e < 0):
 	 		res.append(e)
-	print "Result of is_positive_semidefinite is "
+	print "Negative eigenvalues of covariance matrix are:"
 	print res
 	#return len(res) == 0
 
@@ -53,8 +53,13 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 	
 	# (degree_pursuing, cs_ug, type_tech_stren, cod_abil, num_yrs_work_exp)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
+	print type(one_hot_data_preprocessed)
+	print "One hot data preprocessed shape:"
+	print one_hot_data_preprocessed.shape
 
 	covariance_matrix = np.cov(one_hot_data_preprocessed)
+	print "Covariance matrix shape:"
+	print covariance_matrix.shape
 
 	# if (not (is_positive_semidefinite(covariance_matrix))):
 	# 	# Could use cov_nearest, but that doesn't produce a positive semidefinite matrix.
