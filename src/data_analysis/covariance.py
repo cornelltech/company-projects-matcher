@@ -30,11 +30,17 @@ def preprocess_random_data(data):
 	return one_hot_data
 
 def is_positive_semidefinite(cov_matrix):
-	eigenvalues = linalg.eig(cov)
-	res = [x for x in eigenvalues if x < 0]
+	(eigenvalues, eigenvectors) = linalg.eig(cov)
+	res = []
+	print type(eigenvalues)
+	print eigenvalues.shape
+	for e in eigenvalues:
+		print e
+ 		if (e < 0):
+	 		res.append(e)
 	print "Result of is_positive_semidefinite is "
 	print res
-	return len(res) == 0
+	#return len(res) == 0
 
 def print_det_and_error(cov_one, cov_two):
 	print "Determinant of the nearest correlation matrix is: "
@@ -104,11 +110,11 @@ if (__name__ == "__main__"):
 	data = result[0]
 	cov  = result[1]
 	
-	print "On fixed: "
+#	print "On fixed: "
 	print is_positive_semidefinite(cov)
 
-	print "Eigenvalues are: "
-	print linalg.eig(cov)
+#	print "Eigenvalues are: "
+#	print linalg.eig(cov)
 	
 	# Calcuate matrix square root (REALLY small and complex, even for normalized data)
  	# matrix_square_root = linalg.sqrtm(fixed_cov)
