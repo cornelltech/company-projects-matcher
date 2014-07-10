@@ -1,4 +1,4 @@
-import teams
+#import teams
 import numpy as np
 import pandas as pd
 from sklearn import preprocessing
@@ -29,10 +29,9 @@ def preprocess_random_data(data):
 
 	return one_hot_data
 
-def is_positive_semidefinite(matrix):
-	def check_row(row):
-		return [entry for entry in row if entry < 0]
-	res = [check_row(row) for row in matrix if (not(check_row(row)) ==  [])]
+def is_positive_semidefinite(cov_matrix):
+	eigenvalues = linalg.eig(cov)
+	res = [x for x in eigenvalues if x < 0]
 	print "Result of is_positive_semidefinite is "
 	print res
 	return len(res) == 0
@@ -51,11 +50,11 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 
 	covariance_matrix = np.cov(one_hot_data_preprocessed)
 
-	if (not (is_positive_semidefinite(covariance_matrix))):
-		# Could use cov_nearest, but that doesn't produce a positive semidefinite matrix.
-		covariance_matrix_two = correlation_tools.corr_nearest(covariance_matrix)
-		print_det_and_error(covariance_matrix, covariance_matrix_two)
-		covariance_matrix = covariance_matrix_two
+	# if (not (is_positive_semidefinite(covariance_matrix))):
+	# 	# Could use cov_nearest, but that doesn't produce a positive semidefinite matrix.
+	# 	covariance_matrix_two = correlation_tools.corr_nearest(covariance_matrix)
+	# 	print_det_and_error(covariance_matrix, covariance_matrix_two)
+	# 	covariance_matrix = covariance_matrix_two
 
 	# Calculate the inverse of the covariance matrix.
 	if (not(use_pseudo_inv)):
@@ -68,8 +67,8 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 		# TODO: Use the matrix square root.
 		# cov_inverse = linalg.pinv(matrix_square_root)
 		cov_inverse = linalg.pinv(covariance_matrix)
-		print "(Pseudo) inverse of the covariance matrix is: "
-		print cov_inverse
+		#print "(Pseudo) inverse of the covariance matrix is: "
+		#print cov_inverse
 
 	# TODO: not sure if we even want to use this. Could go through steps like Serge listed.
 	# obs_zero = one_hot_data_preprocessed[0]
@@ -78,7 +77,9 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 
 	# TODO: should return the Mahalanobis distance between the data at the two indices.
 	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
-	return (one_hot_data_preprocessed, covariance_matrix_two)
+
+	# TODO: this was covariance_matrix_two
+	return (one_hot_data_preprocessed, covariance_matrix)
 
 # Pass in team of Students.
 # TODO: make a Team ID, and return (Team_ID, result.)
@@ -101,13 +102,13 @@ if (__name__ == "__main__"):
 
 	result = do_mahal_distance(0, 1)
 	data = result[0]
-	fixed_cov  = result[1]
+	cov  = result[1]
 	
 	print "On fixed: "
-	print is_positive_semidefinite(fixed_cov)
+	print is_positive_semidefinite(cov)
 
 	print "Eigenvalues are: "
-	print linalg.eig(fixed_cov)
+	print linalg.eig(cov)
 	
 	# Calcuate matrix square root (REALLY small and complex, even for normalized data)
  	# matrix_square_root = linalg.sqrtm(fixed_cov)
