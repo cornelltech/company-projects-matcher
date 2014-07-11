@@ -9,6 +9,12 @@ import clustering
 
 default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
 
+class CovarianceError(Exception):
+	def __init__(self, value):
+		self.val = value
+	def __str__(self):
+		return repr(self.val)
+
 def preprocess_random_data(data):
 	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, True, False])
 	enc.fit(data)
@@ -59,7 +65,26 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 
 	covariance_matrix = np.cov(one_hot_data_preprocessed)
 	print "Covariance matrix shape:"
-	print covariance_matrix.shape
+	shape = covariance_matrix.shape
+	print shape
+	num_rows = shape[0]
+	num_cols = shape[1]
+
+	# Should never happen
+	if (not(num_rows == num_cols)):
+		raise CovarianceError("Covariance matrix is not a square matrix.")
+
+	else:
+		n = num_rows
+		i = np.matrix(np.identity(n))
+		print i
+		factor = 10. ** -10
+		mapped = np.multiply(i, factor)
+		#print mapped
+		#print type(mapped)
+		#print mapped.shape
+		result = np.add(mapped, covariance_matrix)
+		#print result
 
 	# if (not (is_positive_semidefinite(covariance_matrix))):
 	# 	# Could use cov_nearest, but that doesn't produce a positive semidefinite matrix.
@@ -68,16 +93,16 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 	# 	covariance_matrix = covariance_matrix_two
 
 	# Calculate the inverse of the covariance matrix.
-	if (not(use_pseudo_inv)):
-		cov_inverse = linalg.inv(covariance_matrix)
-		print "(Real) inverse of the covariance matrix is: "
-		print cov_inverse
+	# if (not(use_pseudo_inv)):
+	# 	cov_inverse = linalg.inv(covariance_matrix)
+	# 	print "(Real) inverse of the covariance matrix is: "
+	# 	print cov_inverse
 
 	# Calculate the pseudoinverse of a matrix.
-	else:
-		# TODO: Use the matrix square root.
-		# cov_inverse = linalg.pinv(matrix_square_root)
-		cov_inverse = linalg.pinv(covariance_matrix)
+	# else:
+	# 	# TODO: Use the matrix square root.
+	# 	# cov_inverse = linalg.pinv(matrix_square_root)
+	# 	cov_inverse = linalg.pinv(covariance_matrix)
 		#print "(Pseudo) inverse of the covariance matrix is: "
 		#print cov_inverse
 
@@ -90,7 +115,7 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
 
 	# TODO: this was covariance_matrix_two
-	return (one_hot_data_preprocessed, covariance_matrix)
+	return (one_hot_data_preprocessed, result)
 
 # Pass in team of Students.
 # TODO: make a Team ID, and return (Team_ID, result.)
@@ -116,7 +141,7 @@ if (__name__ == "__main__"):
 	cov  = result[1]
 	
 #	print "On fixed: "
-	print is_positive_semidefinite(cov)
+	is_positive_semidefinite(cov)
 
 #	print "Eigenvalues are: "
 #	print linalg.eig(cov)
