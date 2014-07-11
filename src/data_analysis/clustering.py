@@ -16,7 +16,7 @@ def __init__(file = default_file):
 	""" Extract data from CSV file and place into numpy array. """
 	initial_array = pd.read_csv(file)
 	data_array = np.array(initial_array)
-	print data_array
+	#print data_array
 	return data_array
 
 def do_preprocessing(data_array):
