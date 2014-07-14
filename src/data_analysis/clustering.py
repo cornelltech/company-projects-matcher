@@ -2,7 +2,6 @@ print (__doc__)
 
 import numpy as np 
 import pandas as pd 
-from matplotlib import pyplot
 
 from sklearn import preprocessing
 from sklearn.cluster import k_means_
@@ -23,6 +22,8 @@ def do_preprocessing(data_array):
 	""" Create a one-hot encoder, and encode the categorical data. Note: the quantitative data is
 		placed at the right side of the resulting matrix. """
 
+	# This is specifically for the format of data in survey_responses.csv.
+	# TODO: put this into a global config file.
 	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, False])
 	enc.fit(data_array)
 
