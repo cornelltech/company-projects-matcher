@@ -98,7 +98,7 @@ def create_covariance_matrix(file = default_file, verbose = False):
 			else:
 				covariance_matrix = result
 
-	return (one_hot_data_preprocessed, covariance_matrix)
+	return (data_array, one_hot_data_preprocessed, covariance_matrix)
 
 # Calcuate matrix square root using scipy linalg
 def sqrt_covariance_matrix(covariance_matrix):	
@@ -161,25 +161,44 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 		result.append(average_mahal_distance_team)
 	return result.sort()
 
-def do_all_distances_data(data, inv_sq_cov_mat):
-	i = 0
-	j = 0
+def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = False):
+	i = start
+	j = start
+	res = []
 	for student_one in data:
 		for student_two in data:
+			# Even this doesn't give every vector dotted with itself to be zero.
+			#d = np.dot(student_one, student_two)
 			d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat)
-			print str((i, j)) + ":",
-			print d
+			tup = ((i, j), d)
+			res.append(tup)
 			j += 1
 		i += 1
-		j = 0
+		j = start
+	res.sort(key = lambda tup: tup[1])
+	if (verbose):
+		for i in res:
+			tup = i[0]
+			first_student = tup[0]
+			second_student = tup[1]
+			print "(",
+			for elm in unprocessed_data[first_student]:
+				print elm,
+			print ";",
+			for elm in unprocessed_data[second_student]:
+				print elm,
+			print ")"
+			#print (, unprocessed_data[second_student])
+	return res
 
 if (__name__ == "__main__"):
 	# Will print out the entire matrix if necessary
 	#np.set_printoptions(threshold=np.nan)
 
 	tup = create_covariance_matrix()
-	data = tup[0]
-	covariance_matrix = tup[1]
+	unprocessed_data = tup[0]
+	processed_data = tup[1]
+	covariance_matrix = tup[2]
 
 	sq_cov = sqrt_covariance_matrix(covariance_matrix)
 	inv_sq_cov = inverse_matrix(sq_cov)
@@ -191,7 +210,7 @@ if (__name__ == "__main__"):
 	# print e
 	# print do_mahal_distance(d, e, inv_sq_cov)
 
-	do_all_distances_data(data, inv_sq_cov)
+	do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True)
 
 
 
