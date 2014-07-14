@@ -48,6 +48,9 @@ def is_positive_semidefinite(cov_matrix):
 	#print res
 	return len(res) == 0
 
+# Reads the data from the file (if we need to fix how the data is read, change clustering init.)
+# Preprocesses data with one hot encoding (changes categorical variables into numerical.)
+# Fixes matrix if it's not positive semidefinite (adds a small version of the identity.)
 # Returns (data, covariance matrix.)
 def create_covariance_matrix(file = default_file):
 	data_array = clustering.__init__(file)
@@ -82,7 +85,7 @@ def create_covariance_matrix(file = default_file):
 
 	return (one_hot_data_preprocessed, covariance_matrix)
 
-# Calcuate matrix square root 
+# Calcuate matrix square root using scipy linalg
 def sqrt_covariance_matrix(covariance_matrix):	
  	matrix_square_root = linalg.sqrtm(covariance_matrix)
 	return matrix_square_root
@@ -99,7 +102,7 @@ def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True):
 	 	cov_inverse = np.linalg.pinv(sqrt_covariance_matrix)
 		print "(Pseudo) inverse of the sqrt. covariance matrix is: "
 
-	print cov_inverse
+	#print cov_inverse
 	return cov_inverse
 	
 def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = default_file):
@@ -133,22 +136,35 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 	return result.sort()
 
 if (__name__ == "__main__"):
-	np.set_printoptions(threshold=np.nan)
+	# Will print out the entire matrix if necessary
+	#np.set_printoptions(threshold=np.nan)
 
 	tup = create_covariance_matrix()
 	data = tup[0]
-	covariance_matrix  = tup[1]
+	covariance_matrix = tup[1]
 
 	sq_cov = sqrt_covariance_matrix(covariance_matrix)
-	c = np.multiply(sq_cov, sq_cov)
-	print "Covariance matrix is: "
-	print covariance_matrix
-	print "Sqrt multiplied by itself:"
-	print c
+	inv_sq_cov = inverse_matrix(sq_cov)
+	print inv_sq_cov
+	#print "Square root of covariance matrix is: "
+	#print sq_cov
+
+	#print "Eigenvalues are: "
+	#print linalg.eig(cov)
+
+	# SANITY CHECKS for matrix square root
+	#print "Eigenvalues of square root are:"
+	#print linalg.eig(sq_cov)
+	#c = np.multiply(sq_cov, sq_cov)
+	#print "Covariance matrix is: "
+	#print covariance_matrix
+	#print "Sqrt multiplied by itself:"
+	#print c
+	#print "Covariance matrix minus sqrt*sqrt:"
+	#print covariance_matrix - c
 	#print (c == covariance_matrix)
 	#inverse_matrix(sq_cov)
 
-#	print "Eigenvalues are: "
-#	print linalg.eig(cov)
+
 
 
