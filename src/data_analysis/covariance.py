@@ -15,30 +15,32 @@ class CovarianceError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
-def preprocess_random_data(data):
-	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, True, False])
-	enc.fit(data)
+# Used for early early testing, probably won't use again.
+# def preprocess_random_data(data):
+# 	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, True, False])
+# 	enc.fit(data)
 
-	#For 'survey_responses.csv,' this produces a 49 x 15 matrix. The last 4 columns are our quantitative data.
-	one_hot_data = enc.transform(data).toarray()
+# 	#For 'survey_responses.csv,' this produces a 49 x 15 matrix. The last 4 columns are our quantitative data.
+# 	one_hot_data = enc.transform(data).toarray()
 
-	print "The parameters are: " + str(enc.get_params())
+# 	print "The parameters are: " + str(enc.get_params())
 	
-	print "The feature indices are: "
-	print enc.feature_indices_
+# 	print "The feature indices are: "
+# 	print enc.feature_indices_
 
-	print "The number of values is " 
-	print enc.n_values
+# 	print "The number of values is " 
+# 	print enc.n_values
 	
-	print "The one hot data is " 
-	print one_hot_data
+# 	print "The one hot data is " 
+# 	print one_hot_data
 
-	return one_hot_data
+# 	return one_hot_data
 
+# Calculates all eigenvalues of the matrix
+# If there are negative eigenvalues, returns false.
 def is_positive_semidefinite(cov_matrix):
 	(eigenvalues, eigenvectors) = linalg.eig(cov_matrix)
 	res = []
-	#print type(eigenvalues)
 	#print eigenvalues.shape
 	for e in eigenvalues:
 		#print e
@@ -155,11 +157,10 @@ if (__name__ == "__main__"):
 
 	sq_cov = sqrt_covariance_matrix(covariance_matrix)
 	inv_sq_cov = inverse_matrix(sq_cov)
-	#print inv_sq_cov
+	print inv_sq_cov
 	#print "Square root of covariance matrix is: "
 	#print sq_cov
 
-	print "hi"
 	#print "Eigenvalues are: "
 	#print linalg.eig(cov)
 

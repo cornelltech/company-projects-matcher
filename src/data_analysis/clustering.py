@@ -2,7 +2,7 @@ print (__doc__)
 
 import numpy as np 
 import pandas as pd 
-
+from matplotlib import pyplot
 from sklearn import preprocessing
 from sklearn.cluster import k_means_
 
