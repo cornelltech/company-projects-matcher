@@ -54,19 +54,20 @@ def is_positive_semidefinite(cov_matrix):
 # Preprocesses data with one hot encoding (changes categorical variables into numerical.)
 # Fixes matrix if it's not positive semidefinite (adds a small version of the identity.)
 # Returns (data, covariance matrix.)
-def create_covariance_matrix(file = default_file):
+def create_covariance_matrix(file = default_file, verbose = False):
 	data_array = clustering.__init__(file)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
-	print "One hot data preprocessed is: "
-	print one_hot_data_preprocessed
-	print one_hot_data_preprocessed.shape
+	if (verbose):
+		print "One hot data preprocessed is: "
+		print one_hot_data_preprocessed
+		print one_hot_data_preprocessed.shape
 
 	# rowvar = 0 because each column represents a variable, while the rows are observations
 	covariance_matrix = np.cov(one_hot_data_preprocessed, rowvar = 0)
-	print "Covariance matrix is:"
-	print covariance_matrix
+	if (verbose):
+		print "Covariance matrix is:"
+		print covariance_matrix
 	shape = covariance_matrix.shape
-	print shape
 	num_rows = shape[0]
 	num_cols = shape[1]
 	
@@ -76,12 +77,14 @@ def create_covariance_matrix(file = default_file):
 
 	else:
 		if (is_positive_semidefinite(covariance_matrix)):
-			print "Pos semi def on the first try!"
+			if (verbose):
+				print "Pos semi def on the first try!"
 			pass		
 		# Our covariance matrix is not positive semidefinite -- an arithmetic error.
 		# Will add (a small number * the identity matrix) to covariance matrix to fix this error.
 		else:
-			print "Not pos semi def on the first try!"
+			if (verbose):
+				print "Not pos semi def on the first try!"
 			n = num_rows
 			i = np.array(np.identity(n))
 			factor = 10. ** -10
@@ -102,22 +105,25 @@ def sqrt_covariance_matrix(covariance_matrix):
  	matrix_square_root = linalg.sqrtm(covariance_matrix)
 	return matrix_square_root
 
-def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True):
+def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True, verbose = False):
 	
 	# Calculate real matrix inverse.
 	if (not(use_pseudo_inv)):
 	 	cov_inverse = linalg.inv(sqrt_covariance_matrix)
-	 	print "(Real) inverse of the sqrt. covariance matrix is: "
+	 	if (verbose):
+	 		print "(Real) inverse of the sqrt. covariance matrix is: "
 
 	# Calculate the matrix pseudoinverse.
 	else:
 	 	cov_inverse = np.linalg.pinv(sqrt_covariance_matrix)
-		print "(Pseudo) inverse of the sqrt. covariance matrix is: "
+	 	if (verbose):
+			print "(Pseudo) inverse of the sqrt. covariance matrix is: "
 
 	#print cov_inverse
 	return cov_inverse
 	
-def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = default_file):
+def do_mahal_distance(s_one_properties, s_two_properties, 
+	inv_sq_cov_mat, use_pseudo_inv = True, file = default_file):
 	
 	# Calculate the inverse of the covariance matrix.
 	# 
@@ -128,6 +134,8 @@ def do_mahal_distance(student_one, student_two, use_pseudo_inv = True, file = de
 
 	# TODO: should return the Mahalanobis distance between the data at the two indices.
 	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
+
+	s_one_properties
 
 	pass
 
@@ -167,13 +175,15 @@ if (__name__ == "__main__"):
 	# SANITY CHECKS for matrix square root
 	#print "Eigenvalues of square root are:"
 	#print linalg.eig(sq_cov)
-	#c = np.multiply(sq_cov, sq_cov)
+
+	# STUPID NP.MULTIPLY WAS GIVING ME THE WRONG ANSWERS
+	c = np.dot(sq_cov, sq_cov)
 	#print "Covariance matrix is: "
 	#print covariance_matrix
 	#print "Sqrt multiplied by itself:"
 	#print c
-	#print "Covariance matrix minus sqrt*sqrt:"
-	#print covariance_matrix - c
+	print "Covariance matrix minus sqrt*sqrt:"
+	print covariance_matrix - c
 	#print (c == covariance_matrix)
 	#inverse_matrix(sq_cov)
 
