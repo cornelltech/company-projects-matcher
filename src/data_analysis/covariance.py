@@ -55,8 +55,16 @@ def is_positive_semidefinite(cov_matrix):
 def create_covariance_matrix(file = default_file):
 	data_array = clustering.__init__(file)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
-	covariance_matrix = np.cov(one_hot_data_preprocessed)
+	print "One hot data preprocessed is: "
+	print one_hot_data_preprocessed
+	print one_hot_data_preprocessed.shape
+
+	# rowvar = 0 because each column represents a variable, while the rows are observations
+	covariance_matrix = np.cov(one_hot_data_preprocessed, rowvar = 0)
+	print "Covariance matrix is:"
+	print covariance_matrix
 	shape = covariance_matrix.shape
+	print shape
 	num_rows = shape[0]
 	num_cols = shape[1]
 	
@@ -66,10 +74,12 @@ def create_covariance_matrix(file = default_file):
 
 	else:
 		if (is_positive_semidefinite(covariance_matrix)):
+			print "Pos semi def on the first try!"
 			pass		
 		# Our covariance matrix is not positive semidefinite -- an arithmetic error.
 		# Will add (a small number * the identity matrix) to covariance matrix to fix this error.
 		else:
+			print "Not pos semi def on the first try!"
 			n = num_rows
 			i = np.array(np.identity(n))
 			factor = 10. ** -10
@@ -145,10 +155,11 @@ if (__name__ == "__main__"):
 
 	sq_cov = sqrt_covariance_matrix(covariance_matrix)
 	inv_sq_cov = inverse_matrix(sq_cov)
-	print inv_sq_cov
+	#print inv_sq_cov
 	#print "Square root of covariance matrix is: "
 	#print sq_cov
 
+	print "hi"
 	#print "Eigenvalues are: "
 	#print linalg.eig(cov)
 
