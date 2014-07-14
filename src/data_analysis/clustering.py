@@ -23,7 +23,7 @@ def do_preprocessing(data_array):
 	""" Create a one-hot encoder, and encode the categorical data. Note: the quantitative data is
 		placed at the right side of the resulting matrix. """
 
-	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, False, False, False])
+	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, False])
 	enc.fit(data_array)
 
 	#For 'survey_responses.csv,' this produces a 49 x 15 matrix. The last 4 columns are our quantitative data.
