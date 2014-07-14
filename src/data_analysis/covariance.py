@@ -122,8 +122,7 @@ def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True, verbose = Fals
 	#print cov_inverse
 	return cov_inverse
 	
-def do_mahal_distance(s_one_properties, s_two_properties, 
-	inv_sq_cov_mat, use_pseudo_inv = True, file = default_file):
+def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat):
 	
 	# Calculate the inverse of the covariance matrix.
 	# 
@@ -135,9 +134,15 @@ def do_mahal_distance(s_one_properties, s_two_properties,
 	# TODO: should return the Mahalanobis distance between the data at the two indices.
 	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
 
-	s_one_properties
-
-	pass
+	print "S1 shape:"
+	print s_one_properties.shape
+	print "S2 shape:"
+	print s_two_properties.shape
+	print "inv_sq_cov_mat shape:"
+	print inv_sq_cov_mat.shape
+	a = np.dot(s_one_properties, inv_sq_cov_mat)
+	res = np.dot(a, s_two_properties)
+	return res
 
 # Pass in team of Students.
 # TODO: make a Team ID, and return (Team_ID, result.)
@@ -165,7 +170,15 @@ if (__name__ == "__main__"):
 
 	sq_cov = sqrt_covariance_matrix(covariance_matrix)
 	inv_sq_cov = inverse_matrix(sq_cov)
-	print inv_sq_cov
+	#print inv_sq_cov
+
+	d = data[0]
+	e = data[1]
+	print d
+	print e
+	print do_mahal_distance(d, e, inv_sq_cov)
+
+
 	#print "Square root of covariance matrix is: "
 	#print sq_cov
 
@@ -177,13 +190,13 @@ if (__name__ == "__main__"):
 	#print linalg.eig(sq_cov)
 
 	# STUPID NP.MULTIPLY WAS GIVING ME THE WRONG ANSWERS
-	c = np.dot(sq_cov, sq_cov)
+	#c = np.dot(sq_cov, sq_cov)
 	#print "Covariance matrix is: "
 	#print covariance_matrix
 	#print "Sqrt multiplied by itself:"
 	#print c
-	print "Covariance matrix minus sqrt*sqrt:"
-	print covariance_matrix - c
+	#print "Covariance matrix minus sqrt*sqrt:"
+	#print covariance_matrix - c
 	#print (c == covariance_matrix)
 	#inverse_matrix(sq_cov)
 
