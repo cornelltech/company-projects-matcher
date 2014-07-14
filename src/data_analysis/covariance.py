@@ -122,7 +122,7 @@ def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True, verbose = Fals
 	#print cov_inverse
 	return cov_inverse
 	
-def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat):
+def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat, verbose = False):
 	
 	# Calculate the inverse of the covariance matrix.
 	# 
@@ -134,12 +134,13 @@ def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat):
 	# TODO: should return the Mahalanobis distance between the data at the two indices.
 	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
 
-	print "S1 shape:"
-	print s_one_properties.shape
-	print "S2 shape:"
-	print s_two_properties.shape
-	print "inv_sq_cov_mat shape:"
-	print inv_sq_cov_mat.shape
+	if (verbose):
+		print "S1 shape:"
+		print s_one_properties.shape
+		print "S2 shape:"
+		print s_two_properties.shape
+		print "inv_sq_cov_mat shape:"
+		print inv_sq_cov_mat.shape
 	a = np.dot(s_one_properties, inv_sq_cov_mat)
 	res = np.dot(a, s_two_properties)
 	return res
@@ -160,6 +161,18 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 		result.append(average_mahal_distance_team)
 	return result.sort()
 
+def do_all_distances_data(data, inv_sq_cov_mat):
+	i = 0
+	j = 0
+	for student_one in data:
+		for student_two in data:
+			d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat)
+			print str((i, j)) + ":",
+			print d
+			j += 1
+		i += 1
+		j = 0
+
 if (__name__ == "__main__"):
 	# Will print out the entire matrix if necessary
 	#np.set_printoptions(threshold=np.nan)
@@ -172,11 +185,14 @@ if (__name__ == "__main__"):
 	inv_sq_cov = inverse_matrix(sq_cov)
 	#print inv_sq_cov
 
-	d = data[0]
-	e = data[1]
-	print d
-	print e
-	print do_mahal_distance(d, e, inv_sq_cov)
+	# d = data[0]
+	# e = data[1]
+	# print d
+	# print e
+	# print do_mahal_distance(d, e, inv_sq_cov)
+
+	do_all_distances_data(data, inv_sq_cov)
+
 
 
 	#print "Square root of covariance matrix is: "
