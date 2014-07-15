@@ -57,6 +57,9 @@ def is_positive_semidefinite(cov_matrix):
 def create_covariance_matrix(file = default_file, verbose = False):
 	data_array = clustering.__init__(file)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
+	print "One hot data preprocessed is: "
+	print one_hot_data_preprocessed
+	
 	if (verbose):
 		print "One hot data preprocessed is: "
 		print one_hot_data_preprocessed
@@ -161,7 +164,11 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 		result.append(average_mahal_distance_team)
 	return result.sort()
 
-def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = False):
+def use_python_distance_data(student_one, student_two, inv_sq_cov_mat):
+	return spatial.distance.mahalanobis(student_one, student_two, inv_sq_cov_mat)
+	
+
+def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = False, python = False):
 	i = start
 	j = start
 	res = []
@@ -169,26 +176,47 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 		for student_two in data:
 			# Even this doesn't give every vector dotted with itself to be zero.
 			#d = np.dot(student_one, student_two)
-			d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat)
+			if (python):
+				d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat)
+			else:
+				d = use_python_distance_data(student_one, student_two, inv_sq_cov_mat)
 			tup = ((i, j), d)
-			res.append(tup)
+			keys = [t[0] for t in res]
+			if ((j, i) in keys):
+				pass
+			else:
+				res.append(tup)
 			j += 1
 		i += 1
 		j = start
 	res.sort(key = lambda tup: tup[1])
+	minimum_tuple = res[0]
+	minimum = minimum_tuple[1]
 	if (verbose):
-		for i in res:
-			tup = i[0]
-			first_student = tup[0]
+		 for i in res:
+		 	tup = i[0]
+		 	first_student = tup[0]
 			second_student = tup[1]
-			print "(",
-			for elm in unprocessed_data[first_student]:
-				print elm,
-			print ";",
-			for elm in unprocessed_data[second_student]:
-				print elm,
-			print ")"
-			#print (, unprocessed_data[second_student])
+
+			lst_first_student = unprocessed_data[first_student]
+			lst_second_student = unprocessed_data[second_student]
+
+			#print "(",
+			print "UG major: " + str(lst_first_student[0]) + ", " + str(lst_second_student[0])
+			print "Coding ability: " + str(lst_first_student[1]) + ", " + str(lst_second_student[1])
+			print "Degree pursuing: " + str(lst_first_student[2]) + ", " + str(lst_second_student[2])
+			print "Work exp. (yrs) " + str(lst_first_student[3]) + ", " + str(lst_second_student[3])
+			# print "Coding ability: " + str((unprocessed_data[first_student])[1]) + str((unprocessed_data[second_student])[1]),
+			# print "Degree pursuing: " + str((unprocessed_data[first_student])[2]) + str((unprocessed_data[second_student])[2]),
+			# print "Num. years work experience: " + str((unprocessed_data[first_student])[3]) + str((unprocessed_data[second_student])[3]),
+			# for elm in unprocessed_data[first_student]:
+			# 	print elm,
+			# print ";",
+			# for elm in unprocessed_data[second_student]:
+			# 	print elm,
+			# print ")",
+			print i[1] - minimum
+
 	return res
 
 if (__name__ == "__main__"):
@@ -210,9 +238,9 @@ if (__name__ == "__main__"):
 	# print e
 	# print do_mahal_distance(d, e, inv_sq_cov)
 
-	do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True)
+	#do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True, python = True)
 
-
+	
 
 	#print "Square root of covariance matrix is: "
 	#print sq_cov
