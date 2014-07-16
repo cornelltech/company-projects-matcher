@@ -265,7 +265,7 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 
 			lst_first_student = unprocessed_data[first_student]
 			lst_second_student = unprocessed_data[second_student]
-
+ 
 			#print "(",
 			# print "UG major: " + str((lst_first_student[0], lst_second_student[0]))
 			# print "Coding ability: " + str((lst_first_student[1], lst_second_student[1]))
