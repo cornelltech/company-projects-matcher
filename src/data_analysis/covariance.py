@@ -57,8 +57,6 @@ def is_positive_semidefinite(cov_matrix):
 def create_covariance_matrix(file = default_file, verbose = False):
 	data_array = clustering.__init__(file)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
-	print "One hot data preprocessed is: "
-	print one_hot_data_preprocessed
 	
 	if (verbose):
 		print "One hot data preprocessed is: "
@@ -124,8 +122,52 @@ def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True, verbose = Fals
 
 	#print cov_inverse
 	return cov_inverse
+
+# Implements:
+# f(x, y) = 
+# 	1 IF x = y
+# 	0.75 IF abs(x - y) = 1
+# 	1/(abs(x-y)) otherwise
+# NOTE: x, y in [0, 4] for coding ability, and x, y in [0, 6] for work experience
+def calc_numerical_difference(x, y):
+	if (x == y):
+		return 1.0
+	elif (abs(x - y) == 1):
+		return 0.75
+	else:
+		return (1.0 / ((abs(x-y))*1.0))
+
+def subtract_vectors(s_one_properties, s_two_properties, verbose = False):
+
+	# Extract the values of interest
+	# ca_one = s_one_properties[10]
+	# ca_two = s_two_properties[10]
+	# work_one = s_one_properties[11]
+	# work_two = s_two_properties[11]
+
+	# s_one_properties[10] = 0
+	# s_two_properties[10] = 0
+	# s_one_properties[11] = 0
+	# s_two_properties[11] = 0
+
+	# Calculate our function for these values
+
+	#coding_diff = calc_numerical_difference(ca_one, ca_two)
+	#work_diff = calc_numerical_difference(work_one, work_two)
+
+	a = np.subtract(s_one_properties, s_two_properties)
+	a = np.absolute(a)
+
+	print "Absolute value of subtracted vectors is:"
+	print a
 	
-def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat, verbose = False):
+	#res = res + coding_diff + work_diff
+
+	#return res
+
+	
+	
+def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat, verbose = False, fixed_with_zeros = True):
 	
 	# Calculate the inverse of the covariance matrix.
 	# 
@@ -137,15 +179,38 @@ def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat, verbos
 	# TODO: should return the Mahalanobis distance between the data at the two indices.
 	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
 
-	if (verbose):
-		print "S1 shape:"
-		print s_one_properties.shape
-		print "S2 shape:"
-		print s_two_properties.shape
-		print "inv_sq_cov_mat shape:"
-		print inv_sq_cov_mat.shape
+	# Extract the values of interest
+	ca_one = s_one_properties[10]
+	ca_two = s_two_properties[10]
+	work_one = s_one_properties[11]
+	work_two = s_two_properties[11]
+
+	if (fixed_with_zeros):
+	# Reset these values in the original vectors to 0
+	# so they don't affect the dot products.
+		s_one_properties[10] = 0
+		s_two_properties[10] = 0
+		s_one_properties[11] = 0
+		s_two_properties[11] = 0
+
+	# Calculate our function for these values
+
+	coding_diff = calc_numerical_difference(ca_one, ca_two)
+	work_diff = calc_numerical_difference(work_one, work_two)
+
 	a = np.dot(s_one_properties, inv_sq_cov_mat)
 	res = np.dot(a, s_two_properties)
+	if (verbose):
+		print "Dotted value: " + str(res)
+	
+	if (fixed_with_zeros):
+		res = res + coding_diff + work_diff
+
+	if (verbose):
+		print "Calculated values:",
+		print coding_diff,
+		print work_diff,
+
 	return res
 
 # Pass in team of Students.
@@ -167,7 +232,7 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 def use_python_distance_data(student_one, student_two, inv_sq_cov_mat):
 	return spatial.distance.mahalanobis(student_one, student_two, inv_sq_cov_mat)
 	
-
+# The input "python" decides if we use the built-in mahalanobis distance or not
 def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = False, python = False):
 	i = start
 	j = start
@@ -176,7 +241,7 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 		for student_two in data:
 			# Even this doesn't give every vector dotted with itself to be zero.
 			#d = np.dot(student_one, student_two)
-			if (python):
+			if (not(python)):
 				d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat)
 			else:
 				d = use_python_distance_data(student_one, student_two, inv_sq_cov_mat)
@@ -190,8 +255,8 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 		i += 1
 		j = start
 	res.sort(key = lambda tup: tup[1])
-	minimum_tuple = res[0]
-	minimum = minimum_tuple[1]
+	#minimum_tuple = res[0]
+	#minimum = minimum_tuple[1]
 	if (verbose):
 		 for i in res:
 		 	tup = i[0]
@@ -202,10 +267,11 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 			lst_second_student = unprocessed_data[second_student]
 
 			#print "(",
-			print "UG major: " + str(lst_first_student[0]) + ", " + str(lst_second_student[0])
-			print "Coding ability: " + str(lst_first_student[1]) + ", " + str(lst_second_student[1])
-			print "Degree pursuing: " + str(lst_first_student[2]) + ", " + str(lst_second_student[2])
-			print "Work exp. (yrs) " + str(lst_first_student[3]) + ", " + str(lst_second_student[3])
+			# print "UG major: " + str((lst_first_student[0], lst_second_student[0]))
+			# print "Coding ability: " + str((lst_first_student[1], lst_second_student[1]))
+			# print "Degree pursuing: " + str((lst_first_student[2], lst_second_student[2]))
+			# print "Work exp. (yrs) " + str((lst_first_student[3], lst_second_student[3]))
+
 			# print "Coding ability: " + str((unprocessed_data[first_student])[1]) + str((unprocessed_data[second_student])[1]),
 			# print "Degree pursuing: " + str((unprocessed_data[first_student])[2]) + str((unprocessed_data[second_student])[2]),
 			# print "Num. years work experience: " + str((unprocessed_data[first_student])[3]) + str((unprocessed_data[second_student])[3]),
@@ -215,7 +281,12 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 			# for elm in unprocessed_data[second_student]:
 			# 	print elm,
 			# print ")",
-			print i[1] - minimum
+
+			print lst_first_student
+			print lst_second_student
+
+			#print i[1] - minimum
+			print i[1]
 
 	return res
 
@@ -223,7 +294,7 @@ if (__name__ == "__main__"):
 	# Will print out the entire matrix if necessary
 	#np.set_printoptions(threshold=np.nan)
 
-	tup = create_covariance_matrix()
+	tup = create_covariance_matrix(file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv")
 	unprocessed_data = tup[0]
 	processed_data = tup[1]
 	covariance_matrix = tup[2]
@@ -232,13 +303,18 @@ if (__name__ == "__main__"):
 	inv_sq_cov = inverse_matrix(sq_cov)
 	#print inv_sq_cov
 
-	# d = data[0]
-	# e = data[1]
-	# print d
-	# print e
-	# print do_mahal_distance(d, e, inv_sq_cov)
+	d = processed_data[1]
+	e = processed_data[36]
+	#f = processed_data[32]
+	print "d " + str(d)
+	print "e " + str(e)
+	#print "f" + str(f)
+	print "(d, d)",
+	print do_mahal_distance(d, d, inv_sq_cov, verbose = True)
+	print "(d, e)",
+	print do_mahal_distance(d, e, inv_sq_cov, verbose = True)
 
-	#do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True, python = True)
+	#do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True)
 
 	
 
