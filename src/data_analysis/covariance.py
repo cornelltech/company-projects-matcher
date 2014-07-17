@@ -129,7 +129,11 @@ def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True, verbose = Fals
 # 	0.75 IF abs(x - y) = 1
 # 	1/(abs(x-y)) otherwise
 # NOTE: x, y in [0, 4] for coding ability, and x, y in [0, 6] for work experience
-def calc_numerical_difference(x, y):
+def calc_numerical_difference(x, y, verbose = False):
+	if (verbose):
+		print "In calc numer diff:"
+		print "X is " + str(x)
+		print "Y is " + str(y)
 	if (x == y):
 		return 1.0
 	elif (abs(x - y) == 1):
@@ -169,49 +173,58 @@ def subtract_vectors(s_one_properties, s_two_properties, verbose = False):
 	
 def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat, verbose = False, fixed_with_zeros = True):
 	
-	# Calculate the inverse of the covariance matrix.
-	# 
-	# TODO: not sure if we even want to use this. Could go through steps like Serge listed.
+	# TODO: not sure if we even want to use this.
 	# obs_zero = one_hot_data_preprocessed[0]
 	# obs_one = one_hot_data_preprocessed[1]
 	# print "Mahal distance is " + str(spatial.distance.mahalanobis(obs_zero, obs_one, cov_inverse))
 
-	# TODO: should return the Mahalanobis distance between the data at the two indices.
-	# TODO TODO: should pass in a team, and return the sorted list of mahal distances at all points.
-
-	# Extract the values of interest
-	ca_one = s_one_properties[10]
-	ca_two = s_two_properties[10]
-	work_one = s_one_properties[11]
-	work_two = s_two_properties[11]
 
 	if (fixed_with_zeros):
-	# Reset these values in the original vectors to 0
+	# Reset these values in copies the original vectors to 0
 	# so they don't affect the dot products.
-		s_one_properties[10] = 0
-		s_two_properties[10] = 0
-		s_one_properties[11] = 0
-		s_two_properties[11] = 0
 
-	# Calculate our function for these values
+		# Copy the original vectors over, so that we don't modify them.
+		# (When we loop through all of the data, we'll have to reuse it.)
+		copy_s_one = s_one_properties.copy()
+		copy_s_two = s_two_properties.copy()
 
-	coding_diff = calc_numerical_difference(ca_one, ca_two)
-	work_diff = calc_numerical_difference(work_one, work_two)
+		# Extract the values of interest
+		ca_one = copy_s_one[10]
+		ca_two = copy_s_two[10]
+		work_one = copy_s_one[11]
+		work_two = copy_s_two[11]
+		
+		copy_s_one[10] = 0
+		copy_s_two[10] = 0
+		copy_s_one[11] = 0
+		copy_s_two[11] = 0
 
-	a = np.dot(s_one_properties, inv_sq_cov_mat)
-	res = np.dot(a, s_two_properties)
-	if (verbose):
-		print "Dotted value: " + str(res)
-	
-	if (fixed_with_zeros):
-		res = res + coding_diff + work_diff
+		# Calculate numerical differences using above function
+		coding_diff = calc_numerical_difference(ca_one, ca_two)
+		work_diff = calc_numerical_difference(work_one, work_two)
 
-	if (verbose):
-		print "Calculated values:",
-		print coding_diff,
-		print work_diff,
+		# Dot the copied vectors
+		a = np.dot(copy_s_one, inv_sq_cov_mat)
+		res = np.dot(a, copy_s_two)
 
-	return res
+		if (verbose):
+			print "Dotted value: " + str(res)
+			print "Calculated values:",
+			print coding_diff,
+			print work_diff
+
+		# Add the calculated differences.
+		new_res = res + coding_diff + work_diff
+		if (verbose):
+			print "New res is " + str(new_res)
+		return new_res
+
+	else:
+
+		a = np.dot(s_one_properties, inv_sq_cov_mat)
+		res = np.dot(a, s_two_properties)
+
+		return res
 
 # Pass in team of Students.
 # TODO: make a Team ID, and return (Team_ID, result.)
@@ -237,27 +250,39 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 	i = start
 	j = start
 	res = []
+	if (verbose):
+		print "data is " + str(data)
 	for student_one in data:
 		for student_two in data:
-			# Even this doesn't give every vector dotted with itself to be zero.
+			if (verbose):
+				#print "(i, j) = " + str((i, j))
+				print "Student one is: " + str(student_one)
+				print "Student two is: " + str(student_two)
 			#d = np.dot(student_one, student_two)
 			if (not(python)):
-				d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat)
+				if (verbose):
+					print "Using my distance"
+			 	d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat, fixed_with_zeros = True)
+			 	if (verbose):
+			 		print "d is " + str(d)
 			else:
 				d = use_python_distance_data(student_one, student_two, inv_sq_cov_mat)
+			# names = (data[i], data[j])
+			# print str(names) + str(d)
 			tup = ((i, j), d)
 			keys = [t[0] for t in res]
 			if ((j, i) in keys):
-				pass
+			 	pass
 			else:
-				res.append(tup)
+			 	res.append(tup)
 			j += 1
 		i += 1
 		j = start
 	res.sort(key = lambda tup: tup[1])
+
 	#minimum_tuple = res[0]
 	#minimum = minimum_tuple[1]
-	if (verbose):
+	if (True):
 		 for i in res:
 		 	tup = i[0]
 		 	first_student = tup[0]
@@ -271,28 +296,24 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 			# print "Coding ability: " + str((lst_first_student[1], lst_second_student[1]))
 			# print "Degree pursuing: " + str((lst_first_student[2], lst_second_student[2]))
 			# print "Work exp. (yrs) " + str((lst_first_student[3], lst_second_student[3]))
-
-			# print "Coding ability: " + str((unprocessed_data[first_student])[1]) + str((unprocessed_data[second_student])[1]),
-			# print "Degree pursuing: " + str((unprocessed_data[first_student])[2]) + str((unprocessed_data[second_student])[2]),
-			# print "Num. years work experience: " + str((unprocessed_data[first_student])[3]) + str((unprocessed_data[second_student])[3]),
-			# for elm in unprocessed_data[first_student]:
-			# 	print elm,
-			# print ";",
-			# for elm in unprocessed_data[second_student]:
-			# 	print elm,
 			# print ")",
 
 			print lst_first_student
 			print lst_second_student
 
+			for x in range(0, 4):
+				if (not(lst_first_student[x] == lst_second_student[x])):
+					print "Diff at " + str(x)
+					pass
+
 			#print i[1] - minimum
 			print i[1]
 
-	return res
+	#return res
 
 if (__name__ == "__main__"):
 	# Will print out the entire matrix if necessary
-	#np.set_printoptions(threshold=np.nan)
+	np.set_printoptions(threshold=np.nan)
 
 	tup = create_covariance_matrix(file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv")
 	unprocessed_data = tup[0]
@@ -303,18 +324,44 @@ if (__name__ == "__main__"):
 	inv_sq_cov = inverse_matrix(sq_cov)
 	#print inv_sq_cov
 
-	d = processed_data[1]
-	e = processed_data[36]
-	#f = processed_data[32]
-	print "d " + str(d)
-	print "e " + str(e)
-	#print "f" + str(f)
-	print "(d, d)",
-	print do_mahal_distance(d, d, inv_sq_cov, verbose = True)
-	print "(d, e)",
-	print do_mahal_distance(d, e, inv_sq_cov, verbose = True)
+	# print "d unprocessed " + str(unprocessed_data[1])
+	# print "d processed " + str(processed_data[1])
 
+	# print "e unprocessed " + str(unprocessed_data[34])
+	# print "e processed " + str(processed_data[34])
+
+
+	#print "unprocessed_data " + str(unprocessed_data)
+	#print "processed_data " + str(processed_data)
+	#d_clustered = clustering.do_preprocessing(unprocessed_data[1])
+	
+	d_u = unprocessed_data[11]
+	d_p = processed_data[11]
+	e = processed_data[18]
+	f = processed_data[15]
+	small_processed_data = (d_p, d_p, d_p)
+	small_unprocessed_data = (d_u, d_u, d_u)
+	print small_processed_data
+	print small_unprocessed_data
+	#print "Before inputing to mahal distances " + str(small_data)
+	# #f = processed_data[32]
+	# print "d " + str(unprocessed_data[1])
+	# print "e " + str(unprocessed_data[34])
+	# #print "f" + str(f)
+	#print "(d, d)",
+	#print do_mahal_distance(d, d, inv_sq_cov)
+	#print "(d, e)",
+	#print do_mahal_distance(d, e, inv_sq_cov)
+
+	# print "Small data is: " + str(small_data)
+
+	# SMALL DATA: to test something
+	do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
+
+	# BIG DATA: for reals
 	#do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True)
+
+
 
 	
 
