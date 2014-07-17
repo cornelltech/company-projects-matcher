@@ -75,7 +75,10 @@ def create_teams_on_all_fields(first_students, first_name, second_students, seco
 	# print len(second_ids)
 
 	# Guarantee proper input.
-	if ((first_students == []) | (second_students == [])):
+	# Changed this to and because one of the teams might be empty 
+	# (i.e. 50 of each type of student and want to make teams of 3).
+
+	if (first_students == []) or (second_students == []):
 		raise InputError('Student lists must not be empty.')
 
 	else:
@@ -795,6 +798,7 @@ def do_loop_to_create_teams(first_students, first_name, second_students, second_
 		f = fill_teams_on_all_fields(d, first_name, second_name)
 		clean = clean_team(f)
 		print_team_list (clean)
+		n = n - 1
 
 def do_test_one():
 	print "50 random students:"
@@ -842,23 +846,22 @@ def do_tests_three(MBAs, MEngs, team_size):
 
 
 # TODO: Running this says that input teams are empty.
-# def do_new_tests():
+def do_new_tests():
 	
-# 	print "Our students are:"
-# 	print "MBAs:"
-# 	MBAs = create_random_MBAs(50)
-# 	print_student_list(MBAs)
-# 	print""
-# 	print ""
+	print "Our students are:"
+	print "MBAs:"
+	MBAs = create_random_MBAs(50)
+	print_student_list(MBAs)
+	print""
+	print ""
 
-# 	print "MEngs:"
-# 	MEngs = create_random_MEngs(50)
-# 	print_student_list(MEngs)
-# 	print""
-# 	print ""
+	print "MEngs:"
+	MEngs = create_random_MEngs(50)
+	print_student_list(MEngs)
+	print""
+	print ""
 
-
-# 	do_loop_to_create_teams(MBAs, 'MBA', MEngs, 'MEng', 3, 1)
+	do_loop_to_create_teams(MBAs, 'MBA', MEngs, 'MEng', 3, 1)
 
 # 	print "Remaining MEngs are :" 
 # 	print_student_list(MEngs)
@@ -871,7 +874,7 @@ if __name__ == "__main__":
 	#do_test_one()
 
 	# Create 50 Random MBAs, and 50 Random MEngs.
-	(MBAs, MEngs) = do_tests_two()
+	#(MBAs, MEngs) = do_tests_two()
 	
 	# Create teams of size 3
 	#do_tests_three(MBAs, MEngs, 3)
@@ -883,7 +886,9 @@ if __name__ == "__main__":
 	#do_tests_three(MBAs, MEngs, 10)
 
 	# Create teams of size 6
-	do_tests_three(MBAs, MEngs, 6)
+	#do_tests_three(MBAs, MEngs, 6)
+
+	do_new_tests()
 
 
 
