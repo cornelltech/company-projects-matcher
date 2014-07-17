@@ -6,39 +6,28 @@ from scipy import linalg
 from scipy import spatial
 from statsmodels.stats import correlation_tools
 import clustering
+import math
 
 default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
 
-class CovarianceError(Exception):
+class DistanceError(Exception):
 	def __init__(self, value):
 		self.val = value
 	def __str__(self):
 		return repr(self.val)
 
-# Used for early early testing, probably won't use again.
-# def preprocess_random_data(data):
-# 	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, True, False])
-# 	enc.fit(data)
+def weight_interest(x):
+	# TODO: change this to be in the range of valid interest vals.
+	# If this dict doesn't exist, make it.
+	# Maybe don't need to do this if it's passed in the right time?
+	if (not(x in range(1, 11))):
+		raise DistanceError("Interest value is invalid.")
+	a = 10 * x
+	return a * math.sqrt(a)
 
-# 	#For 'survey_responses.csv,' this produces a 49 x 15 matrix. The last 4 columns are our quantitative data.
-# 	one_hot_data = enc.transform(data).toarray()
-
-# 	print "The parameters are: " + str(enc.get_params())
-	
-# 	print "The feature indices are: "
-# 	print enc.feature_indices_
-
-# 	print "The number of values is " 
-# 	print enc.n_values
-	
-# 	print "The one hot data is " 
-# 	print one_hot_data
-
-# 	return one_hot_data
-
-# Calculates all eigenvalues of the matrix
+def is_positive_semidefinite(cov_matrix, verbose = False):
+#Calculates all eigenvalues of the matrix
 # If there are negative eigenvalues, returns false.
-def is_positive_semidefinite(cov_matrix):
 	(eigenvalues, eigenvectors) = linalg.eig(cov_matrix)
 	res = []
 	#print eigenvalues.shape
@@ -46,8 +35,9 @@ def is_positive_semidefinite(cov_matrix):
 		#print e
  		if (e < 0):
 	 		res.append(e)
-	#print "Negative eigenvalues of covariance matrix are:"
-	#print res
+	if (verbose):
+		print "Negative eigenvalues of covariance matrix are:"
+		print res
 	return len(res) == 0
 
 # Reads the data from the file (if we need to fix how the data is read, change clustering init.)
@@ -74,7 +64,7 @@ def create_covariance_matrix(file = default_file, verbose = False):
 	
 	# Should never happen
 	if (not(num_rows == num_cols)):
-		raise CovarianceError("Covariance matrix is not a square matrix.")
+		raise DistanceError("Covariance matrix is not a square matrix.")
 
 	else:
 		if (is_positive_semidefinite(covariance_matrix)):
@@ -95,7 +85,7 @@ def create_covariance_matrix(file = default_file, verbose = False):
 			# Add that matrix to our covariance matrix (to make sure that our matrix is positive semidefinite.)
 			result = np.add(small_identity, covariance_matrix)
 			if (not(is_positive_semidefinite(result))):
-				raise CovarianceError("Fixed covariance matrix is not positive semidefinite.")
+				raise DistanceError("Fixed covariance matrix is not positive semidefinite.")
 			else:
 				covariance_matrix = result
 
@@ -335,14 +325,14 @@ if (__name__ == "__main__"):
 	#print "processed_data " + str(processed_data)
 	#d_clustered = clustering.do_preprocessing(unprocessed_data[1])
 	
-	d_u = unprocessed_data[11]
-	d_p = processed_data[11]
-	e = processed_data[18]
-	f = processed_data[15]
-	small_processed_data = (d_p, d_p, d_p)
-	small_unprocessed_data = (d_u, d_u, d_u)
-	print small_processed_data
-	print small_unprocessed_data
+	# d_u = unprocessed_data[11]
+	# d_p = processed_data[11]
+	# e = processed_data[18]
+	# f = processed_data[15]
+	# small_processed_data = (d_p, d_p, d_p)
+	# small_unprocessed_data = (d_u, d_u, d_u)
+	# print small_processed_data
+	# print small_unprocessed_data
 	#print "Before inputing to mahal distances " + str(small_data)
 	# #f = processed_data[32]
 	# print "d " + str(unprocessed_data[1])
@@ -356,13 +346,14 @@ if (__name__ == "__main__"):
 	# print "Small data is: " + str(small_data)
 
 	# SMALL DATA: to test something
-	do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
+	#do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
 
 	# BIG DATA: for reals
 	#do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True)
 
-
-
+	# Testing weighted interest
+	#for i in range (1, 11):
+		#print str(i) + ": " + str(weight_interest(i))
 	
 
 	#print "Square root of covariance matrix is: "
