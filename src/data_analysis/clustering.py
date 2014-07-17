@@ -11,7 +11,6 @@ default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/com
 def __init__(file = default_file):
 	# print the full array instead of truncating
 	# np.set_printoptions(threshold=np.nan)
-	# Karni Amnon
 	
 	""" Extract data from CSV file and place into numpy array. """
 	initial_array = pd.read_csv(file)

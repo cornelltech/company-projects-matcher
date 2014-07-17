@@ -8,7 +8,7 @@ existing_project_IDs = []
 
 # Declaring valid values for all fields.
 vals_cs_ug = [True, False]
-vals_work_experience = range(0, 7)
+vals_work_experience = range(0, 5)
 
 # 0 = lowest, 4 = most
 vals_coding_ability = range(0, 5)
@@ -170,7 +170,7 @@ class Student(object):
 			----------
 			ca    = coding ability. Int from 0 to 4, inclusive.
 			csug  = was cs undergrad. Boolean.
-			nywe  = num. years of work experience. Int from 0 to 6 (6 = 6+).
+			nywe  = num. years of work experience. Int from 0 to 4 (4 = 4+).
 			project_lst = an integer list size number_project_rankings. Ints are the project IDs. 
 						  The position of the int determines what rank it is.
 
