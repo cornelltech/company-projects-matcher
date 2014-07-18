@@ -13,6 +13,7 @@ if __name__ == "__main__":
 
  # 	def __init__ (self, name, ID, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp):
 
+ 	# NOTE: This is going to error. Not imperative to fix this -- just a random test.
 	a = Student("Ameyayayaya", 2886650, 1, 0, 3, 6, [3055, 3250, 3250, 3250, 3250, 3250, 3250, 3250, 3250, 3250])
 	print a.name
 	print a.ID
