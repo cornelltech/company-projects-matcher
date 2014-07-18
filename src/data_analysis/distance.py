@@ -44,7 +44,6 @@ def is_positive_semidefinite(cov_matrix, verbose = False):
 def create_covariance_matrix(file = default_file, verbose = False):
 	data_array = clustering.__init__(file)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
-	print one_hot_data_preprocessed
 	
 	if (verbose):
 		print "One hot data preprocessed is: "
@@ -436,7 +435,7 @@ if (__name__ == "__main__"):
 	#do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
 
 	# BIG DATA: for reals
-	do_all_python_distances_data(processed_data, inv_cov, unprocessed_data)
+	#do_all_python_distances_data(processed_data, inv_cov, unprocessed_data)
 	#do_all_subtracted_distances_data(processed_data, unprocessed_data)
 
 
