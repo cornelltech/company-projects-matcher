@@ -6,7 +6,7 @@ from matplotlib import pyplot
 from sklearn import preprocessing
 from sklearn.cluster import k_means_
 
-default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv"
 
 def __init__(file = default_file):
 	# print the full array instead of truncating
@@ -42,18 +42,20 @@ def do_preprocessing(data_array):
 	#print one_hot_data
 	return one_hot_data
 
-def do_normalize(data_array):
+def do_normalize(data_array, verbose = False):
 	"""" Normalize the data before feeding into K means. """
 	norm = preprocessing.Normalizer()
 	normalized = norm.fit_transform(data_array)
 
-	print "mean is "
-	print np.mean(data_array, 0)
+	if (verbose):
+		print "mean is "
+		print np.mean(data_array, 0)
 
-	print "len mean is "
-	print len(np.mean(data_array, 0))
+		print "len mean is "
+		print len(np.mean(data_array, 0))
 
-	print normalized
+		print normalized
+
 	return normalized
 
 def do_k_means(normalized, k):
@@ -103,8 +105,8 @@ def print_data(enc, transformed, kmeans):
 
 if __name__ == "__main__":
 	data_array = __init__()
-	print "Length of data array is "
-	print len(data_array)
+	#print "Length of data array is "
+	#print len(data_array)
 	pre_processed = do_preprocessing(data_array)
 	normalized = do_normalize(pre_processed)
 	km = do_k_means(normalized, 3)
