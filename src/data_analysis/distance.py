@@ -1,14 +1,11 @@
 #import teams
 import numpy as np
-import pandas as pd
-from sklearn import preprocessing
 from scipy import linalg
 from scipy import spatial
-from statsmodels.stats import correlation_tools
 import clustering
 import math
 
-default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses.csv"
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv"
 
 class DistanceError(Exception):
 	def __init__(self, value):
@@ -233,33 +230,19 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 		result.append(average_mahal_distance_team)
 	return result.sort()
 
-def use_python_distance_data(student_one, student_two, inv_sq_cov_mat):
-	return spatial.distance.mahalanobis(student_one, student_two, inv_sq_cov_mat)
-	
-# The input "python" decides if we use the built-in mahalanobis distance or not
-def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = False, python = True):
+# This takes in the inverse of the cov mat, not the inverse sq cov mat.
+def use_python_distance_data(student_one, student_two, inv_cov_mat):
+	return spatial.distance.mahalanobis(student_one, student_two, inv_cov_mat)
+
+# This takes in the inverse of the cov mat, not the inverse sq cov mat.
+# TODO: make this actually return the result.
+def do_all_python_distances_data(data, inv_cov_mat, unprocessed_data, start = 0, verbose = True):
 	i = start
 	j = start
 	res = []
-	if (verbose):
-		print "data is " + str(data)
 	for student_one in data:
 		for student_two in data:
-			if (verbose):
-				#print "(i, j) = " + str((i, j))
-				print "Student one is: " + str(student_one)
-				print "Student two is: " + str(student_two)
-			#d = np.dot(student_one, student_two)
-			if (not(python)):
-				if (verbose):
-					print "Using my distance"
-			 	d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat, fixed_with_zeros = True)
-			 	if (verbose):
-			 		print "d is " + str(d)
-			else:
-				d = use_python_distance_data(student_one, student_two, inv_sq_cov_mat)
-			# names = (data[i], data[j])
-			# print str(names) + str(d)
+			d = use_python_distance_data(student_one, student_two, inv_cov_mat)
 			tup = ((i, j), d)
 			keys = [t[0] for t in res]
 			if ((j, i) in keys):
@@ -271,9 +254,7 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 		j = start
 	res.sort(key = lambda tup: tup[1])
 
-	#minimum_tuple = res[0]
-	#minimum = minimum_tuple[1]
-	if (True):
+	if (verbose):
 		 for i in res:
 		 	tup = i[0]
 		 	first_student = tup[0]
@@ -281,13 +262,45 @@ def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, ver
 
 			lst_first_student = unprocessed_data[first_student]
 			lst_second_student = unprocessed_data[second_student]
- 
-			#print "(",
-			# print "UG major: " + str((lst_first_student[0], lst_second_student[0]))
-			# print "Coding ability: " + str((lst_first_student[1], lst_second_student[1]))
-			# print "Degree pursuing: " + str((lst_first_student[2], lst_second_student[2]))
-			# print "Work exp. (yrs) " + str((lst_first_student[3], lst_second_student[3]))
-			# print ")",
+
+			print lst_first_student
+			print lst_second_student
+
+			for x in range(0, 4):
+				if (not(lst_first_student[x] == lst_second_student[x])):
+					print "Diff at " + str(x)
+
+			print i[1]
+
+	#return res
+
+# Uses the function that I defined (do_mahal_distance).
+def do_all_my_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = True):
+	i = start
+	j = start
+	res = []
+	for student_one in data:
+		for student_two in data:
+			d = do_mahal_distance(student_one, student_two, inv_sq_cov_mat, fixed_with_zeros = True)
+			tup = ((i, j), d)
+			keys = [t[0] for t in res]
+			if ((j, i) in keys):
+			 	pass
+			else:
+			 	res.append(tup)
+			j += 1
+		i += 1
+		j = start
+	res.sort(key = lambda tup: tup[1])
+
+	if (verbose):
+		 for i in res:
+		 	tup = i[0]
+		 	first_student = tup[0]
+			second_student = tup[1]
+
+			lst_first_student = unprocessed_data[first_student]
+			lst_second_student = unprocessed_data[second_student]
 
 			print lst_first_student
 			print lst_second_student
@@ -306,14 +319,14 @@ if (__name__ == "__main__"):
 	# Will print out the entire matrix if necessary
 	np.set_printoptions(threshold=np.nan)
 
-	tup = create_covariance_matrix(file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv")
+	tup = create_covariance_matrix()
 	unprocessed_data = tup[0]
 	processed_data = tup[1]
 	covariance_matrix = tup[2]
 
-	#sq_cov = sqrt_covariance_matrix(covariance_matrix)
-	inv_sq_cov = inverse_matrix(covariance_matrix)
-	#print inv_sq_cov
+	sq_cov = sqrt_covariance_matrix(covariance_matrix)
+	inv_cov = inverse_matrix(covariance_matrix)
+	inv_sq_cov = inverse_matrix(sq_cov)
 
 	# print "d unprocessed " + str(unprocessed_data[1])
 	# print "d processed " + str(processed_data[1])
@@ -350,7 +363,7 @@ if (__name__ == "__main__"):
 	#do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
 
 	# BIG DATA: for reals
-	do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = False, python = True)
+	do_all_python_distances_data(processed_data, inv_cov, unprocessed_data)
 
 	# Testing weighted interest
 	#for i in range (1, 11):
