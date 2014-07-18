@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd 
 
 import classes
-import teams
+import random_teams
 from classes import Student
 from classes import Team
 from classes import Project
@@ -260,7 +260,7 @@ def get_project_from_ID(ID, projects):
 def simple_greedy_match(students_lst, projects):
 	while(len(students_lst) > 0):
 		#print "Students list is " + str([s.ID for s in students_lst])
-		r = teams.random_index(len(students_lst))
+		r = random_teams.random_index(len(students_lst))
 		cur_student = students_lst[r]
 		#print "Current student is: " + str(cur_student.ID)
 		#print "Student " + str(cur_student.ID) + "'s list is ",
