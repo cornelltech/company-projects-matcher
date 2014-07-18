@@ -436,13 +436,13 @@ if (__name__ == "__main__"):
 	#do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
 
 	# BIG DATA: for reals
-	#do_all_python_distances_data(processed_data, inv_cov, unprocessed_data)
+	do_all_python_distances_data(processed_data, inv_cov, unprocessed_data)
 	#do_all_subtracted_distances_data(processed_data, unprocessed_data)
 
 
 	a = [1, 0, 0, 4]
 	b = [0, 3, 1, 4]
-	print subtract_distances(a, b)
+	#print subtract_distances(a, b)
 
 	# Testing weighted interest
 	#for i in range (1, 11):
