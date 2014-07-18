@@ -274,6 +274,79 @@ def do_all_python_distances_data(data, inv_cov_mat, unprocessed_data, start = 0,
 
 	#return res
 
+def subtract_distances(student_one, student_two):
+	def categorical_differences(index):
+		if (student_one[index] == student_two[index]):
+			return 0
+		else:
+			return 4
+
+	def numerical_differences(index):
+		if (student_one[index] == student_two[index]):
+			return 0
+		else:
+			diff = abs(student_one[index] - student_two[index])
+			return diff
+
+	# Declare result
+	res = 0
+
+	# UG major
+	res += categorical_differences(0)
+
+	# Coding ability
+	res += numerical_differences(1)
+
+	# Degree pursuing
+	res += categorical_differences(2)
+
+	# Work experience
+	res += numerical_differences(3)
+
+	return res
+
+
+
+def do_all_subtracted_distances_data(data, unprocessed_data, start = 0, verbose = True):
+	i = start
+	j = start
+	res = []
+	for student_one in data:
+		for student_two in data:
+			d = subtract_distances(student_one, student_two)
+			tup = ((i, j), d)
+			keys = [t[0] for t in res]
+			if ((j, i) in keys):
+			 	pass
+			else:
+			 	res.append(tup)
+			j += 1
+		i += 1
+		j = start
+	res.sort(key = lambda tup: tup[1])
+
+	if (verbose):
+		 for i in res:
+		 	tup = i[0]
+		 	first_student = tup[0]
+			second_student = tup[1]
+
+			lst_first_student = unprocessed_data[first_student]
+			lst_second_student = unprocessed_data[second_student]
+
+			print lst_first_student
+			print lst_second_student
+
+			for x in range(0, 4):
+				if (not(lst_first_student[x] == lst_second_student[x])):
+					print "Diff at " + str(x)
+					pass
+
+			#print i[1] - minimum
+			print i[1]
+
+	#return res
+
 # Uses the function that I defined (do_mahal_distance).
 def do_all_my_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = True):
 	i = start
@@ -363,7 +436,13 @@ if (__name__ == "__main__"):
 	#do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
 
 	# BIG DATA: for reals
-	do_all_python_distances_data(processed_data, inv_cov, unprocessed_data)
+	#do_all_python_distances_data(processed_data, inv_cov, unprocessed_data)
+	#do_all_subtracted_distances_data(processed_data, unprocessed_data)
+
+
+	a = [1, 0, 0, 4]
+	b = [0, 3, 1, 4]
+	print subtract_distances(a, b)
 
 	# Testing weighted interest
 	#for i in range (1, 11):
