@@ -47,6 +47,7 @@ def is_positive_semidefinite(cov_matrix, verbose = False):
 def create_covariance_matrix(file = default_file, verbose = False):
 	data_array = clustering.__init__(file)
 	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
+	print one_hot_data_preprocessed
 	
 	if (verbose):
 		print "One hot data preprocessed is: "
@@ -236,7 +237,7 @@ def use_python_distance_data(student_one, student_two, inv_sq_cov_mat):
 	return spatial.distance.mahalanobis(student_one, student_two, inv_sq_cov_mat)
 	
 # The input "python" decides if we use the built-in mahalanobis distance or not
-def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = False, python = False):
+def do_all_distances_data(data, inv_sq_cov_mat, unprocessed_data, start = 0, verbose = False, python = True):
 	i = start
 	j = start
 	res = []
@@ -310,8 +311,8 @@ if (__name__ == "__main__"):
 	processed_data = tup[1]
 	covariance_matrix = tup[2]
 
-	sq_cov = sqrt_covariance_matrix(covariance_matrix)
-	inv_sq_cov = inverse_matrix(sq_cov)
+	#sq_cov = sqrt_covariance_matrix(covariance_matrix)
+	inv_sq_cov = inverse_matrix(covariance_matrix)
 	#print inv_sq_cov
 
 	# print "d unprocessed " + str(unprocessed_data[1])
@@ -349,7 +350,7 @@ if (__name__ == "__main__"):
 	#do_all_distances_data(small_processed_data, inv_sq_cov, small_unprocessed_data, verbose = True)
 
 	# BIG DATA: for reals
-	#do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = True)
+	do_all_distances_data(processed_data, inv_sq_cov, unprocessed_data, verbose = False, python = True)
 
 	# Testing weighted interest
 	#for i in range (1, 11):
