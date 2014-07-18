@@ -17,8 +17,9 @@ degree_pursuing: categorical.
 	1: MEng
 	2: MS
 
-num_yrs_work_experience: 7-point scale ranging from 0 to 6
+num_yrs_work_experience: 5-point scale ranging from 0 to 4
 
+***DEPRECATED***
 group_experience: 5-point scale ranging from 0 to 4.
 	0: I have never worked in a group.
 	1: I have worked in a group a few times.
@@ -26,6 +27,7 @@ group_experience: 5-point scale ranging from 0 to 4.
 	3: I work in a group once a month.
 	4: I work in a group a few times a month/all of the time.
 
+***DEPRECATED***
 m_group_experience: 5-point scale ranging from 0 to 4.
 	0: I have never worked in a multidiscliplinary group.
 	1: I have worked in a multidiscliplinary group a few times.
