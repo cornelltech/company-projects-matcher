@@ -12,6 +12,7 @@ from classes import FieldError
 
 student_ids = []
 
+# Just for the initial test case.
 names_projects = {3705: 'Goldman Sachs',
 				2990: 'American Express',
 				4225: 'Google',
@@ -25,7 +26,7 @@ names_projects = {3705: 'Goldman Sachs',
 				3445: 'Bonobos',
 				3900: 'Bloomberg'}
 
-
+# Normalize each element in a list by the list min and max.
 def normalize_bet_zero_and_one(lst):
 	lst_max = lst.max()
 	lst_min = lst.min()
@@ -37,6 +38,8 @@ def normalize_bet_zero_and_one(lst):
 	final = [(elm * 1.0) / den for elm in num]
 	return final
 
+# For each of the IDs in classes' valid projects, create a project object with that ID.
+# As a default, each project requires 2 MBAs and 2 MEngs.
 def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 	projects_lst = []
 	for ID in classes.vals_valid_projects:
@@ -45,20 +48,24 @@ def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 	return projects_lst
 
 # Filter out projects with insufficient rankings to get matched.
-def remove_infeasible_projects(students):
+def remove_infeasible_projects(students, verbose = False):
 	insufficient_IDs = []
 	projects = generate_all_projects()
 	for p in projects:
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
-		#print "For project " + str(p.ID) + ":"
-		#print [s.ID for s in matched]
+		if (verbose):
+			print "For project " + str(p.ID) + ":"
+			print [s.ID for s in matched]
 		MBAs_ranked = [s for s in matched if s.degree_pursuing == 0]
 		MEngs_ranked = [s for s in matched if s.degree_pursuing == 1]
-		#print [s.ID for s in MBAs_ranked]
-		#print [s.ID for s in MEngs_ranked]
+		if (verbose):
+			print [s.ID for s in MBAs_ranked]
+			print [s.ID for s in MEngs_ranked]
 
+		# TODO: change this to the number of MBAs and number of MEngs that we actually have.
 	 	if (len(MBAs_ranked) < 2 or len(MEngs_ranked) < 2):
-	 		#print "NOT ENOUGH MBAS OR MENGS"
+	 		if (verbose):
+	 			print "NOT ENOUGH MBAS OR MENGS"
 	 		insufficient_IDs.append(p.ID)
 
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
