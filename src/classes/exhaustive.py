@@ -47,6 +47,7 @@ def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 	return projects_lst
 
 # Filter out projects with insufficient rankings to get matched.
+# Returns a list of projects which passed the test.
 def remove_infeasible_projects(students, verbose = False):
 	insufficient_IDs = []
 	projects = generate_all_projects()
@@ -63,19 +64,30 @@ def remove_infeasible_projects(students, verbose = False):
 
 	 	if (len(MBAs_ranked) < p.num_MBAs or len(MEngs_ranked) < p.num_MEngs):
 	 		if (verbose):
-	 			print "NOT ENOUGH MBAS OR MENGS"
+	 			string = "Not enough MBAs or MEngs ranked project "
+	 			string += str(p.ID)
+	 			string += " for it to be included."
+	 			print string
 	 		insufficient_IDs.append(p.ID)
 
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
 	return projects
 
+# For a specific project p, get the students' overall interest in the project.
+# Higher interest means that more students ranked it highly on their lists.
+# TODO: fix this to include the new interest level from rankings that I developed.
+def get_project_interest_from_rankings(p, students, verbose = False):
 
-def get_project_interest_from_rankings(p, students):
+	# Check which students ranked this project.
+	matched = filter(lambda s: p.ID in s.project_rankings, students)
+	if (verbose):
+		print "The following students ranked project " + str(p.ID) + ":"
+		print [s.ID for s in matched]
+
+	# For each student, get their interest in this project.
+	# Add this to the sum of the overall interest.
+
 	overall_interest = 0
-
-	matched = filter(lambda x: p.ID in x.project_rankings, students)
-#	print "For project " + str(p.ID) + ":"
-	#print [s.ID for s in matched]
 	for s in matched:
 		rank = s.get_ranking(p.ID)
 		interest = s.get_interest_from_ranking(rank)
@@ -83,15 +95,14 @@ def get_project_interest_from_rankings(p, students):
 	 	overall_interest = overall_interest + interest
 	return overall_interest
 
+def exhaustive(projects, students, verbose = False):
+	if (verbose):
+		print "The viable projects to match to are:"
+		print "-------------------------------------"
 
-def exhaustive(projects, students):
-	print "The viable projects to match to are:"
-	print "-------------------------------------"
-
-	for p in projects:
-		print names_projects[p.ID]
-	print ""
-	#print [p.ID for p in projects]
+		for p in projects:
+			print names_projects[p.ID]
+		print ""
 
 	# Sort projects in order of highest demand to lowest demand.
 	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students), reverse = True)
