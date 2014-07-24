@@ -479,7 +479,7 @@ def get_student_type_diversity_all_fields(fixed_output, first_name, second_name)
 					changed = True
 		if (not changed):
 			result[count] = (-1, -1)
-		else:
+		else:  
 			result[count] = (first_count, second_count)
 		count += 1	
 
