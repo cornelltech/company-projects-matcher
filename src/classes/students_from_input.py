@@ -299,7 +299,7 @@ def simple_greedy_match(students_lst, projects):
 	return projects
 
 def rearrange_spots(students_lst, projects):
-
+ 
 	def has_empty_spot(x):
 		return ((x.remaining_MEng_spots + x.remaining_MBA_spots) > 0)
 
