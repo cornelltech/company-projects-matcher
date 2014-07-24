@@ -3,7 +3,6 @@ import pandas as pd
 
 import classes
 import itertools
-import teams
 from classes import Student
 from classes import Team
 from classes import Project
@@ -62,8 +61,7 @@ def remove_infeasible_projects(students, verbose = False):
 			print [s.ID for s in MBAs_ranked]
 			print [s.ID for s in MEngs_ranked]
 
-		# TODO: change this to the number of MBAs and number of MEngs that we actually have.
-	 	if (len(MBAs_ranked) < 2 or len(MEngs_ranked) < 2):
+	 	if (len(MBAs_ranked) < p.num_MBAs or len(MEngs_ranked) < p.num_MEngs):
 	 		if (verbose):
 	 			print "NOT ENOUGH MBAS OR MENGS"
 	 		insufficient_IDs.append(p.ID)
