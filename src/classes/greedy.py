@@ -75,7 +75,6 @@ def remove_infeasible_projects(students, verbose = False):
 
 # For a specific project p, get the students' overall interest in the project.
 # Higher interest means that more students ranked it highly on their lists.
-# TODO: fix this to include the new interest level from rankings that I developed.
 def get_project_interest_from_rankings(p, students, verbose = False):
 
 	# Check which students ranked this project.
@@ -86,7 +85,6 @@ def get_project_interest_from_rankings(p, students, verbose = False):
 
 	# For each student, get their interest in this project.
 	# Add this to the sum of the overall interest.
-
 	overall_interest = 0
 	for s in matched:
 		rank = s.get_ranking(p.ID)
@@ -95,7 +93,14 @@ def get_project_interest_from_rankings(p, students, verbose = False):
 	 	overall_interest = overall_interest + interest
 	return overall_interest
 
-def exhaustive(projects, students, verbose = False):
+# This function takes in the already-filtered list of projects.
+# Call remove infeasible projects on the original list of projects
+# before calling this function.
+# Initially sorts the list of projects by their overall interest levels.
+# Assigns students to the projects in that order.
+# Create all possible pairs of MBAs and MEngs.
+
+def sort_and_match(projects, students, verbose = False):
 	if (verbose):
 		print "The viable projects to match to are:"
 		print "-------------------------------------"
@@ -106,121 +111,123 @@ def exhaustive(projects, students, verbose = False):
 
 	# Sort projects in order of highest demand to lowest demand.
 	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students), reverse = True)
-	#print [p.ID for p in projects]
 
 	added_projects = []
 
 	for p in projects:
-		print "For " + names_projects[p.ID] + " project:"
-		matched = filter(lambda x: p.ID in x.project_rankings, students)
+		if (verbose):
+			print "For " + names_projects[p.ID] + " project:"
+		# Get all of the students that ranked this project.
+		matched = filter(lambda s: p.ID in s.project_rankings, students)
+
+		# Sort them into MBAs and MEngs.
 		MBAs_ranked = [s for s in matched if s.degree_pursuing == 0]
 		MEngs_ranked = [s for s in matched if s.degree_pursuing == 1]
+		
 		# Generate all possible pairs of MBAs.		
 		iter_MBA_pairs = itertools.combinations(MBAs_ranked, 2)
-		#print "MBA pair IDS"
+		
+		if (verbose):
+			print "MBA pair IDs:"
+		
 		MBA_pairs = []
-		#Creating a list
+		MEng_pairs = []
+
+		# Creating a list of all possible pairs
 		for s in iter_MBA_pairs:
 			MBA_pairs.append(s)
-			#(x, y) = s
-			#print x.ID,
-			#print y.ID
+			if (verbose):
+				(x, y) = s
+				print x.ID,
+				print y.ID
+
 		# Generate all possible pairs of MEngs.
 		iter_MEng_pairs = itertools.combinations(MEngs_ranked, 2)
-		#print "MEng pair IDS"
-		MEng_pairs = []
+		
+		if (verbose):
+			print "MEng pair IDs:"
+
 		for s in iter_MEng_pairs:
 			MEng_pairs.append(s)
-			#(x, y) = s
-			#print x.ID,
-		#	print y.ID
-		#print "MEng pairs is is "
-		#print MEng_pairs
-		#print "MBA pairs is "
-		#print MBA_pairs
+			if (verbose):
+				(x, y) = s
+				print x.ID,
+				print y.ID
 
-		#print "Len MBA pairs",
-		#print len(MBA_pairs)
-		#print "Len MEng pairs",
-		#print len(MEng_pairs)
+		if (verbose):
+			print "MEng pairs is is "
+			print MEng_pairs
+			print "MBA pairs is "
+			print MBA_pairs
 
-		print "There are",
-		print len(MBA_pairs),
-		print "MBA pairs and",
-		print len(MEng_pairs),
-		print "MEng pairs."
-		# Generate combinations of the MBAs and the MEngs.
+			print "Len MBA pairs",
+			print len(MBA_pairs)
+			print "Len MEng pairs",
+			print len(MEng_pairs)
+
+			print "There are",
+			print len(MBA_pairs),
+			print "MBA pairs and",
+			print len(MEng_pairs),
+			print "MEng pairs."
+
+		# Generate all possible combinations of the MBAs and the MEngs.
 		all_possible_teams = []
 		for x in MBA_pairs:
 			for y in MEng_pairs:
 				all_possible_teams.append((x, y))
 
-		#print len(all_possible_teams)
+		if (verbose):
+			string = "There are " + str(len(all_possible_teams)) + "possible teams"
+			print string
 
-		all_possible_teams_with_values = []
+		all_possible_teams_with_interest_values = []
+		
 		for t in all_possible_teams:
 			overall_interest = 0
 			((x, y), (a, b)) = t
+			# Extract the members from this possible team.
 			members = [x, y, a, b]
-			# print "(",
-			# print x.ID,
-			# print ",",
-			# print y.ID,
-			# print ",",
-			# print a.ID,
-			# print ",",
-			# print b.ID,
-			# print ")",
+
+			# Get the overall interest level of this team in the project.
 			for mem in members:
 				rank = mem.get_ranking(p.ID)
 				interest = mem.get_interest_from_ranking(rank)
 				overall_interest = overall_interest + interest
-			all_possible_teams_with_values.append((overall_interest, t))
+
+			# Add an (interest, team) tuple to all
+			all_possible_teams_with_interest_values.append((overall_interest, t))
 
 		# for a in all_possible_teams_with_values:
 		# 	print "(" + str(a[0]) + ","
 		# 	print type(a[1])
 		# 	print str(a[1].ID) + ")"
-		print ""
+		#print ""
 
 		#print all_possible_teams_with_values
-		all_possible_teams_with_values.sort(key = lambda tup: tup[0], reverse = True)
+		all_possible_teams_with_interest_values.sort(key = lambda tup: tup[0], reverse = True)
 		#print all_possible_teams_with_values
 
-		if (len(all_possible_teams_with_values) > 0):
-			happiest_team_combo = (all_possible_teams_with_values[0])[1]
+		# If there are some possible teams,
+		# pick the most interested one.
+		if (len(all_possible_teams_with_interest_values) > 0):
+			most_interested_team_combo = (all_possible_teams_with_interest_values[0])[1]
 			proceed = True
+	
+		# If there are no possible teams, do nothing (for this project).
 		else:
 			#raise FieldError("There are no viable teams for project " + str(p.ID) + ".")
 			proceed = False
 
 		if (proceed):
-			#print "Happiest team combo is"
-			#print happiest_team_combo
-
-			#print "Before removing, len of students is",
-			#print len(students)
-			for tup in happiest_team_combo:
+			for tup in most_interested_team_combo:
 				for stud in tup:
 					p.add_student(stud)
 					for s in students:
 						if (s.ID == stud.ID):
 							students.remove(s)
-							#print "Removed"
-			#print "After removing, len of students is",
-			#print len(students)
 
-			# for a in all_possible_teams_with_values:
-			# 	print "(" + str(a[0]) + ","
-			# 	print str(a[1].ID) + ")"
-
-			#print "After add:"
-			#p.print_student_IDs(num = False, name = True, dct = names_projects)
-			#print [(b, e) for b in MBA_pairs for e in MEng_pairs]
 			added_projects.append(p)
-		#	print "After add remaining students are:"
-		#	print [s.ID for s in students]
-		#	print ""
 
 	for stud in added_projects:
 		stud.print_student_IDs(num = False, name = True, dct = names_projects)
@@ -274,11 +281,10 @@ def get_students_from_input(file, normalize=True):
 
 	return students_lst
 
-
 def do_tests():
 	students_lst = get_students_from_input("tests.csv")
 	projects_filtered = remove_infeasible_projects(students_lst)
-	exhaustive(projects_filtered, students_lst)
+	sort_and_match(projects_filtered, students_lst)
 
 if (__name__ == "__main__"):
 	do_tests()
