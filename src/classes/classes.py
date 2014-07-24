@@ -214,6 +214,7 @@ class Student(object):
 			raise FieldError(error_one + self._ID.astype('|S10') + error_two)
 
 
+	# The comment on #16 refers to this.
 	# def get_interest_from_interest(self, rank):
 	#	return abs(10 - rank)
 

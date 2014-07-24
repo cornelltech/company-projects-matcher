@@ -99,8 +99,11 @@ def get_project_interest_from_rankings(p, students, verbose = False):
 # Initially sorts the list of projects by their overall interest levels.
 # Assigns students to the projects in that order.
 # Create all possible pairs of MBAs and MEngs.
+# Creates all possible teams from these pairs.
+# Pick the most interested team.
+# Goes through the projects in terms of their sorted interest levels.
 
-def sort_and_match(projects, students, verbose = False):
+def sort_and_match_by_pairs(projects, students, verbose = False):
 	if (verbose):
 		print "The viable projects to match to are:"
 		print "-------------------------------------"
@@ -284,7 +287,7 @@ def get_students_from_input(file, normalize=True):
 def do_tests():
 	students_lst = get_students_from_input("tests.csv")
 	projects_filtered = remove_infeasible_projects(students_lst)
-	sort_and_match(projects_filtered, students_lst)
+	sort_and_match_by_pairs(projects_filtered, students_lst)
 
 if (__name__ == "__main__"):
 	do_tests()
