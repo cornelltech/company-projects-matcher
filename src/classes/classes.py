@@ -1,4 +1,5 @@
 import random
+import math
 
 # TODO: move these to a globals file.
 '''To ensure that we do not create multiple students, teams, or projects with the same ID.'''
@@ -26,6 +27,7 @@ cs_ug_weight = 0.25
 coding_ability_weight = 0.25
 work_experience_weight = 0.25
 
+# TODO: should change this to 10 when I'm testing.
 number_project_rankings = 5
 
 class FieldError(Exception):
@@ -200,6 +202,7 @@ class Student(object):
 		tup.append(self._project_rankings)
 		return tup
 
+	# Get the number that this student ranked this project. 
 	def get_ranking(self, project_id):
 		try:
 			rankings = (self._project_rankings).tolist()
@@ -210,8 +213,16 @@ class Student(object):
 			error_two = "'s ranking list."
 			raise FieldError(error_one + self._ID.astype('|S10') + error_two)
 
+
+	# def get_interest_from_interest(self, rank):
+	#	return abs(10 - rank)
+
+	# Curved function that I wrote to close #2.
 	def get_interest_from_ranking(self, rank):
-		return abs(10 - rank)
+		if (not(rank <= number_project_rankings)):
+			raise CompError("Rank is invalid.")
+		a = 10 * rank
+		return a * math.sqrt(a)
 
 class Team(object):
 
