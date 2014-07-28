@@ -56,8 +56,8 @@ def remove_infeasible_projects(students, verbose = False):
 		if (verbose):
 			print "For project " + str(p.ID) + ":"
 			print [s.ID for s in matched]
-		MBAs_ranked = [s for s in matched if s.degree_pursuing == 0]
-		MEngs_ranked = [s for s in matched if s.degree_pursuing == 1]
+		MBAs_ranked = [s for s in matched if s.degree_pursuing == "MBA"]
+		MEngs_ranked = [s for s in matched if s.degree_pursuing == "MEng"]
 		if (verbose):
 			print [s.ID for s in MBAs_ranked]
 			print [s.ID for s in MEngs_ranked]
@@ -287,7 +287,8 @@ def get_students_from_input(file, normalize=True):
 def do_tests():
 	students_lst = get_students_from_input("tests.csv")
 	projects_filtered = remove_infeasible_projects(students_lst)
-	sort_and_match_by_pairs(projects_filtered, students_lst)
+	print [p.ID for p in projects_filtered]
+	#sort_and_match_by_pairs(projects_filtered, students_lst)
 
 if (__name__ == "__main__"):
 	do_tests()
