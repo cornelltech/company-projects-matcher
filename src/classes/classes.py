@@ -20,7 +20,7 @@ vals_degree_pursuing = { 0 : "MBA",
 }
 
 # Valid IDs for our projects.
-vals_valid_projects = map(lambda x: x * 65, range(16, 66))
+vals_valid_projects = map(lambda x: x * 65, range(16, 76))
 
 degree_weight = 0.25
 cs_ug_weight = 0.25
