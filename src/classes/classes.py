@@ -511,6 +511,7 @@ class Project(object):
 		self.set_num_MEngs(num_MEngs)
 		self._remaining_MBA_spots = num_MBAs
 		self._remaining_MEng_spots = num_MEngs
+		self._students = []
 		self._MBA_list  = []
 		self._MEng_list = []
 		# Waiting students is meant to be tuples of (rank, student) form.
@@ -583,6 +584,16 @@ class Project(object):
 	MBA_list = property(get_MBA_list, set_MBA_list,
 				  doc = "Get and set the MBA list on this project.")
 
+	def get_students(self):
+		return self._students
+
+	def set_students(self):
+		error = "Cannot manually set the students list. Must add students via add_student function."
+		raise FieldError(error)
+
+	students = property(get_students, set_students, 
+						doc = "Get and set the students on this project.")
+
 	def get_waiting_students(self):
 		return self._waiting_students
 
@@ -619,45 +630,42 @@ class Project(object):
 	def has_remaining_MEng_spots(self):
 		return (self._remaining_MEng_spots > 0)
 
+	def has_remaining_spots(self):
+		return self.has_remaining_MBA_spots() or self.has_remaining_MEng_spots()
+
 	# TODO: Add a way to check that ID doesnt exist on another team.
+	# ^^^^ actually don't want that because at some intermediate point, we might want the same student
+	# two different projects.
 	def add_student_to_MBAs(self, student):
-		# TODO: change this if we start storing degree pursuing as a string.
 		if (not(student.degree_pursuing == 0 or student.degree_pursuing == "MBA")):
-			# error = "Student " + str(student.ID) + " is not an MBA student. Cannot add to MBAs on project " + str(self._ID) + ".'"
-			# raise FieldError(error)
 			return False
-		# TODO: assumes that there are only two types of students
 		elif (not(self.has_remaining_MBA_spots())):
-			# error = "In add " + str(student.ID) + ", there are no remaining MBA spots for project " + str(self._ID) + "."
-			# raise FieldError(error)
 			return False
 		else:
 			MBA_IDs  = [s.ID for s in self._MBA_list]
 			if (student.ID in MBA_IDs):
-				error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
-				raise FieldError(error)
+				return False
+				#error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
+				#raise FieldError(error)
 		self._MBA_list.append(student)
+		self._students.append(student)
 		self._remaining_MBA_spots -= 1
 		return True
 
 	# NOTE: returns a boolean!!!!
 	def add_student_to_MEngs(self, student):
-		# TODO: decide if we want to raise errors or keep booleans.
 		if (not(student.degree_pursuing == 1 or student.degree_pursuing == "MEng")):
-			# error = "Student " + str(student.ID) + " is not an MEng student. Cannot add to MEngs on project " + str(self._ID) + ".'"
-			# raise FieldError(error)
 			return False
-		# TODO: assumes that there are only two types of students
 		elif (not(self.has_remaining_MEng_spots())):
-			# error = "In add " + str(student.ID) + ", there are no remaining MEng spots for project " + str(self._ID) + "."
-			# raise FieldError(error)
 			return False
 		else:
 			MEng_IDs  = [s.ID for s in self._MEng_list]
 			if (student.ID in MEng_IDs):
-				error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
-				raise FieldError(error)
+				return False
+				#error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
+				#raise FieldError(error)
 		self._MEng_list.append(student)
+		self._students.append(student)
 		self._remaining_MEng_spots -= 1
 		return True
 
@@ -672,8 +680,9 @@ class Project(object):
 
 	def add_waiting_student(self, student, verbose = False):
 		if (student in self._MBA_list or student in self._MEng_list):
-			error = "Student " + str(student.ID) + " is already on project " + str(self._ID)
-			raise FieldError(error)
+			# error = "Student " + str(student.ID) + " is already on project " + str(self._ID)
+			# raise FieldError(error)
+			pass
 		# test if there are open spots
 		else:
 			deg = student.degree_pursuing
@@ -787,9 +796,6 @@ class Project(object):
 	 		print "On average, students got their",
 	 		print str(sum(lst) / len(lst)) + " pick."
 	 		print ""
-
-	def get_students(self):
-	 	return self._MBA_list + self._MEng_list
 
 
 
