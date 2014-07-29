@@ -87,6 +87,7 @@ class Student(object):
 		else:
 			raise FieldError("What is this degree you're pursuing?")
 
+	# NOTE: this sets the degree pursuing as  A STRING. NOT 0/1
 	def set_degree_pursuing(self, val):
 		# Checks if the user is passing in the string value for degree pursuing.
 		# If not, check if the int they're passing in is included in our dict.
@@ -651,9 +652,9 @@ class Project(object):
 		return True
 
 	def add_student(self, student):
-		if (student.degree_pursuing == 0):
+		if (student.degree_pursuing == "MBA" or student.degree_pursuing == 0):
 			return self.add_student_to_MBAs(student)
-		elif (student.degree_pursuing == 1):
+		elif (student.degree_pursuing == "MEng" or student.degree_pursuing == 1):
 			return self.add_student_to_MEngs(student)
 		else:
 			raise FieldError("Are there more than two types?")
