@@ -210,10 +210,8 @@ class Student(object):
 			ind = rankings.index(project_id)
 			return ind
 		except(ValueError):
-			error_one = "Project " + str(project_id) + " is not in student "
-			error_two = "'s ranking list."
-			raise FieldError(error_one + self._ID.astype('|S10') + error_two)
-
+			# Student did not rank this project.
+			return 1000000000000
 
 	# The comment on #16 refers to this.
 	# def get_interest_from_interest(self, rank):
@@ -507,15 +505,6 @@ class Team(object):
 		pass
 
 class Project(object):
-	def check_valid_student_nums(self, num_students):
-		try:
-			if(num_students < 0):
-				error = "Number of required MBAs and MEngs must be positive."
-				raise FieldError(error)
-		except(TypeError):
-			error = "Number of required MBAs and MEngs must be integers."
-			raise FieldError(error)
-
 	def __init__(self, ID, num_MBAs, num_MEngs):
 		self.set_ID(ID)
 		self.set_num_MBAs(num_MBAs)
@@ -524,6 +513,18 @@ class Project(object):
 		self._remaining_MEng_spots = num_MEngs
 		self._MBA_list  = []
 		self._MEng_list = []
+		# Waiting students is meant to be tuples of (rank, student) form.
+		# I.e. (2, ameya)  means that ameya ranked this project 2 and is waiting.
+		self._waiting_students = []
+
+	def check_valid_student_nums(self, num_students):
+		try:
+			if(num_students < 0):
+				error = "Number of required MBAs and MEngs must be positive."
+				raise FieldError(error)
+		except(TypeError):
+			error = "Number of required MBAs and MEngs must be integers."
+			raise FieldError(error)
 
 	def get_ID(self):
 		return self._ID
@@ -582,6 +583,16 @@ class Project(object):
 	MBA_list = property(get_MBA_list, set_MBA_list,
 				  doc = "Get and set the MBA list on this project.")
 
+	def get_waiting_students(self):
+		return self._waiting_students
+
+	def set_waiting_students(self, val):
+		error = "Cannot manually set the waiting students list. Must add students via add_waiting_student function."
+		raise FieldError(error)
+
+	waiting_students = property(get_waiting_students, set_waiting_students, 
+								doc = "Get and set the waiting students for this project. ")
+
 	def get_remaining_MBA_spots(self):
 		return self._remaining_MBA_spots
 
@@ -611,7 +622,7 @@ class Project(object):
 	# TODO: Add a way to check that ID doesnt exist on another team.
 	def add_student_to_MBAs(self, student):
 		# TODO: change this if we start storing degree pursuing as a string.
-		if (not(student.degree_pursuing == 0)):
+		if (not(student.degree_pursuing == 0 or student.degree_pursuing == "MBA")):
 			# error = "Student " + str(student.ID) + " is not an MBA student. Cannot add to MBAs on project " + str(self._ID) + ".'"
 			# raise FieldError(error)
 			return False
@@ -632,8 +643,7 @@ class Project(object):
 	# NOTE: returns a boolean!!!!
 	def add_student_to_MEngs(self, student):
 		# TODO: decide if we want to raise errors or keep booleans.
-		# TODO: change this if we start storing degree pursuing as a string.
-		if (not(student.degree_pursuing == 1)):
+		if (not(student.degree_pursuing == 1 or student.degree_pursuing == "MEng")):
 			# error = "Student " + str(student.ID) + " is not an MEng student. Cannot add to MEngs on project " + str(self._ID) + ".'"
 			# raise FieldError(error)
 			return False
@@ -651,6 +661,7 @@ class Project(object):
 		self._remaining_MEng_spots -= 1
 		return True
 
+	# Returns a boolean of if the add was successful or not.
 	def add_student(self, student):
 		if (student.degree_pursuing == "MBA" or student.degree_pursuing == 0):
 			return self.add_student_to_MBAs(student)
@@ -658,6 +669,29 @@ class Project(object):
 			return self.add_student_to_MEngs(student)
 		else:
 			raise FieldError("Are there more than two types?")
+
+	def add_waiting_student(self, student, verbose = False):
+		if (student in self._MBA_list or student in self._MEng_list):
+			error = "Student " + str(student.ID) + " is already on project " + str(self._ID)
+			raise FieldError(error)
+		# test if there are open spots
+		else:
+			deg = student.degree_pursuing
+			if ((deg == "MBA" or deg == 0) and self.has_remaining_MBA_spots()):
+				value = self.add_student_to_MBAs(student)
+				if (verbose):
+					print value
+			elif ((deg == "MEng" or deg == 1) and self.has_remaining_MEng_spots()):
+				value = self.add_student_to_MEngs(student)
+				if (verbose):
+					print value
+			else:
+				# Get the rank that this student gave this project.
+				rank = student.get_ranking(self._ID)
+				# Create a tuple of the project ranking and the student.
+				tup = (rank, student)
+				# Add the tuple to the waiting students list.
+				self._waiting_students.append(tup)
 
 	def is_empty(self):
 		return (self._remaining_MEng_spots == self._num_MEngs and self.remaining_MBA_spots == self._num_MBAs)
