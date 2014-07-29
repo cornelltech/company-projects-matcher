@@ -124,26 +124,36 @@ def initial_solution(students, projects):
 
 		ranking_spot += 1
 
+	# See the status after the initial process.
 	for project in projects:
-		pass
-		#if (not(project.students == [])):
-		#	print "For project " + str(project.ID) + ":"
-		#	print [s.ID for s in project.students]
+		#pass
+		if (not(project.students == [])):
+			print "For project " + str(project.ID) + ":"
+			print "     Students: " + str([s.ID for s in project.students])
+			print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
-			# For all projects
-			# If this student ID is on the project
-				# Remove the student from that project
-			# If this student ID is on the waiting list
-				# Remove the student fromt that waiting list.
+
+	# Remove the projects that are full.
+	# For each project, add the students that are waiting
+		# In the order of the highest ranking
+		# If any of these form full teams:
+			# Remove these students from other teams and other waiting lists
 
 def remove_students_from_projects(students_to_remove, projects, ID):
 	for project in projects:
+		# Get the student objects from the tuples of (rank, student) in waiting_students
+		objects_waiting_students = [tup[1] for tup in project.waiting_students]
 		if (not (project.ID == ID)):
 			for student in students_to_remove:
 				if student in project.students:
 					project.students.remove(student)
-				if student in project.waiting_students:
-					project.waiting_students.remove(student)
+
+				# If the student was waiting
+				if student in objects_waiting_students:
+					# Get the index that the student is in the waiting_students list
+					index_student = objects_waiting_students.index(student)
+					# Remove the student & rank at that index
+					project.waiting_students.pop(index_student)
 
 # create all projects
 
