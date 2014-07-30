@@ -224,6 +224,12 @@ class Student(object):
 		a = 10 * rank
 		return a * math.sqrt(a)
 
+	def get_cost_from_ranking(self, rank):
+		if (not(rank <= number_project_rankings)):
+			return 10000
+		else:
+			return (rank * rank)
+
 class Team(object):
 
 	global degree_weight
