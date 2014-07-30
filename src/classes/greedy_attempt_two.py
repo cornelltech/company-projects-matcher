@@ -63,7 +63,7 @@ def create_feasible_projects(students, projects):
 def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
 
-def initial_solution(students, projects, verbose = False):
+def initial_solution(students, projects, verbose = True):
 	feasible_projects = create_feasible_projects(students, projects)
 	print "Feasible projects are:"
 	print [f.ID for f in feasible_projects]
@@ -153,52 +153,90 @@ def initial_solution(students, projects, verbose = False):
 				print "     Students: " + str([s.ID for s in project.students])
 				print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
-	# OLD APPROACH
-	# Remove the projects that are full.
-	# For each of the projects:
-		# If the project is not full:
-			# Add the students that are waiting until there is a full team
-				# Sort the students by the highest rank first
-			# If this project now forms a full team (length of students = team_size)
-				# Cost = sum of costs of individual students.
-			# If this project does not form a full team:
-				# Cost = 10000000
-
-	# Sort the projects by lowest cost first.
-		# If the cost is < 10000000:
-			# This means the team is full.
-
-	# For each of the projects
-		# If the project is 
-	# Add (cost, project) tuple to the projects with costs list. 
-
-	# Sort the projects by their costs level (lowest first).
-		# If there is a project whose goodness is not 0:
-			# This means that the project has a full team.
-			# Add this project to the finished_projects list
-			# Remove the students from any other projects.
-			# Remove the students from any other waiting lists.
-
-	# TODO: think about goodness of a team of 1. I think this is already implemented, but
-	# make sure that the diversity of a singleton team is 0 so that the algorithm will not
-	# choose these options.
-
 	# NEW APPROACH
-	# Remove the projects that are full.
-	# For each of the remaining projects:
-		# Add the students that are waiting until there is a full team
+
+	# For each of the projects that are not full:
+		# Add the students that are waiting 
+			# (until all students are over or there is a full team)
 			# Sort the students by the highest rank first
+	for project in feasible_projects:
+		print str(project.ID) + ": " + str(project.has_spot_for_one_more())
+		
+		# These projects are not full.
+		if (project.has_remaining_spots()):
+		 	if (project.has_waiting_students()):
+		 		for (rank, waiting_student) in project.waiting_students:
+		 			# Will add as many students as it can, and will return false and do nothing
+		 			# when it cannot add any more waiting students.
+		 			# This is already sorted by highest rank first. 
+		 			project.add_student(waiting_student)
+		else:
+		 	pass
 	
+
 	# Sort the projects by number of spots remaining (lowest first).
-	# Should have some sort of check: will only allow teams of 3 (less than that is weird)
+	new_lst = sorted(feasible_projects, key = lambda x: len(x.students), reverse = True)
+	feasible_projects = new_lst
+	print [(p.ID, len(p.students)) for p in feasible_projects]
+
+	# Allowable team size
+	team_size = feasible_projects[0].num_MBAs + feasible_projects[0].num_MBAs
+	allowable_team_size = team_size-1
 
 	# If the team size is 3 (or some allowable number):
 			# For all students
 				# Remove the student from other waiting lists
-				# The student should not be on other teams' student lists
+				# Remove the student from other student lists
+
+	for project in feasible_projects:
+		if (len(project.students) >= allowable_team_size):
+			remove_students_from_projects(project.students, feasible_projects, project.ID)
+
+	# Creating a list of unfilled students
+	# And will assign these to different projects
+	unmatched_students = []
+
 
 	# For all of the remaining projects that are not size 3:
-		# Add students to a sadness list
+	# Remove the students and add them to an unmatched list
+	for project in feasible_projects:
+		# These teams will not be full
+		if (len(project.students) < allowable_team_size):
+			# Add the project's students to the unmatched list
+			unmatched_student_IDs = [s.ID for s in unmatched_students]
+			for student in project.students:
+				if (not(student.ID in unmatched_student_IDs)):
+					unmatched_students.append(student)
+
+	print "Unmatched students is :"
+	print [s.ID for s in unmatched_students]
+
+	for unmatched_student in unmatched_students:
+		# If they are on the waiting list for some full teams:
+			# Pick the highest rank that they gave a team whose waiting list they are on.
+			# Add the student to that team.
+		# If they are not on the waiting list:
+			# Leave them unmatched.
+		waiting_on = find_waiting_lists(unmatched_student, feasible_projects)
+		if (len(waiting_on) > 0):
+			top_project = waiting_on[0]
+			top_project.students.append(unmatched_student)
+			unmatched_students.remove(unmatched_student)
+			# Remove this student from other projects
+			remove_students_from_projects([unmatched_student], projects, top_project.ID)
+
+	# Print:
+	for project in feasible_projects:
+		#pass
+		if (len(project.students) >= allowable_team_size):
+			if (verbose):
+				print "For project " + str(project.ID) + ":"
+				print "     Students: " + str([s.ID for s in project.students])
+				print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
+
+
+	print "At the end the unmatched students are "
+	print [s.ID for s in unmatched_students]
 
 
 def remove_students_from_projects(students_to_remove, projects, ID):
@@ -217,7 +255,24 @@ def remove_students_from_projects(students_to_remove, projects, ID):
 					# Remove the student & rank at that index
 					project.waiting_students.pop(index_student)
 
-# create all projects
+# Find the waitings lists that student is on.
+def find_waiting_lists(student, projects, verbose = False):
+	waiting_lists = []
+	for p in projects:
+		lst = p.waiting_students
+		matching = [tup for tup in lst if tup[1].ID == student.ID]
+		if (verbose):
+			print "For project " + str(p.ID) + ":"
+			print matching
+		# If this project is currently full
+		if ((len(matching) > 0) and (len(p.students) == 4)):
+			waiting_lists.append(p)
+
+	# Sort the project list by the rank that this student gave the project
+	new_lst = sorted(waiting_lists, key = lambda p: student.get_ranking(p.ID))
+	if (verbose):
+		print [p.ID for p in new_lst]
+	return new_lst
 
 if __name__ == "__main__":
 	students = create_students_from_input("tests.csv")
