@@ -57,13 +57,16 @@ def create_students_from_input(file):
 
 	return students_lst
 
-def create_feasible_projects(students):
-	return all_pairs_sorted.remove_infeasible_projects(students)
+def create_feasible_projects(students, projects):
+	return all_pairs_sorted.remove_infeasible_projects(students, projects)
 
 def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
 
-def initial_solution(students, projects):
+def initial_solution(students, projects, verbose = True):
+
+	feasible_projects = create_feasible_projects(students, projects)
+
 	# The index of the ranking that we are currently looking at.
 	ranking_spot = 0
 
@@ -75,69 +78,102 @@ def initial_solution(students, projects):
 	while (ranking_spot < classes.number_project_rankings):
 		#random.shuffle(unmatched_students)
 		for student in students:
-			print "Student number " + str(student.ID)
+			if (verbose):
+				print "Student number " + str(student.ID)
 			if (not (student.ID in matched_students)):
 				cur_project_ID = student.project_rankings[ranking_spot]
-				cur_project = all_pairs_sorted.get_project_from_ID(cur_project_ID, projects)
-				print "     Student not matched (" + str(student.ID) + ")"
-				print "     Rank " + str(ranking_spot) + " is project " + str(cur_project_ID)
+				try:
+					cur_project = all_pairs_sorted.get_project_from_ID(cur_project_ID, feasible_projects)
+					if (verbose):
+						print "     Student not matched (" + str(student.ID) + ")"
+						print "     Rank " + str(ranking_spot) + " is project " + str(cur_project_ID)
 				
-				# Try to add student to the project.
-				successful_add = cur_project.add_student(student)
-				if (successful_add):
-					print "     Successful add of student " + str(student.ID) + " to project " + str(cur_project.ID)
-					print "     Project " + str(cur_project.ID) + "'s student list is now: "
-					print "     " + str([s.ID for s in cur_project.students])
+					# Try to add student to the project.
+					successful_add = cur_project.add_student(student)
+					if (successful_add and verbose):
+						print "     Successful add of student " + str(student.ID) + " to project " + str(cur_project.ID)
+						print "     Project " + str(cur_project.ID) + "'s student list is now: "
+						print "     " + str([s.ID for s in cur_project.students])
 
-				# If there were no spots available, add this student to the waiting list.
-				else:
-					print "     Not successful. Adding to waiting list"
-					cur_project.add_waiting_student(student)
-
-				# If the project is full and its students havent been 
-				# removed yet, then remove it and its students.
-				if (not (cur_project.has_remaining_spots())):
-					print "     For project " + str(cur_project_ID) + ":"
-					print "     Project " + str(cur_project_ID) + " has no more spots."
-					
-					if (not (cur_project.ID in matched_projects)):
-						print "     The students on this project are: ",
-						print [s.ID for s in cur_project.students]
-						remove_students_from_projects(cur_project.students, projects, cur_project_ID)
-
-						print "     Before remove: "
-						print "          Unmatched students is:"
-						print [s.ID for s in students if not (s.ID in matched_students)]
-						print "          Cur project students is: "
-						print [s.ID for s in cur_project.students]
-						# Remove students from unmatched_students
-						for student in cur_project.students:
-							matched_students.append(student.ID)
-
-						print "     After remove: "
-						print "          Unmatched students is:"
-						print [s.ID for s in students if not (s.ID in matched_students)]
-
-						matched_projects.append(cur_project.ID)
+					# If there were no spots available, add this student to the waiting list.
 					else:
-						pass
+						if (verbose):
+							print "     Not successful. Adding to waiting list"
+						cur_project.add_waiting_student(student)
+
+					# If the project is full and its students havent been 
+					# removed yet, then remove it and its students.
+					if (not (cur_project.has_remaining_spots())):
+						if (verbose):
+							print "     For project " + str(cur_project_ID) + ":"
+							print "     Project " + str(cur_project_ID) + " has no more spots."
+						
+						if (not (cur_project.ID in matched_projects)):
+							if (verbose):
+								print "     The students on this project are: ",
+								print [s.ID for s in cur_project.students]
+							remove_students_from_projects(cur_project.students, feasible_projects, cur_project_ID)
+
+							if (verbose):
+								print "     Before remove: "
+								print "          Unmatched students is:"
+								print [s.ID for s in students if not (s.ID in matched_students)]
+								print "          Cur project students is: "
+								print [s.ID for s in cur_project.students]
+							# Remove students from unmatched_students
+							for student in cur_project.students:
+								matched_students.append(student.ID)
+
+							if (verbose):
+								print "     After remove: "
+								print "          Unmatched students is:"
+								print [s.ID for s in students if not (s.ID in matched_students)]
+
+							matched_projects.append(cur_project.ID)
+						else:
+							pass
+
+				# The project that the student wants to match to is not feasible.
+				# So, we do nothing.
+				except (FieldError):
+					pass
 
 		ranking_spot += 1
 
 	# See the status after the initial process.
-	for project in projects:
+	for project in feasible_projects:
 		#pass
 		if (not(project.students == [])):
-			print "For project " + str(project.ID) + ":"
-			print "     Students: " + str([s.ID for s in project.students])
-			print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
+			if (verbose):
+				print "For project " + str(project.ID) + ":"
+				print "     Students: " + str([s.ID for s in project.students])
+				print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
 
-	# Remove the projects that are full.
-	# For each project, add the students that are waiting
-		# In the order of the highest ranking
-		# If any of these form full teams:
-			# Remove these students from other teams and other waiting lists
+	# Remove the projects that are full (add them to the finished_projects list)
+	# Sort the remaining projects by least spots remaining first.
+	# For each of these projects:
+		# Add the students that are waiting 
+			#(because now there might be spots after the matched students were removed)
+		# If this project now forms a full team:
+			# Calculate goodness of this project-team pairing.
+		# If this project does not form a full team:
+			# Not sure what to do here.
+			# This means that this project will not ever become a full team, so we might want to remove it.
+			# But, we don't want to remove it because there are instances where there will be 
+			# teams at the end that aren't full.
+			# Goodness is 0.
+
+	# Sort the projects by their goodness levels (highest first). (reverse = True)
+		# If there is a project whose goodness is not 0:
+			# This means that the project has a full team.
+			# Add this project to the finished_projects list
+			# Remove the students from any other projects.
+			# Remove the students from any other waiting lists.
+
+	# TODO: think about goodness of a team of 1. I think this is already implemented, but
+	# make sure that the diversity of a singleton team is 0 so that the algorithm will not
+	# choose these options.
 
 def remove_students_from_projects(students_to_remove, projects, ID):
 	for project in projects:
