@@ -63,8 +63,10 @@ def create_feasible_projects(students, projects):
 def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
 
-def initial_solution(students, projects, verbose = True):
+def initial_solution(students, projects, verbose = False):
 	feasible_projects = create_feasible_projects(students, projects)
+	print "Feasible projects are:"
+	print [f.ID for f in feasible_projects]
 
 	# The index of the ranking that we are currently looking at.
 	ranking_spot = 0
@@ -137,7 +139,8 @@ def initial_solution(students, projects, verbose = True):
 				except (FieldError):
 					pass
 			else:
-				print "Student is already matched"
+				if (verbose):
+					print "Student is already matched"
 
 		ranking_spot += 1
 
@@ -150,6 +153,7 @@ def initial_solution(students, projects, verbose = True):
 				print "     Students: " + str([s.ID for s in project.students])
 				print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
+	# OLD APPROACH
 	# Remove the projects that are full.
 	# For each of the projects:
 		# If the project is not full:
@@ -178,6 +182,24 @@ def initial_solution(students, projects, verbose = True):
 	# TODO: think about goodness of a team of 1. I think this is already implemented, but
 	# make sure that the diversity of a singleton team is 0 so that the algorithm will not
 	# choose these options.
+
+	# NEW APPROACH
+	# Remove the projects that are full.
+	# For each of the remaining projects:
+		# Add the students that are waiting until there is a full team
+			# Sort the students by the highest rank first
+	
+	# Sort the projects by number of spots remaining (lowest first).
+	# Should have some sort of check: will only allow teams of 3 (less than that is weird)
+
+	# If the team size is 3 (or some allowable number):
+			# For all students
+				# Remove the student from other waiting lists
+				# The student should not be on other teams' student lists
+
+	# For all of the remaining projects that are not size 3:
+		# Add students to a sadness list
+
 
 def remove_students_from_projects(students_to_remove, projects, ID):
 	for project in projects:
