@@ -64,7 +64,6 @@ def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
 
 def initial_solution(students, projects, verbose = True):
-
 	feasible_projects = create_feasible_projects(students, projects)
 
 	# The index of the ranking that we are currently looking at.
@@ -76,7 +75,7 @@ def initial_solution(students, projects, verbose = True):
 	matched_students = []
 
 	while (ranking_spot < classes.number_project_rankings):
-		#random.shuffle(unmatched_students)
+		# TODO: change the order that students are selected.
 		for student in students:
 			if (verbose):
 				print "Student number " + str(student.ID)
@@ -137,6 +136,8 @@ def initial_solution(students, projects, verbose = True):
 				# So, we do nothing.
 				except (FieldError):
 					pass
+			else:
+				print "Student is already matched"
 
 		ranking_spot += 1
 
@@ -149,22 +150,25 @@ def initial_solution(students, projects, verbose = True):
 				print "     Students: " + str([s.ID for s in project.students])
 				print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
+	# Remove the projects that are full.
+	# For each of the projects:
+		# If the project is not full:
+			# Add the students that are waiting until there is a full team
+				# Sort the students by the highest rank first
+			# If this project now forms a full team (length of students = team_size)
+				# Cost = sum of costs of individual students.
+			# If this project does not form a full team:
+				# Cost = 10000000
 
-	# Remove the projects that are full (add them to the finished_projects list)
-	# Sort the remaining projects by least spots remaining first.
-	# For each of these projects:
-		# Add the students that are waiting 
-			#(because now there might be spots after the matched students were removed)
-		# If this project now forms a full team:
-			# Calculate goodness of this project-team pairing.
-		# If this project does not form a full team:
-			# Not sure what to do here.
-			# This means that this project will not ever become a full team, so we might want to remove it.
-			# But, we don't want to remove it because there are instances where there will be 
-			# teams at the end that aren't full.
-			# Goodness is 0.
+	# Sort the projects by lowest cost first.
+		# If the cost is < 10000000:
+			# This means the team is full.
 
-	# Sort the projects by their goodness levels (highest first). (reverse = True)
+	# For each of the projects
+		# If the project is 
+	# Add (cost, project) tuple to the projects with costs list. 
+
+	# Sort the projects by their costs level (lowest first).
 		# If there is a project whose goodness is not 0:
 			# This means that the project has a full team.
 			# Add this project to the finished_projects list
