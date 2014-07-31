@@ -631,25 +631,38 @@ class Project(object):
 				  doc = "Get and set the remaining MEng spots on this project.")
 
 	def has_remaining_MBA_spots(self):
-		return (self._remaining_MBA_spots > 0)
+		MBAs = filter(lambda s: s.degree_pursuing == 0 or s.degree_pursuing == "MBA", self._students)
+		num_MBAs_needed = self._num_MBAs - len(MBAs)
+		return (num_MBAs_needed > 0)
 
 	def has_remaining_MEng_spots(self):
-		return (self._remaining_MEng_spots > 0)
+		MEngs = filter(lambda s: s.degree_pursuing == 1 or s.degree_pursuing == "MEng", self._students)
+		num_MEngs_needed = self._num_MEngs - len(MEngs)
+		return (num_MEngs_needed > 0)
 
 	def has_remaining_spots(self):
 		return self.has_remaining_MBA_spots() or self.has_remaining_MEng_spots()
 
+	def has_waiting_students(self):
+		return (len(self.waiting_students) > 0)
+
 	# TODO: Add a way to check that ID doesnt exist on another team.
 	# ^^^^ actually don't want that because at some intermediate point, we might want the same student
 	# two different projects.
-	def add_student_to_MBAs(self, student):
+	def add_student_to_MBAs(self, student, verbose = False):
 		if (not(student.degree_pursuing == 0 or student.degree_pursuing == "MBA")):
+			if (verbose):
+				print "Degree is not 0 or MBA"
 			return False
 		elif (not(self.has_remaining_MBA_spots())):
+			if (verbose):
+				print "This project does not have remaining MBA spots"
 			return False
 		else:
 			MBA_IDs  = [s.ID for s in self._MBA_list]
 			if (student.ID in MBA_IDs):
+				if (verbose):
+					print "Student is already on team"
 				return False
 				#error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
 				#raise FieldError(error)
@@ -676,37 +689,47 @@ class Project(object):
 		return True
 
 	# Returns a boolean of if the add was successful or not.
-	def add_student(self, student):
+	def add_student(self, student, verbose = False):
 		if (student.degree_pursuing == "MBA" or student.degree_pursuing == 0):
-			return self.add_student_to_MBAs(student)
+			if (verbose):
+				print "Adding an MBA. ID is " + str(student.ID)
+			return self.add_student_to_MBAs(student, verbose)
 		elif (student.degree_pursuing == "MEng" or student.degree_pursuing == 1):
+			if (verbose):
+				print "Adding an MEng. ID is " + str(student.ID)
 			return self.add_student_to_MEngs(student)
 		else:
 			raise FieldError("Are there more than two types?")
+
+	def has_spot_for_one_more(self):
+		return (len(self.students) <= 4)
+
+	def num_spots_remaining(self):
+		return self._remaining_MEng_spots + self._remaining_MBA_spots
 
 	def add_waiting_student(self, student, verbose = False):
 		if (student in self._MBA_list or student in self._MEng_list):
 			# error = "Student " + str(student.ID) + " is already on project " + str(self._ID)
 			# raise FieldError(error)
 			pass
-		# test if there are open spots
 		else:
-			deg = student.degree_pursuing
-			if ((deg == "MBA" or deg == 0) and self.has_remaining_MBA_spots()):
-				value = self.add_student_to_MBAs(student)
-				if (verbose):
-					print value
-			elif ((deg == "MEng" or deg == 1) and self.has_remaining_MEng_spots()):
-				value = self.add_student_to_MEngs(student)
-				if (verbose):
-					print value
-			else:
-				# Get the rank that this student gave this project.
-				rank = student.get_ranking(self._ID)
-				# Create a tuple of the project ranking and the student.
-				tup = (rank, student)
-				# Add the tuple to the waiting students list.
-				self._waiting_students.append(tup)
+			# deg = student.degree_pursuing
+			# if ((deg == "MBA" or deg == 0)):
+			# 	value = self.add_student_to_MBAs(student)
+			# 	if (verbose):
+			# 		print value
+			# elif ((deg == "MEng" or deg == 1) and self.has_remaining_MEng_spots()):
+			# 	value = self.add_student_to_MEngs(student)
+			# 	if (verbose):
+			# 		print value
+			# else:
+			
+			# Get the rank that this student gave this project.
+			rank = student.get_ranking(self._ID)
+			# Create a tuple of the project ranking and the student.
+			tup = (rank, student)
+			# Add the tuple to the waiting students list.
+			self._waiting_students.append(tup)
 
 	def is_empty(self):
 		return (self._remaining_MEng_spots == self._num_MEngs and self.remaining_MBA_spots == self._num_MBAs)
