@@ -244,18 +244,93 @@ def initial_solution(students, projects, verbose = True):
 			# If any students ranked these projects:	
 			if (len(project_ranks) > 0):
 				# Add them to our list.
-				unfilled_projects_with_ranks.append((project.ID, project_ranks))
+				unfilled_projects_with_ranks.append((project, project_ranks))
 
 
-
+	# Print the unfilled projects that were ranked
 	for tup in unfilled_projects_with_ranks:
 		ID = tup[0]
 		project_ranks = tup[1]
 		print str(ID) + ":"
 		print [(rank, s.ID, deg) for (s, rank, deg) in project_ranks]
+		
+	print "Starting the sorted"
+	# Sort the unfilled projects by the number of students that they have (largest first)
+	# Then going to "steal" students who also ranked these from other projects
+	# And see if that resolves things
+	sorted_unfilled = sorted(unfilled_projects_with_ranks, 
+		key = lambda x: len(x[0].students), reverse = True)
+	for proj in sorted_unfilled:
+		students = proj[0].students
+		print str(proj[0].ID) + ":" + str(len(students))
+	print "Ending the sorted"
 
+	#for tup in sorted_unfilled:
+	for i in range (0, 1):
+		# TODO: this is hacky and was a way to only affect the first project.
+		tup = sorted_unfilled[0]
+		project = tup[0]
+		project_ranks = tup[1]
+		# [(rank, s.ID, deg) for (s, rank, deg) in project_ranks]
+		# Find out what type of student the project requires
+		num_MBAs = filter(lambda s: s.degree_pursuing == "MBA" or s.degree_pursuing == 0, project.students)
+		print [s.ID for s in project.students]
+		num_MBAs_needed = 2 - len(num_MBAs)
+		num_MEngs = filter(lambda s: s.degree_pursuing == "MEng" or s.degree_pursuing == 1, project.students)
+		num_MEngs_needed = 2 - len(num_MEngs)
 
+		for i in range(0, num_MBAs_needed):
+			# Pick a random MBA from the list of students who ranked.
+			need_new_student = True
+			while (need_new_student):
+				r = random_teams.random_index(len(project_ranks))
+				random_triple = project_ranks[r]
+				student = random_triple[0]
+				student_type = random_triple[2]
+				if (student_type == "MBA" or student_type == 0):
+					IDs_already_on_project = [s.ID for s in project.students]
+					# Check that this student is not already on this project
+					if (student.ID in IDs_already_on_project):
+						# If they are, then pick another random student.
+						pass
+					else:
+						# They're not on the project, so don't need to look for another student.
+						need_new_student = False
+						# Add the student to the project.
+						print "FOUND A SUITABLE MBA TO ADD "
+						print "SUITABLE MBA's ID IS " + str(student.ID)
+						boolean = project.add_student(student, verbose = True) 
+						print boolean
+				else:
+					pass
 
+		print "Project needed " + str(num_MBAs_needed) + " MBAs. And now is "
+		print str(project.ID) + ": " + str([s.ID for s in project.students])	 	
+
+		for i in range(0, num_MEngs_needed):
+			# Pick a random MBA from the list of students who ranked.
+			need_new_student = True
+			while (need_new_student):
+				r = random_teams.random_index(len(project_ranks))
+				random_triple = project_ranks[r]
+				student = random_triple[0]
+				student_type = random_triple[2]
+				if (student_type == "MEng" or student_type == 1):
+					IDs_already_on_project = [s.ID for s in project.students]
+					# Check that this student is not already on this project
+					if (student.ID in IDs_already_on_project):
+						# If they are, then pick another random student.
+						pass
+					else:
+						# They're not on the project, so don't need to look for another student.
+						need_new_student = False
+						# Add the student to the project.
+						project.add_student(student) 
+				else:
+					pass
+
+		print "Project needed " + str(num_MEngs_needed) + " MEngs. And now is "
+		print str(project.ID) + ": " + str([s.ID for s in project.students])	
 
 	# Printing things
 	for project in feasible_projects:
