@@ -211,24 +211,56 @@ def initial_solution(students, projects, verbose = True):
 	print "Unmatched students is :"
 	print [s.ID for s in unmatched_students]
 
-	for unmatched_student in unmatched_students:
-		# If they are on the waiting list for some full teams:
-			# Pick the highest rank that they gave a team whose waiting list they are on.
-			# Add the student to that team.
-		# If they are not on the waiting list:
-			# Leave them unmatched.
-		waiting_on = find_waiting_lists(unmatched_student, feasible_projects)
-		if (len(waiting_on) > 0):
-			top_project = waiting_on[0]
-			top_project.students.append(unmatched_student)
-			unmatched_students.remove(unmatched_student)
-			# Remove this student from other projects
-			remove_students_from_projects([unmatched_student], projects, top_project.ID)
+	# Adds students to form teams of 5.
+	# for unmatched_student in unmatched_students:
+	# 	# If they are on the waiting list for some full teams:
+	# 		# Pick the highest rank that they gave a team whose waiting list they are on.
+	# 		# Add the student to that team.
+	# 	# If they are not on the waiting list:
+	# 		# Leave them unmatched.
+	# 	waiting_on = find_waiting_lists(unmatched_student, feasible_projects)
+	# 	if (len(waiting_on) > 0):
+	# 		top_project = waiting_on[0]
+	# 		top_project.students.append(unmatched_student)
+	# 		for w_tuple in top_project.waiting_students:
+	# 			if (w_tuple[1].ID == unmatched_student.ID):
+	# 				top_project.waiting_students.remove(w_tuple)
+	# 		unmatched_students.remove(unmatched_student)
+	# 		# Remove this student from other projects
+	# 		remove_students_from_projects([unmatched_student], projects, top_project.ID)
 
-	# Print:
+	unfilled_projects_with_ranks = []
+	for project in feasible_projects:
+		# If the project is not full
+		if (len(project.students) < team_size):
+			# List all of the students who ranked it
+			project_ranks = []
+			for student in students:
+				if (project.ID in student.project_rankings):
+					rank = student.get_ranking(project.ID)
+					# These are the unmatched students who ranked the projects.
+					# Add the student, rank, and degree to project ranks.
+					project_ranks.append((student, rank, student.degree_pursuing))
+			# If any students ranked these projects:	
+			if (len(project_ranks) > 0):
+				# Add them to our list.
+				unfilled_projects_with_ranks.append((project.ID, project_ranks))
+
+
+
+	for tup in unfilled_projects_with_ranks:
+		ID = tup[0]
+		project_ranks = tup[1]
+		print str(ID) + ":"
+		print [(rank, s.ID, deg) for (s, rank, deg) in project_ranks]
+
+
+
+
+	# Printing things
 	for project in feasible_projects:
 		#pass
-		if (len(project.students) >= allowable_team_size):
+	#	if (len(project.students) >= allowable_team_size):
 			if (verbose):
 				print "For project " + str(project.ID) + ":"
 				print "     Students: " + str([s.ID for s in project.students])
@@ -237,6 +269,14 @@ def initial_solution(students, projects, verbose = True):
 
 	print "At the end the unmatched students are "
 	print [s.ID for s in unmatched_students]
+
+	# Maybe try this approach
+	# For the unmatched students:
+		# For project in their list of rankings:
+			# If done is false
+				# List all students who ranked this project.
+				# Form a team with these students.
+				# If 
 
 
 def remove_students_from_projects(students_to_remove, projects, ID):
