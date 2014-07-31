@@ -265,6 +265,9 @@ def initial_solution(students, projects, verbose = True):
 		print str(proj[0].ID) + ":" + str(len(students))
 	print "Ending the sorted"
 
+	unmatched_IDs = [s.ID for s in unmatched_students]
+	#feasible_project_IDs = [s.ID for s in feasible_projects]
+
 	#for tup in sorted_unfilled:
 	for i in range (0, 1):
 		# TODO: this is hacky and was a way to only affect the first project.
@@ -285,12 +288,12 @@ def initial_solution(students, projects, verbose = True):
 			while (need_new_student):
 				r = random_teams.random_index(len(project_ranks))
 				random_triple = project_ranks[r]
-				student = random_triple[0]
+				new_student = random_triple[0]
 				student_type = random_triple[2]
 				if (student_type == "MBA" or student_type == 0):
 					IDs_already_on_project = [s.ID for s in project.students]
 					# Check that this student is not already on this project
-					if (student.ID in IDs_already_on_project):
+					if (new_student.ID in IDs_already_on_project):
 						# If they are, then pick another random student.
 						pass
 					else:
@@ -298,9 +301,35 @@ def initial_solution(students, projects, verbose = True):
 						need_new_student = False
 						# Add the student to the project.
 						print "FOUND A SUITABLE MBA TO ADD "
-						print "SUITABLE MBA's ID IS " + str(student.ID)
-						boolean = project.add_student(student, verbose = True) 
+						print "SUITABLE MBA's ID IS " + str(new_student.ID)
+						boolean = project.add_student(new_student, verbose = True) 
+						# If this new student is on the waiting list.
+						waiting_list_IDs = [s.ID for (rank, s) in project.waiting_students]
+						if (new_student.ID in waiting_list_IDs):
+							# Remove the student from the project
+							project.waiting_students.remove(new_student)
 						print boolean
+
+						matched = not (new_student.ID in unmatched_IDs)
+						print "Student " + str(new_student.ID) + " is matched: " + str(matched)
+
+						# If this student was already matched, remove this student from their other project.
+						if (matched):
+							# Find the project that this student was on
+							project_to_remove = find_students_project(new_student, 
+								feasible_projects, project.ID)
+							# Remove this student from that project.
+							project_to_remove.students.remove(new_student)
+							# (HARD) Add that project to the list of projects that are fill.
+							
+							# Change to a while loop. ^^^^^
+							pass
+
+						# If they weren't matched, remove them from the unmatched list.
+						else:
+							# Remove the student from the unmatched students list
+							unmatched_students.remove(new_student)
+							unmatched_IDs.remove(new_student.ID)
 				else:
 					pass
 
@@ -353,6 +382,27 @@ def initial_solution(students, projects, verbose = True):
 				# Form a team with these students.
 				# If 
 
+# For the given student, find the project that it was on.
+def find_students_project(student, projects, newly_added_ID):
+	#project_IDs = [p.ID for p in projects]
+	matched_projects = []
+	for project in projects:
+		# This is the project that we just added our student to,
+		# so we don't do anything in this way.
+		if (project.ID == newly_added_ID):
+			pass
+		else:
+			student_IDs = [s.ID for s in project.students]
+			if (student.ID in student_IDs):
+				matched_projects.append(project)
+	if (len(matched_projects) > 1):
+		raise CompError("More than one project that is not the newly added one.")
+	elif (len(matched_projects) == 0):
+		raise CompError("No project that is not the newly added one.")
+	else:
+		# There is only one project in matched_projects.
+		print "The project that " + str(student.ID) + " matched was:" + str(matched_projects[0].ID)
+		return matched_projects[0]	
 
 def remove_students_from_projects(students_to_remove, projects, ID):
 	for project in projects:
