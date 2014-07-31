@@ -642,7 +642,7 @@ class Project(object):
 
 	def has_remaining_spots(self):
 		return self.has_remaining_MBA_spots() or self.has_remaining_MEng_spots()
-
+ 
 	def has_waiting_students(self):
 		return (len(self.waiting_students) > 0)
 
