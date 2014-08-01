@@ -27,6 +27,15 @@ names_projects = {3705: 'Goldman Sachs',
 				3445: 'Bonobos',
 				3900: 'Bloomberg'}
 
+def print_students_and_waiting(projects):
+	for project in projects:
+		#pass
+	#	if (len(project.students) >= allowable_team_size):
+		print "For project " + str(project.ID) + ":"
+		print "     Students: " + str([s.ID for s in project.students])
+		print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
+
+
 def create_students_from_input(file):
 	data = pd.read_csv(file)
 	data_array = np.array(data)
@@ -145,13 +154,9 @@ def initial_solution(students, projects, verbose = True):
 		ranking_spot += 1
 
 	# See the status after the initial process.
-	for project in feasible_projects:
-		#pass
-		if (not(project.students == [])):
-			if (verbose):
-				print "For project " + str(project.ID) + ":"
-				print "     Students: " + str([s.ID for s in project.students])
-				print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
+	if (verbose):
+		print_students_and_waiting(feasible_projects)
+
 
 	# NEW APPROACH
 
@@ -321,7 +326,7 @@ def initial_solution(students, projects, verbose = True):
 							# Remove this student from that project.
 							project_to_remove.students.remove(new_student)
 							# (HARD) Add that project to the list of projects that are fill.
-							
+
 							# Change to a while loop. ^^^^^
 							pass
 
@@ -362,13 +367,8 @@ def initial_solution(students, projects, verbose = True):
 		print str(project.ID) + ": " + str([s.ID for s in project.students])	
 
 	# Printing things
-	for project in feasible_projects:
-		#pass
-	#	if (len(project.students) >= allowable_team_size):
-			if (verbose):
-				print "For project " + str(project.ID) + ":"
-				print "     Students: " + str([s.ID for s in project.students])
-				print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
+	if (verbose):
+		print_students_and_waiting(feasible_projects)
 
 
 	print "At the end the unmatched students are "
@@ -381,6 +381,8 @@ def initial_solution(students, projects, verbose = True):
 				# List all students who ranked this project.
 				# Form a team with these students.
 				# If 
+
+	return (feasible_projects, unmatched_students)
 
 # For the given student, find the project that it was on.
 def find_students_project(student, projects, newly_added_ID):
