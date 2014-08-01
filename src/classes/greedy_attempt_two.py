@@ -157,6 +157,10 @@ def initial_solution(students, projects, verbose = True):
 	if (verbose):
 		print_students_and_waiting(feasible_projects)
 
+	return (feasible_projects, students)
+
+def post_processing(feasible_projects, students, verbose = True):
+
 
 	# NEW APPROACH
 
@@ -274,9 +278,10 @@ def initial_solution(students, projects, verbose = True):
 	#feasible_project_IDs = [s.ID for s in feasible_projects]
 
 	#for tup in sorted_unfilled:
-	for i in range (0, 1):
+	while (len(unmatched_IDs) > 0):
 		# TODO: this is hacky and was a way to only affect the first project.
-		tup = sorted_unfilled[0]
+		index = random_teams.random_index(len(unmatched_IDs))
+		tup = sorted_unfilled[index]
 		project = tup[0]
 		project_ranks = tup[1]
 		# [(rank, s.ID, deg) for (s, rank, deg) in project_ranks]
