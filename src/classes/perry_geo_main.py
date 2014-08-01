@@ -41,5 +41,12 @@ if (__name__ == "__main__"):
 
 	state = greedy_attempt_two.initial_solution(students, all_projects)
 	print perry_geo_annealing.energy(state)
+	perry_geo_annealing.move(state)
+	projects = state[0]
+	unmatched_students = state[1]
+	greedy_attempt_two.print_students_and_waiting(projects)
+	print "Unmatched"
+	print [s.ID for s in unmatched_students]
+
 
 
