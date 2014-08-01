@@ -42,3 +42,4 @@ if (__name__ == "__main__"):
 	state = greedy_attempt_two.initial_solution(students, all_projects)
 	print perry_geo_annealing.energy(state)
 
+
