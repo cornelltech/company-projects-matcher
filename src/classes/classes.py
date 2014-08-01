@@ -224,6 +224,8 @@ class Student(object):
 		a = 10 * rank
 		return a * math.sqrt(a)
 
+	# This is the function to use when we are actually calculating
+	# the goodness of a match.
 	def get_cost_from_ranking(self, rank):
 		if (not(rank <= number_project_rankings)):
 			return 10000
