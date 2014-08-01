@@ -30,6 +30,21 @@ def random_index(lst_length):
 		r = random.randint(0, lst_length - 1)
 	return r
 
+def random_project(projects):
+	rand_index = random_index(len(projects))
+	return projects[rand_index]
+
+def random_student(project):
+	rand_index = random_index(len(project.students))
+	return project.students[rand_index]
+
+def random_two_choice():
+	non_int = random.random()
+	if (non_int > 0.5):
+		return 1
+	else:
+		return 0
+
 def create_teams_on_all_fields(first_students, first_name, second_students, second_name, team_size):
 	'''
 		A loop that goes through the sample space of students
