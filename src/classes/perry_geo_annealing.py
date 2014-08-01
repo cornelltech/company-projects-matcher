@@ -20,7 +20,7 @@ def energy(state):
 		return energy
 
 	def unmatched_student_cost():
-		return 10000 * len(unmatched_students)
+		return 10000 * len(unmatched_students) 
 
 	# 34
 	def team_diversity_cost():
