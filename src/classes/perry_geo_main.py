@@ -22,7 +22,7 @@ if (__name__ == "__main__"):
 				  the system is (i.e. which Students are with which Projects.)
 			- Student list:
 				- These are the unmatched students (students who are not on any
-					project). 
+					proje ct). 
 
 		Desired postconditions:
 			- Each student is matched to exactly one project.
