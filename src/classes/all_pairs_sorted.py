@@ -46,11 +46,23 @@ def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 		projects_lst.append(p)
 	return projects_lst
 
+def get_project_from_ID(ID, projects):
+	matching_ID_lst = filter(lambda x: x.ID == ID, projects)
+	if (len(matching_ID_lst) == 0):
+		error = "ID " + str(ID) + " does not match to a valid project."
+		raise FieldError(error)
+	elif (len(matching_ID_lst) > 1):
+		error = "There is more than one matching project. Problem!"
+		raise FieldError(error)
+	
+	# Otherwise, there is one element in the list and it matches our desired ID.
+	else:
+		return matching_ID_lst[0]
+
 # Filter out projects with insufficient rankings to get matched.
 # Returns a list of projects which passed the test.
-def remove_infeasible_projects(students, verbose = False):
+def remove_infeasible_projects(students, projects, verbose = False):
 	insufficient_IDs = []
-	projects = generate_all_projects()
 	for p in projects:
 		matched = filter(lambda x: p.ID in x.project_rankings, students)
 		if (verbose):
