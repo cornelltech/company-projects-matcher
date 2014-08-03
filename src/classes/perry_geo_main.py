@@ -54,7 +54,10 @@ if (__name__ == "__main__"):
 		print str(p.ID) + ": " + str([s.ID for s in p.students])
 	state = (sol, [])
 	projects = pg.move(state)
-	sol = state[0]
+	state = (projects, [])
+	#sol = state[0]
+	projects = pg.move(state)
+
 	# print "AFTER MOVE:"
 	# for p in projects:
 	# 	print str(p.ID) + ": " + str([s.ID for s in p.students])
