@@ -105,6 +105,12 @@ def get_project_interest_from_rankings(p, students, verbose = False):
 	 	overall_interest = overall_interest + interest
 	return overall_interest
 
+# Sort projects by highest demand to lowest demand.
+def sort_projects_by_demand(students, projects):
+	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students), reverse = True)
+	return projects
+
+
 # This function takes in the already-filtered list of projects.
 # Call remove infeasible projects on the original list of projects
 # before calling this function.
