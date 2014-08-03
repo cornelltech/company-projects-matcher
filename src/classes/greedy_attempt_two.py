@@ -89,7 +89,13 @@ def create_feasible_projects(students, projects):
 def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
 
-def random_initial_solution(students, projects):
+# Matches projects in the order of highest interest first.
+
+
+# Creates a random initial initial solution from only the feasible projects.
+# Have the option to sort the projects by the highest interest first, so there is a 
+# higher chance that the students matched to it actually ranked it.
+def make_initial_solution(students, projects, sorted = True):
 	print "There are",
 	print len(students),
 	print "students"
@@ -102,7 +108,9 @@ def random_initial_solution(students, projects):
 	unmatched_students = students
 
 	matched_projects = []
+	projects = all_pairs_sorted.sort_projects_by_demand(students, projects)
 
+	index = 0
 	while (len(unmatched_students) > 0):
 		print "Len unmatched students is",
 		print len(unmatched_students)
@@ -112,7 +120,10 @@ def random_initial_solution(students, projects):
 		if (len(unmatched_students) > 4):
 			print "True"
 
-			project = random_teams.random_project(projects)
+			if (sorted):
+				project = projects[index]
+			else:
+				project = random_teams.random_project(projects)
 			
 			MBA_one = random_teams.random_student_lst(MBAs)
 			MBAs.remove(MBA_one)
@@ -143,7 +154,10 @@ def random_initial_solution(students, projects):
 			# Less than 4 students left
 			for student in MBAs:
 				# Pick a random project and add this student to that project.
-				project = random_teams.random_project(matched_projects)
+				if (sorted):
+					project = projects[index]
+				else:
+					project = random_teams.random_project(matched_projects)
 				project.students.append(student)
 				MBAs.remove(student)
 				unmatched_students.remove(student)
@@ -162,6 +176,7 @@ def random_initial_solution(students, projects):
 				if (len(matched_projects) > 1):
 					print "Should remove project " + str(project.ID)
 					matched_projects.remove(project)
+		index += 1
 
 	return [p for p in projects if len(p.students) > 0]
 
