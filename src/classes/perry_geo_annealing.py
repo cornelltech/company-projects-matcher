@@ -41,18 +41,6 @@ def move(state):
 	project_one = random_teams.random_project(projects)
 	project_two = random_teams.random_project(projects)
 
-	# Make sure that project one is not empty.
-	while (len(project_one.students) == 0):
-		print "Project one (" + str(project_one.ID) + ") is empty. Finding a new one."
-		project_one = random_teams.random_project(projects)
-
-
-	# Make sure that project two is not empty.
-	while (len(project_two.students) == 0):
-		print "Project two (" + str(project_one.ID) + ") is empty. Finding a new one."
-		project_two = random_teams.random_project(projects)
-
-	print "Found a new project two."
 
 	# Guarantee that the projects are not the same.
 	# Continue to swap project two until it is diff from project one.
@@ -62,15 +50,8 @@ def move(state):
 
 	print "Found two different projects."
 
-	# Make sure that the new project two is not empty.
-	while (len(project_two.students) == 0):
-		project_two = random_teams.random_project(projects)
-		print "The second project is empty."
-
 	print "First team students are " + str([s.ID for s in project_one.students])
 	print "Second team students are " + str([s.ID for s in project_two.students])
-
-	print "Found a new second project that is diff and not empty."
 
 	print "CLEAR: made it to pick_team"
 
@@ -112,8 +93,9 @@ def move(state):
 	first_team.students.append(student_two)
 	second_team.students.append(student_one)
 
-	# for p in projects:
-	# 	print str(p.ID) + ": " + str([s.ID for s in p.students])
+	print "AFTER MOVE:"
+	for p in projects:
+	 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
 	return projects
 

@@ -1,6 +1,6 @@
 import all_pairs_sorted
 import greedy_attempt_two
-import perry_geo_annealing
+import perry_geo_annealing as pg
 
 input_file = "tests.csv"
 
@@ -49,9 +49,28 @@ if (__name__ == "__main__"):
 	# print [s.ID for s in unmatched_students]
 
 	sol = greedy_attempt_two.random_initial_solution(students, all_projects)
-	greedy_attempt_two.print_students_and_waiting(sol)
+	print "INITIAL SOLUTION:"
+	for p in sol:
+		print str(p.ID) + ": " + str([s.ID for s in p.students])
+	state = (sol, [])
+	projects = pg.move(state)
+	sol = state[0]
+	# print "AFTER MOVE:"
+	# for p in projects:
+	# 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
-	print perry_geo_annealing.energy((sol, []))
+
+
+	# print perry_geo_annealing.energy(state)
+
+	# n = 500
+	# while (n > 0):
+	# 	perry_geo_annealing.move(state)
+	# 	sol = state[0]
+	# 	print perry_geo_annealing.energy(state)
+	# 	n -= 1
+
+
 
 
 
