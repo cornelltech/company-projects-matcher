@@ -48,7 +48,9 @@ if (__name__ == "__main__"):
 	# print "Unmatched"
 	# print [s.ID for s in unmatched_students]
 
-	sol = greedy_attempt_two.random_initial_solution(students, all_projects)
+	feasible_projects = greedy_attempt_two.create_feasible_projects(students, all_projects)
+
+	sol = greedy_attempt_two.random_initial_solution(students, feasible_projects)
 	print "INITIAL SOLUTION:"
 	for p in sol:
 		print str(p.ID) + ": " + str([s.ID for s in p.students])
@@ -70,7 +72,7 @@ if (__name__ == "__main__"):
 
 	# print perry_geo_annealing.energy(state)
 
-	n = 500
+	n = 5000
 	while (n > 0):
 	 	pg.move(state)
 	 	print pg.energy(state)
