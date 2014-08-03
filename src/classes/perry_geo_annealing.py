@@ -33,10 +33,8 @@ def energy(state):
 # Returns None (just like the example).
 # Currently implemented as one swap of two people across teams.
 # NOTE: there should be no teams of size 0 before calling the function.
-def move(state):
+def move(state, verbose = False):
 	projects = state[0]
-	#unmatched_students = state[1]
-	print "New iteration of move: there are " + str(len(projects)) + " projects"
 
 	project_one = random_teams.random_project(projects)
 	project_two = random_teams.random_project(projects)
@@ -46,15 +44,16 @@ def move(state):
 	# Continue to swap project two until it is diff from project one.
 	while (project_one.ID == project_two.ID):
 		project_two = random_teams.random_project(projects)
-		print "Project one and project two are the same."
+		if (verbose):
+			print "Project one and project two are the same."
 
-	print "Found two different projects."
+	if (verbose):
+		print "Found two different projects."
 
-	print "First team students are " + str([s.ID for s in project_one.students])
-	print "Second team students are " + str([s.ID for s in project_two.students])
+		print "First team students are " + str([s.ID for s in project_one.students])
+		print "Second team students are " + str([s.ID for s in project_two.students])
 
-	print "CLEAR: made it to pick_team"
-
+		print "CLEAR: made it to pick_team"
 
 	# Team to pick first students from 
 	pick_team = random_teams.random_two_choice()
@@ -80,7 +79,8 @@ def move(state):
 	# Remove the students from their respective teams
 	first_team.students.remove(student_one)
 	if (not(student_two in second_team.students)):
-		print "Second team students is " + str([s.ID for s in second_team.students])
+		if (verbose):
+			print "Second team students is " + str([s.ID for s in second_team.students])
 		error = "Student two ("
 		error += str(student_two.ID)
 		error += ") is not in second_team.students ("

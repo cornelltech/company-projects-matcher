@@ -53,10 +53,14 @@ if (__name__ == "__main__"):
 	for p in sol:
 		print str(p.ID) + ": " + str([s.ID for s in p.students])
 	state = (sol, [])
-	projects = pg.move(state)
-	state = (projects, [])
+	print "INITIAL ENERGY: " + str(pg.energy(state))
+	pg.move(state)
+	print "SECOND ENERGY: " + str(pg.energy(state))
+	#state = (projects, [])
 	#sol = state[0]
-	projects = pg.move(state)
+	pg.move(state)
+	print "THIRD ENERGY: " + str(pg.energy(state))
+
 
 	# print "AFTER MOVE:"
 	# for p in projects:
@@ -66,12 +70,11 @@ if (__name__ == "__main__"):
 
 	# print perry_geo_annealing.energy(state)
 
-	# n = 500
-	# while (n > 0):
-	# 	perry_geo_annealing.move(state)
-	# 	sol = state[0]
-	# 	print perry_geo_annealing.energy(state)
-	# 	n -= 1
+	n = 500
+	while (n > 0):
+	 	pg.move(state)
+	 	print pg.energy(state)
+	 	n -= 1
 
 
 
