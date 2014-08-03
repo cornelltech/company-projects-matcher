@@ -1,6 +1,7 @@
 import all_pairs_sorted
 import greedy_attempt_two
 import perry_geo_annealing as pg
+from anneal import Annealer
 
 input_file = "tests.csv"
 
@@ -33,6 +34,10 @@ if (__name__ == "__main__"):
 		In our case, energy calculates the cost of assigning people to projects.
 
 	'''
+
+	# Creating the annealer with our energy and move functions.
+	annealer = Annealer(pg.energy, pg.move)
+
 	# Format for describing the state of the system.
 	students = greedy_attempt_two.create_students_from_input(input_file)
 	
@@ -54,14 +59,24 @@ if (__name__ == "__main__"):
 	print "INITIAL SOLUTION:"
 	for p in sol:
 		print str(p.ID) + ": " + str([s.ID for s in p.students])
+	
 	state = (sol, [])
-	print "INITIAL ENERGY: " + str(pg.energy(state))
-	pg.move(state)
-	print "SECOND ENERGY: " + str(pg.energy(state))
-	#state = (projects, [])
-	#sol = state[0]
-	pg.move(state)
-	print "THIRD ENERGY: " + str(pg.energy(state))
+
+	schedule = annealer.auto(state, minutes=0.1)
+
+	state, e = annealer.anneal(state, schedule['tmax'], schedule['tmin'], 
+	                             schedule['steps'], updates=6)
+	print state  # the "final" solution
+
+
+
+	# print "INITIAL ENERGY: " + str(pg.energy(state))
+	# pg.move(state)
+	# print "SECOND ENERGY: " + str(pg.energy(state))
+	# #state = (projects, [])
+	# #sol = state[0]
+	# pg.move(state)
+	# print "THIRD ENERGY: " + str(pg.energy(state))
 
 
 	# print "AFTER MOVE:"
@@ -72,14 +87,13 @@ if (__name__ == "__main__"):
 
 	# print perry_geo_annealing.energy(state)
 
-	n = 5000
-	while (n > 0):
-	 	pg.move(state)
-	 	print pg.energy(state)
-	 	n -= 1
+	# n = 5000
+	# while (n > 0):
+	#  	pg.move(state)
+	#  	print pg.energy(state)
+	#  	n -= 1
 
 
-
-
+	
 
 
