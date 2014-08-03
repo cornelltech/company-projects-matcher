@@ -97,6 +97,8 @@ def move(state, verbose = False):
 	for p in projects:
 	 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
+	print energy((projects, []))
+
 	return projects
 
 
