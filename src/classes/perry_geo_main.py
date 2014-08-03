@@ -50,7 +50,7 @@ if (__name__ == "__main__"):
 
 	feasible_projects = greedy_attempt_two.create_feasible_projects(students, all_projects)
 
-	sol = greedy_attempt_two.random_initial_solution(students, feasible_projects)
+	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects)
 	print "INITIAL SOLUTION:"
 	for p in sol:
 		print str(p.ID) + ": " + str([s.ID for s in p.students])
