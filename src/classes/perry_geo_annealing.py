@@ -102,10 +102,3 @@ def move(state, verbose = False):
 	return projects
 
 
-
-
-
-
-
-
-
