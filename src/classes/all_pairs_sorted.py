@@ -4,7 +4,6 @@ import pandas as pd
 import classes
 import itertools
 from classes import Student
-from classes import Team
 from classes import Project
 from classes import CompError
 from classes import FieldError
@@ -114,8 +113,8 @@ def get_project_interest_from_rankings(p, students, verbose = False, interest = 
 
 
 # Sort projects by highest demand to lowest demand.
-def sort_projects_by_demand(students, projects):
-	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students), reverse = True)
+def sort_projects_by_demand(students, projects, interest = False):
+	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students, interest = interest), reverse = True)
 	return projects
 
 
