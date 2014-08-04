@@ -1,34 +1,43 @@
 import random
 import math
+import ConfigParser
 
 # TODO: move these to a globals file.
 '''To ensure that we do not create multiple students, teams, or projects with the same ID.'''
+
+configParser = ConfigParser.ConfigParser()
+configFilePath = r'config.txt'
+configParser.read(configFilePath)
+
 existing_student_IDs = []
 existing_team_IDs = []
 existing_project_IDs = []
 
 # Declaring valid values for all fields.
 vals_cs_ug = [True, False]
-vals_work_experience = range(0, 5)
+max_work_experience = configParser.getint('valid_values', 'max_work_experience')
+vals_work_experience = range(0, max_work_experience+1)
 
 # 0 = lowest, 4 = most
-vals_coding_ability = range(0, 5)
+max_coding_ability = configParser.getint('valid_values', 'max_coding_ability')
+vals_coding_ability = range(0, max_coding_ability+1)
 
 # Keep these organized in alphabetical order. 
-vals_degree_pursuing = { 0 : "MBA",
-						 1 : "MEng"
-}
+# NOTE: fix this.
+vals_degree_pursuing = { 0 : "MBA", 1 : "MEng"}
 
 # Valid IDs for our projects.
-vals_valid_projects = map(lambda x: x * 65, range(16, 76))
+num_valid_projects = configParser.getint('valid_values', 'num_valid_projects')
+vals_valid_projects = map(lambda x: x * 65, range(16, 16 + num_valid_projects))
 
+# TODO: remove these.
 degree_weight = 0.25
 cs_ug_weight = 0.25
 coding_ability_weight = 0.25
 work_experience_weight = 0.25
 
 # TODO: should change this to 10 when I'm testing.
-number_project_rankings = 5
+number_project_rankings = configParser.getint('valid_values', 'number_project_rankings')
 
 class FieldError(Exception):
 	def __init__(self, value):
@@ -211,7 +220,7 @@ class Student(object):
 			return (ind + 1)
 		except(ValueError):
 			# Student did not rank this project.
-			return 1000000000000
+			return 100
 
 	# The comment on #16 refers to this.
 	# def get_interest_from_interest(self, rank):
@@ -228,7 +237,7 @@ class Student(object):
 	# the goodness of a match.
 	def get_cost_from_ranking(self, rank):
 		if (not(rank <= number_project_rankings)):
-			return 1000000
+			return 1000000000000000
 		else:
 			return (rank * rank)
 
