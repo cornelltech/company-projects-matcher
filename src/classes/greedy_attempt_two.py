@@ -3,6 +3,7 @@ import pandas as pd
 import random
 
 import classes
+import ConfigParser
 import random_teams
 import all_pairs_sorted
 import greedy_student_and_fix
@@ -551,6 +552,13 @@ def find_waiting_lists(student, projects, verbose = False):
 	return new_lst
 
 if __name__ == "__main__":
+
+	configParser = ConfigParser.ConfigParser()
+	configFilePath = r'config.txt'
+	configParser.read(configFilePath)
+
+	input_file = configParser.get('files', 'greedy_attempt_two_file')
+
 	students = create_students_from_input("tests.csv")
 	all_projects = all_pairs_sorted.generate_all_projects()
 	initial_solution(students, all_projects)
