@@ -9,10 +9,6 @@ configParser = ConfigParser.ConfigParser()
 configFilePath = r'config.txt'
 configParser.read(configFilePath)
 
-existing_student_IDs = []
-existing_team_IDs = []
-existing_project_IDs = []
-
 # Declaring valid values for all fields.
 vals_cs_ug = [True, False]
 max_work_experience = configParser.getint('valid_values', 'max_work_experience')
@@ -38,6 +34,10 @@ work_experience_weight = 0.25
 
 # TODO: should change this to 10 when I'm testing.
 number_project_rankings = configParser.getint('valid_values', 'number_project_rankings')
+
+existing_student_IDs = []
+existing_team_IDs = []
+existing_project_IDs = []
 
 class FieldError(Exception):
 	def __init__(self, value):
