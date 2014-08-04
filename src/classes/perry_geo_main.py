@@ -62,11 +62,27 @@ if (__name__ == "__main__"):
 	
 	state = (sol, [])
 
-	schedule = annealer.auto(state, minutes=0.1)
+	# Automatically calculate the annealing schedule and anneal using this schedule.
+	schedule = annealer.auto(state, 1)
 
 	state, e = annealer.anneal(state, schedule['tmax'], schedule['tmin'], 
 	                             schedule['steps'], updates=6)
-	print state  # the "final" solution
+
+
+	# Manually calculate the annealing schedule.
+	#state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
+	#state, e = annealer.anneal(randState, 10000000, 0.01,
+     #  18000 * len(randState), 9)
+	
+ 	# state is the "final" solution
+ 	print "Final Solution:"
+ 	(projects, unmatched) = state
+	for p in projects:
+	 	print str(p.ID) + ": " + str([s.ID for s in p.students])
+	print "Final Energy: " + str(e) 
+
+
+
 
 
 
