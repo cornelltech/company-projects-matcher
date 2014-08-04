@@ -208,7 +208,7 @@ class Student(object):
 		try:
 			rankings = (self._project_rankings).tolist()
 			ind = rankings.index(project_id)
-			return ind
+			return ind + 1
 		except(ValueError):
 			# Student did not rank this project.
 			return 1000000000000
