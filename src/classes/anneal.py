@@ -131,11 +131,15 @@ class Annealer:
         
         # Note initial state
         T = Tmax
+
+        # Keeps track of the current energy. 
         E = self.energy(state)
         #prevState = copy.deepcopy(state)
         prevState = state[:]
         prevEnergy = E
         #bestState = copy.deepcopy(state)
+
+        # Best state and energy are the initial.
         bestState = state[:]
         bestEnergy = E
         trials, accepts, improves = 0, 0, 0
@@ -147,15 +151,22 @@ class Annealer:
         while step < steps:
             step += 1
             T = Tmax * math.exp( Tfactor * step / steps )
+            # Make a new move.
             self.move(state)
+
+            # Calculate the energy of the new state.
             E = self.energy(state)
             dE = E - prevEnergy
             trials += 1
+
+            # If it increases energy and we decide to accept it:
             if dE > 0.0 and math.exp(-dE/T) < random.random():
                 # Restore previous state
                 #state = copy.deepcopy(prevState)
                 state = prevState[:]
                 E = prevEnergy
+
+            # If it decreases energy (we always accept it):
             else:
                 # Accept new state and compare to best state
                 accepts += 1
