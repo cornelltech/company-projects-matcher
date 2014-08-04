@@ -93,9 +93,10 @@ def move(state, verbose = False):
 	first_team.students.append(student_two)
 	second_team.students.append(student_one)
 
-	print "AFTER MOVE:"
-	for p in projects:
-	 	print str(p.ID) + ": " + str([s.ID for s in p.students])
+	if (verbose):
+		print "AFTER MOVE:"
+		for p in projects:
+		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
 	print energy((projects, []))
 
