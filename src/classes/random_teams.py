@@ -1,7 +1,6 @@
 #import exceptions
 import random
-from classes import Student, Team
-
+from classes import Student
 
 class InputError(Exception):
 	def __init__(self, value):
