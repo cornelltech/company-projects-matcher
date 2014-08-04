@@ -17,7 +17,7 @@ vals_work_experience = range(0, max_work_experience+1)
 # 0 = lowest, 4 = most
 max_coding_ability = configParser.getint('valid_values', 'max_coding_ability')
 vals_coding_ability = range(0, max_coding_ability+1)
-
+ 
 # Keep these organized in alphabetical order. 
 # NOTE: fix this.
 vals_degree_pursuing = { 0 : "MBA", 1 : "MEng"}
