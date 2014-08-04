@@ -1,0 +1,33 @@
+# Setting the valid values for Student and Project objects.
+[valid_values]
+
+# Field: "was a CS undergrad."
+# No option to set here: just true or false.
+
+# Field: "number of years of work experience."
+# Note: range (0, n) is a list [0, 1, ..., n-1].
+# On a scale from 0 to max_work_experience.
+max_work_experience = 4
+
+# Field: "coding ability."
+# On a scale from 0 to max_coding_ability.
+max_coding_ability = 4
+
+# Field: "degree pursuing.""
+# The number of degrees pursuing.
+# NOTE: this goes into a dict, so need to figure out some way to input the name of the degree.
+num_degree_pursuing = 2
+
+# Field: valid IDs for our projects.
+# Currently is a list of 60 valid projects.
+num_valid_projects = 60
+
+# Field: number of project rankings.
+number_project_rankings = 5
+
+[files]
+# File to use in greedy_attempt_two.py
+
+# Don't put quotes around these -- the ConfigParser does otherwise.
+greedy_attempt_two_file = tests.csv
+perry_geo_main_file = tests.csv
