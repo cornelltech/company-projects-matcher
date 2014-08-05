@@ -1,5 +1,6 @@
 #import exceptions
 import random
+import util
 from classes import Student
 
 class InputError(Exception):
@@ -15,53 +16,6 @@ class FunctionError(Exception):
 		return repr(self.val)
 
 used_IDs = []
-
-
-# TODO: Make this work for arbitrary number of student types. 
-# 		Can apply these (functions that apply to two teams) apply to 
-#		three or more teams by taking input in a list, and then
-# 		using map.
-# TODO: Make this work with more than one team size.
-
-def random_index(lst_length):
-	if (lst_length == 0):
-		raise FunctionError("List has length of 0.")
-	elif (lst_length == 1):
-		r = 0
-	else:
-		r = random.randint(0, lst_length - 1)
-	return r
-
-# This method is used to perform the swap of the students. 
-# Need to find a non-empty random project so that we can swap
-# one of the students on the project. 
-def random_project(projects, verbose = False):
-	# Pick a random project
-	rand_index = random_index(len(projects))
-	# Ensures that the project that we pick is not empty
-	if (verbose):
-		print "Length of this project is " + str(len(projects[rand_index].students))
-	#while (len(projects[rand_index].students) == 0):
-	#	rand_index = random_index(len(projects))
-	return projects[rand_index]
-
-# From a project
-def random_student(project):
-	rand_index = random_index(len(project.students))
-	return project.students[rand_index]
-
-# From a list of students
-def random_student_lst(student_lst):
-	rand_index = random_index(len(student_lst))
-	return student_lst[rand_index]
-
-
-def random_two_choice():
-	non_int = random.random()
-	if (non_int > 0.5):
-		return 1
-	else:
-		return 0
 
 def create_teams_on_all_fields(first_students, first_name, second_students, second_name, team_size):
 	'''
@@ -215,7 +169,7 @@ def create_teams_on_all_fields(first_students, first_name, second_students, seco
 					else:
 						raise FunctionError('Are there more than two types of students?')
 					
-					r = random_index(len(cur_team_students))
+					r = util.random_index(len(cur_team_students))
 					
 					# Place the player onto our current team.
 					cur_student = cur_team_students.pop(r)
@@ -408,7 +362,7 @@ def add_students_to_team_on_all_fields(remaining_students, s_type, output, empty
 	while (len(remaining_students) > 0):
 			
 	# Get a random student
-		r = random_index(len(remaining_students))
+		r = util.random_index(len(remaining_students))
 	
 		cur_student = remaining_students.pop(r)
 		new_student = cur_student
@@ -697,7 +651,7 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 				error += str(fixed_teams)
 				raise FunctionError(error)
 
-			r = random_index(len(swap_from))
+			r = util.random_index(len(swap_from))
 	 		# print "R is " + str(r)
 	 		team_to_take_from = cleaned_teams[r]
 	 		# print "Team to take from is " + str(team_to_take_from)
@@ -713,7 +667,7 @@ def fix_singletons_on_all_fields(fixed_teams, cleaned_teams, first_name, second_
 
 	 		print "len of possible indices is "
 	 		print str(len(possible_indices))
-	 		i = random_index(len(possible_indices))
+	 		i = util.random_index(len(possible_indices))
 	
 	 		# print "i is " + str(i)
 
