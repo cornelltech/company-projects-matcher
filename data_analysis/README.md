@@ -8,7 +8,7 @@ Data Analysis
 [src](https://github.com/cornelltech/company-projects-matcher/tree/master/data_analysis/src): Contains the code for analyses I performed.
 
 Numerical
-
+---------
 [Clustering](http://en.wikipedia.org/wiki/Cluster_analysis): performed clustering to see there were groups of datapoints that were very similar.
 
 [Distance](http://en.wikipedia.org/wiki/Mahalanobis_distance): calculates the Mahalanobis distance between the students' feature vectors.
@@ -17,6 +17,7 @@ Numerical
 
 
 Visualization
+--------------
 [Histogram](): creates histograms of the data (plots numerical data and color codes by the categorical data).
 
 [Scatterplot](): creates scatterplots of data. Plots pairs of data against each other, to view how the individual variables correlate with one another.
