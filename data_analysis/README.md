@@ -7,8 +7,8 @@ Data Analysis
 
 [src](https://github.com/cornelltech/company-projects-matcher/tree/master/data_analysis/src): contains the code for analyses I performed.
 
-Numerical
----------
+Numerical Analyses
+-------------------
 [Clustering](http://en.wikipedia.org/wiki/Cluster_analysis): performs [k-means analysis](http://en.wikipedia.org/wiki/K-means_clustering) to partition data into clusters, where each data point is "similar" or "close" to the mean of its cluster. Performs [one-hot encoding](http://en.wikipedia.org/wiki/One-hot) on categorical data before analyzing.
 
 [Distance](http://en.wikipedia.org/wiki/Mahalanobis_distance): calculates the [Mahalanobis distance](http://en.wikipedia.org/wiki/Mahalanobis_distance) between the students' feature vectors. Performs [one-hot encoding](http://en.wikipedia.org/wiki/One-hot) on categorical data before analyzing.
