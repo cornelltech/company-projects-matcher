@@ -47,21 +47,64 @@ if (__name__ == "__main__"):
 
 	# Format for describing the state of the system.
 	students = greedy_attempt_two.create_students_from_input(input_file)
-
-	for student in students:
-		rank = student.get_ranking(1820)
-		print str(student.ID) + ": " + str(rank)
-		print "\t Cost : " + str(student.get_cost_from_ranking(rank))
-
-	
-	# Do we want to pass in only the feasible prjoects here?
 	all_projects = all_pairs_sorted.generate_all_projects()
-
-	# sorted_projects = all_pairs_sorted.sort_projects_by_demand(students, all_projects)
-
-	# print [project.ID for project in sorted_projects]
-
 	feasible_projects = greedy_attempt_two.create_feasible_projects(students, all_projects)
+	print [s.ID for s in feasible_projects]
+
+
+	#Get projects from IDs 2860, 4225, 1820.
+	#cur_project = all_pairs_sorted.get_project_from_ID(cur_project_ID, feasible_projects)
+	proj_one = all_pairs_sorted.get_project_from_ID(2275, feasible_projects)
+	proj_two = all_pairs_sorted.get_project_from_ID(1625, feasible_projects)
+	proj_three = all_pairs_sorted.get_project_from_ID(1820, feasible_projects)
+
+	# Get students from IDs.
+	# Project one students
+	s_one = all_pairs_sorted.get_student_from_ID(4102938, students)
+	s_two = all_pairs_sorted.get_student_from_ID(8291021, students)
+	s_three = all_pairs_sorted.get_student_from_ID(4990324, students)
+	s_four = all_pairs_sorted.get_student_from_ID(6249314, students)
+	#s_five = all_pairs_sorted.get_student_from_ID(5092102, students)
+
+	proj_one.students.append(s_one)
+	proj_one.students.append(s_two)
+	proj_one.students.append(s_three)
+	proj_one.students.append(s_four)
+	#proj_one.students.append(s_five)
+
+	t_one = all_pairs_sorted.get_student_from_ID(5467123, students)
+	t_two = all_pairs_sorted.get_student_from_ID(7894231, students)
+	t_three = all_pairs_sorted.get_student_from_ID(8888888, students)
+	t_four = all_pairs_sorted.get_student_from_ID(5092102, students)
+	t_five = all_pairs_sorted.get_student_from_ID(3333333, students)
+
+	proj_two.students.append(t_one)
+	proj_two.students.append(t_two)
+	proj_two.students.append(t_three)
+	proj_two.students.append(t_four)
+	proj_two.students.append(t_five)
+
+
+	r_one = all_pairs_sorted.get_student_from_ID(3922650, students)
+	r_two = all_pairs_sorted.get_student_from_ID(2886650, students)
+	r_three = all_pairs_sorted.get_student_from_ID(1678231, students)
+	r_four = all_pairs_sorted.get_student_from_ID(9191919, students)
+	#r_five = all_pairs_sorted.get_student_from_ID(6666666, students)
+
+	proj_three.students.append(r_one)
+	proj_three.students.append(r_two)
+	proj_three.students.append(r_three)
+	proj_three.students.append(r_four)
+	#proj_three.students.append(r_five)
+
+	# Print the cost of this
+	fake_state = ([proj_one, proj_two, proj_three], [])
+	print pg.energy(fake_state)
+
+	# Do we want to pass in only the feasible prjoects here?
+	
+
+	sorted_projects = all_pairs_sorted.sort_projects_by_demand(students, all_projects)
 
 	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects)	
 	state = (sol, [])
@@ -69,15 +112,12 @@ if (__name__ == "__main__"):
 	# Automatically calculate the annealing schedule and anneal using this schedule.
 	schedule = annealer.auto(state, 1)
 
-
 	state, e = annealer.anneal(state, schedule['tmax'], schedule['tmin'], 
-	                             schedule['steps'], updates=6)
+	                             schedule['steps'])
 
 
 	# Manually set the annealing schedule.
 	#state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
-	#state, e = annealer.anneal(randState, 10000000, 0.01,
-     #  18000 * len(randState), 9)
 	
  	# state is the "final" solution
  	print "Final Solution:"

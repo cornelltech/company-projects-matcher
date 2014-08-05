@@ -1,5 +1,5 @@
 import numpy as np
-import random_teams
+import util
 from classes import CompError
 
 # A function to calculate the energy of a state.
@@ -33,21 +33,21 @@ def energy(state):
 # Returns None (just like the example).
 # Currently implemented as one swap of two people across teams.
 # NOTE: there should be no teams of size 0 before calling the function.
-def move(state, verbose = False):
+def move(state, verbose = True, super_verbose = False):
 	projects = state[0]
 
-	project_one = random_teams.random_project(projects)
-	project_two = random_teams.random_project(projects)
+	project_one = util.random_project(projects)
+	project_two = util.random_project(projects)
 
 
 	# Guarantee that the projects are not the same.
 	# Continue to swap project two until it is diff from project one.
 	while (project_one.ID == project_two.ID):
-		project_two = random_teams.random_project(projects)
-		if (verbose):
+		project_two = util.random_project(projects)
+		if (super_verbose):
 			print "Project one and project two are the same."
 
-	if (verbose):
+	if (super_verbose):
 		print "Found two different projects."
 
 		print "First team students are " + str([s.ID for s in project_one.students])
@@ -56,7 +56,7 @@ def move(state, verbose = False):
 		print "CLEAR: made it to pick_team"
 
 	# Team to pick first students from 
-	pick_team = random_teams.random_two_choice()
+	pick_team = util.random_two_choice()
 
 	if (pick_team == 0):
 		first_team = project_one
@@ -67,19 +67,19 @@ def move(state, verbose = False):
 
 	# Pick a student from the first team, and this student will be swapped.
 
-	student_one = random_teams.random_student(first_team)
-	student_two = random_teams.random_student(second_team)
+	student_one = util.random_student(first_team)
+	student_two = util.random_student(second_team)
 
 	# NOTE: this is problematic if teams aren't full.
 	# 38
 	# Guarantee that the students are of the same type.
 	while (not (student_one.degree_pursuing == student_two.degree_pursuing)):
-		student_two = random_teams.random_student(second_team)
+		student_two = util.random_student(second_team)
 
 	# Remove the students from their respective teams
 	first_team.students.remove(student_one)
 	if (not(student_two in second_team.students)):
-		if (verbose):
+		if (super_verbose):
 			print "Second team students is " + str([s.ID for s in second_team.students])
 		error = "Student two ("
 		error += str(student_two.ID)

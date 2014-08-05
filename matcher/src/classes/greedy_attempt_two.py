@@ -1,15 +1,12 @@
 import numpy as np 
 import pandas as pd 
-import random
+import util
 
 import classes
 import ConfigParser
-import random_teams
 import all_pairs_sorted
 import greedy_student_and_fix
 from classes import Student
-from classes import Team
-from classes import Project
 from classes import CompError
 from classes import FieldError
 
@@ -124,18 +121,18 @@ def make_initial_solution(students, projects, sorted = True):
 			if (sorted):
 				project = projects[index]
 			else:
-				project = random_teams.random_project(projects)
+				project = util.random_project(projects)
 			
-			MBA_one = random_teams.random_student_lst(MBAs)
+			MBA_one = util.random_student_lst(MBAs)
 			MBAs.remove(MBA_one)
 			
-			MBA_two = random_teams.random_student_lst(MBAs)
+			MBA_two = util.random_student_lst(MBAs)
 			MBAs.remove(MBA_two)
 			
-			MEng_one = random_teams.random_student_lst(MEngs)
+			MEng_one = util.random_student_lst(MEngs)
 			MEngs.remove(MEng_one)
 			
-			MEng_two = random_teams.random_student_lst(MEngs)
+			MEng_two = util.random_student_lst(MEngs)
 			MEngs.remove(MEng_two)
 
 			project.add_student(MBA_one)
@@ -158,7 +155,7 @@ def make_initial_solution(students, projects, sorted = True):
 				if (sorted):
 					project = projects[index]
 				else:
-					project = random_teams.random_project(matched_projects)
+					project = util.random_project(matched_projects)
 				project.students.append(student)
 				MBAs.remove(student)
 				unmatched_students.remove(student)
@@ -168,7 +165,7 @@ def make_initial_solution(students, projects, sorted = True):
 					print "Should remove project " + str(project.ID)
 					matched_projects.remove(project)
 			for student in MEngs:
-				project = random_teams.random_project(matched_projects)
+				project = util.random_project(matched_projects)
 				project.students.append(student)
 				MEngs.remove(student)
 				unmatched_students.remove(student)
@@ -382,7 +379,7 @@ def post_processing(feasible_projects, students, verbose = True):
 	#for tup in sorted_unfilled:
 	while (len(unmatched_IDs) > 0):
 		# TODO: this is hacky and was a way to only affect the first project.
-		index = random_teams.random_index(len(unmatched_IDs))
+		index = util.random_index(len(unmatched_IDs))
 		tup = sorted_unfilled[index]
 		project = tup[0]
 		project_ranks = tup[1]
@@ -398,7 +395,7 @@ def post_processing(feasible_projects, students, verbose = True):
 			# Pick a random MBA from the list of students who ranked.
 			need_new_student = True
 			while (need_new_student):
-				r = random_teams.random_index(len(project_ranks))
+				r = util.random_index(len(project_ranks))
 				random_triple = project_ranks[r]
 				new_student = random_triple[0]
 				student_type = random_triple[2]
@@ -452,7 +449,7 @@ def post_processing(feasible_projects, students, verbose = True):
 			# Pick a random MBA from the list of students who ranked.
 			need_new_student = True
 			while (need_new_student):
-				r = random_teams.random_index(len(project_ranks))
+				r = util.random_index(len(project_ranks))
 				random_triple = project_ranks[r]
 				student = random_triple[0]
 				student_type = random_triple[2]
