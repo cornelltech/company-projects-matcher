@@ -1,4 +1,4 @@
-import all_pairs_sorted
+import util
 import greedy_attempt_two
 import perry_geo_annealing as pg
 import ConfigParser
@@ -47,24 +47,24 @@ if (__name__ == "__main__"):
 
 	# Format for describing the state of the system.
 	students = greedy_attempt_two.create_students_from_input(input_file)
-	all_projects = all_pairs_sorted.generate_all_projects()
+	all_projects = util.generate_all_projects()
 	feasible_projects = greedy_attempt_two.create_feasible_projects(students, all_projects)
 	print [s.ID for s in feasible_projects]
 
 
 	#Get projects from IDs 2860, 4225, 1820.
-	#cur_project = all_pairs_sorted.get_project_from_ID(cur_project_ID, feasible_projects)
-	proj_one = all_pairs_sorted.get_project_from_ID(2275, feasible_projects)
-	proj_two = all_pairs_sorted.get_project_from_ID(1625, feasible_projects)
-	proj_three = all_pairs_sorted.get_project_from_ID(1820, feasible_projects)
+	#cur_project = util.get_project_from_ID(cur_project_ID, feasible_projects)
+	proj_one = util.get_project_from_ID(2275, feasible_projects)
+	proj_two = util.get_project_from_ID(1625, feasible_projects)
+	proj_three = util.get_project_from_ID(1820, feasible_projects)
 
 	# Get students from IDs.
 	# Project one students
-	s_one = all_pairs_sorted.get_student_from_ID(4102938, students)
-	s_two = all_pairs_sorted.get_student_from_ID(8291021, students)
-	s_three = all_pairs_sorted.get_student_from_ID(4990324, students)
-	s_four = all_pairs_sorted.get_student_from_ID(6249314, students)
-	#s_five = all_pairs_sorted.get_student_from_ID(5092102, students)
+	s_one = util.get_student_from_ID(4102938, students)
+	s_two = util.get_student_from_ID(8291021, students)
+	s_three = util.get_student_from_ID(4990324, students)
+	s_four = util.get_student_from_ID(6249314, students)
+	#s_five = util.get_student_from_ID(5092102, students)
 
 	proj_one.students.append(s_one)
 	proj_one.students.append(s_two)
@@ -72,11 +72,11 @@ if (__name__ == "__main__"):
 	proj_one.students.append(s_four)
 	#proj_one.students.append(s_five)
 
-	t_one = all_pairs_sorted.get_student_from_ID(5467123, students)
-	t_two = all_pairs_sorted.get_student_from_ID(7894231, students)
-	t_three = all_pairs_sorted.get_student_from_ID(8888888, students)
-	t_four = all_pairs_sorted.get_student_from_ID(5092102, students)
-	t_five = all_pairs_sorted.get_student_from_ID(3333333, students)
+	t_one = util.get_student_from_ID(5467123, students)
+	t_two = util.get_student_from_ID(7894231, students)
+	t_three = util.get_student_from_ID(8888888, students)
+	t_four = util.get_student_from_ID(5092102, students)
+	t_five = util.get_student_from_ID(3333333, students)
 
 	proj_two.students.append(t_one)
 	proj_two.students.append(t_two)
@@ -85,11 +85,11 @@ if (__name__ == "__main__"):
 	proj_two.students.append(t_five)
 
 
-	r_one = all_pairs_sorted.get_student_from_ID(3922650, students)
-	r_two = all_pairs_sorted.get_student_from_ID(2886650, students)
-	r_three = all_pairs_sorted.get_student_from_ID(1678231, students)
-	r_four = all_pairs_sorted.get_student_from_ID(9191919, students)
-	#r_five = all_pairs_sorted.get_student_from_ID(6666666, students)
+	r_one = util.get_student_from_ID(3922650, students)
+	r_two = util.get_student_from_ID(2886650, students)
+	r_three = util.get_student_from_ID(1678231, students)
+	r_four = util.get_student_from_ID(9191919, students)
+	#r_five = util.get_student_from_ID(6666666, students)
 
 	proj_three.students.append(r_one)
 	proj_three.students.append(r_two)
@@ -104,7 +104,7 @@ if (__name__ == "__main__"):
 	# Do we want to pass in only the feasible prjoects here?
 	
 
-	sorted_projects = all_pairs_sorted.sort_projects_by_demand(students, all_projects)
+	sorted_projects = util.sort_projects_by_demand(students, all_projects)
 
 	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects)	
 	state = (sol, [])

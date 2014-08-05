@@ -4,7 +4,6 @@ import util
 
 import classes
 import ConfigParser
-import all_pairs_sorted
 import greedy_student_and_fix
 from classes import Student
 from classes import CompError
@@ -82,7 +81,7 @@ def create_students_from_input(file):
 	return students_lst
 
 def create_feasible_projects(students, projects):
-	return all_pairs_sorted.remove_infeasible_projects(students, projects)
+	return util.remove_infeasible_projects(students, projects)
 
 def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
@@ -106,7 +105,7 @@ def make_initial_solution(students, projects, sorted = True):
 	unmatched_students = students
 
 	matched_projects = []
-	projects = all_pairs_sorted.sort_projects_by_demand(students, projects)
+	projects = util.sort_projects_by_demand(students, projects)
 
 	index = 0
 	while (len(unmatched_students) > 0):
@@ -200,7 +199,7 @@ def initial_solution(students, projects, verbose = True):
 			if (not (student.ID in matched_students)):
 				cur_project_ID = student.project_rankings[ranking_spot]
 				try:
-					cur_project = all_pairs_sorted.get_project_from_ID(cur_project_ID, feasible_projects)
+					cur_project = util.get_project_from_ID(cur_project_ID, feasible_projects)
 					if (verbose):
 						print "     Student not matched (" + str(student.ID) + ")"
 						print "     Rank " + str(ranking_spot) + " is project " + str(cur_project_ID)
@@ -557,7 +556,7 @@ if __name__ == "__main__":
 	input_file = configParser.get('files', 'greedy_attempt_two_file')
 
 	students = create_students_from_input("tests.csv")
-	all_projects = all_pairs_sorted.generate_all_projects()
+	all_projects = util.generate_all_projects()
 	initial_solution(students, all_projects)
 	#feasible_projects = create_feasible_projects(students)
 
