@@ -23,10 +23,21 @@ def function_one(projects, students):
 				impossible_teams.append(g)
 
 		feasible_teams = filter(lambda t: t not in impossible_teams, groups_of_four)
-		print str(p.ID) + ":" + str([(a.ID, b.ID, c.ID, d.ID) for (a, b, c, d) in feasible_teams])
+		#print str(p.ID) + ":" + str([(a.ID, b.ID, c.ID, d.ID) for (a, b, c, d) in feasible_teams])
 
-		print str(p.ID) + ":" + str(len(matched)) + " ranked, " + str(len(feasible_teams)) + " feasible teams."
+		#print str(p.ID) + ":" + str(len(matched)) + " ranked, " + str(len(feasible_teams)) + " feasible teams."
 		#print [(a.ID, b.ID, c.ID, d.ID) for (a, b, c, d) in feasible_teams]
+
+		# 	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students), reverse = True)
+
+		# NOTE: this is per project.
+		team_interest_tuples = []
+
+		for t in feasible_teams:
+			project_ranking = exhaustive.get_project_interest_from_rankings(p, students)
+			# Create a tuple of this team's interest for the project and the team (a 4-tuple of students).
+			tup = (project_ranking, t)
+			team_interest_tuples.append(tup)
 
 
 
