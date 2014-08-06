@@ -99,7 +99,7 @@ if (__name__ == "__main__"):
 
 	# Print the cost of this
 	fake_state = ([proj_one, proj_two, proj_three], [])
-	print pg.energy(fake_state)
+	#print pg.energy(fake_state)
 
 	# Do we want to pass in only the feasible prjoects here?
 	
@@ -107,27 +107,43 @@ if (__name__ == "__main__"):
 	sorted_projects = util.sort_projects_by_demand(students, all_projects)
 
 	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects)	
-	state = (sol, [])
+	
+
+	def print_final_solution(state):
+		print "Final Solution:"
+ 		(projects, unmatched) = state
+		for p in projects:
+		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
 	# Automatically calculate the annealing schedule and anneal using this schedule.
-	schedule = annealer.auto(state, 1)
+	def auto_schedule():
+		state = (sol, [])
+		schedule = annealer.auto(state, 1)
 
-	state, e = annealer.anneal(state, schedule['tmax'], schedule['tmin'], 
-	                             schedule['steps'])
+		state, e = annealer.anneal(state, schedule['tmax'], schedule['tmin'], 
+	    	                        schedule['steps'])
+
+		print_final_solution(state)
+
+		print "Annealing Schedule:"
+		print "Tmax: " + str(schedule['tmax'])
+		print "Tmin: " + str(schedule['tmin'])
+		print "Steps: " + str(schedule['steps'])
+
+		print "Final Energy: " + str(e) 
 
 
-	# Manually set the annealing schedule.
-	#state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
+	def manual_schedule():
+		state = (sol, [])
+		# Manually set the annealing schedule.
+		state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
+		print_final_solution(state)
+
+	manual_schedule()
 	
- 	# state is the "final" solution
- 	print "Final Solution:"
- 	(projects, unmatched) = state
-	for p in projects:
-	 	print str(p.ID) + ": " + str([s.ID for s in p.students])
-	print "Final Energy: " + str(e) 
+ 
+	
 
 
-	print "Annealing Schedule:"
-	print "Tmax: " + str(schedule['tmax'])
-	print "Tmin: " + str(schedule['tmin'])
-	print "Steps: " + str(schedule['steps'])
+
+	
