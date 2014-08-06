@@ -41,12 +41,15 @@ if (__name__ == "__main__"):
 	configParser.read(configFilePath)
 
 	input_file = configParser.get('files', 'perry_geo_main_file')
+	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
+	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
+	team_size = num_MBAs + num_MEngs
 
 	# Creating the annealer with our energy and move functions.
 	annealer = Annealer(pg.energy, pg.move)
 
 	# Format for describing the state of the system.
-	students = greedy_attempt_two.create_students_from_input(input_file)
+	students = util.create_students_from_input(input_file)
 	print "All students:"
 	print [s.ID for s in students]
 	all_projects = util.generate_all_projects()
@@ -110,8 +113,10 @@ if (__name__ == "__main__"):
 
 	def random_solutions_and_goodness(num_times = 1):
 		for i in range (0, num_times):
-			init = greedy_attempt_two.make_initial_solution(students, feasible_projects)
-			print [p.ID for p in init]
+			init = greedy_attempt_two.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
+			print "This random solution is: "
+			for p in init:
+				print str(p.ID) + ":" + str([s.ID for s in p.students])
 
 	random_solutions_and_goodness()
 

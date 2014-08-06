@@ -3,6 +3,12 @@ import random
 import classes
 from classes import Project
 from classes import FieldError
+from classes import CompError
+from classes import Student
+import pandas as pd
+import numpy as np
+
+student_ids = []
 
 class InputError(Exception):
 	def __init__(self, value):
@@ -162,3 +168,93 @@ def sort_projects_by_demand(students, projects, tup = False):
 		return [liking(p) for p in projects]
 	else:
 		return projects
+
+
+def are_unique(l1, l2):
+	''' 
+		Checks if two given lists are unique.
+
+		Parameters
+		----------
+		l1, l2: two arbitrary lists.
+
+		Returns
+		-------
+		are_unique: a boolean value indicating if these lists are unique.
+
+	'''
+	return (set(l1).intersection(set(l2)) == set([]))
+
+def create_students_from_input(file):
+	data = pd.read_csv(file)
+	data_array = np.array(data)
+	shape = data_array.shape
+	num_rows = shape[0]
+
+	students_lst = []
+
+	# Extract rows and create students
+	for i in range(0, num_rows):
+		student = data_array[i,:]
+		ID 	= student[0]
+		if (ID in student_ids):
+			raise CompError("Student IDs must be unique.")
+		student_ids.append(ID)
+		
+		degree_pursuing = student[1]
+		cs_ug = student[2]
+		coding_ability = student[3]
+		num_yrs_work_exp = student[4]
+
+		# Only take the desired number of project rankings that we want.
+		rankings = student[5:(5 + classes.number_project_rankings)]
+		name = student[10]
+
+		a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
+		students_lst.append(a)
+
+	return students_lst
+
+def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
+	if (len(projects) == 0):
+		raise FieldError ("Cannot make an initial solution with an empty project list.")
+
+	elif (len(students) == 0):
+		raise FieldError ("Cannot make an initial solution with an empty student list.")
+
+	team_size = num_MBAs + num_MEngs
+	num_teams = int(len(students) / team_size)
+
+	MBAs = filter(lambda student: student.degree_pursuing == 0 or student.degree_pursuing == "MBA", students)
+	MEngs = filter(lambda student: student.degree_pursuing == 1 or student.degree_pursuing == "MEng", students)
+
+	# Make sure that there are no overlapping student IDs.
+	MBA_IDs = [s.ID for s in MBAs]
+	MEng_IDs = [s.ID for s in MEngs]
+
+	if (not (are_unique(MBA_IDs, MEng_IDs))):
+		raise FieldError('Student ID lists must not overlap.')
+
+	# Make sure that team size is not zero.
+	if (team_size == 0):
+		raise FieldError('Team size cannot be 0.')
+
+	# If we don't have enough MBAs or MEngs to make the correct teams, fail.
+	num_MBAs_needed = num_MBAs * num_teams
+	num_MEngs_needed = num_MEngs * num_teams
+
+	if (len(MBAs) < num_MBAs_needed):
+		raise FieldError ("Not enough MBA students to produce teams of the desired makeup.")
+	elif (len(MEngs) < num_MEngs_needed):
+		raise FieldError ("Not enough MEng students to produce teams of the desired makeup.")
+
+	# If team size is too big for input.
+	if (num_teams == 0):
+		raise FieldError ("Team size is too large for given input.")
+
+	# If none of these errors are raised, then the input is fine.
+	else:
+		pass
+
+
+
