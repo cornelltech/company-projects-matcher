@@ -641,11 +641,15 @@ class Project(object):
 	remaining_MEng_spots = property(get_remaining_MEng_spots, set_remaining_MEng_spots,
 				  doc = "Get and set the remaining MEng spots on this project.")
 
+	# This just returns if the project strictly has remaining spots for MBAs.
+	# Does not account for the wiggle room (+1 MEng OR +1 MBA).
 	def has_remaining_MBA_spots(self):
 		MBAs = filter(lambda s: s.degree_pursuing == 0 or s.degree_pursuing == "MBA", self._students)
 		num_MBAs_needed = self._num_MBAs - len(MBAs)
 		return (num_MBAs_needed > 0)
 
+	# This just returns if the project strictly has remaining spots for MEngs.
+	# Does not account for the wiggle room (+1 MEng OR +1 MBA).
 	def has_remaining_MEng_spots(self):
 		MEngs = filter(lambda s: s.degree_pursuing == 1 or s.degree_pursuing == "MEng", self._students)
 		num_MEngs_needed = self._num_MEngs - len(MEngs)
@@ -660,44 +664,62 @@ class Project(object):
 	# TODO: Add a way to check that ID doesnt exist on another team.
 	# ^^^^ actually don't want that because at some intermediate point, we might want the same student
 	# two different projects.
+
+	# This accounts for the wiggle room.
 	def add_student_to_MBAs(self, student, verbose = False):
-		if (not(student.degree_pursuing == 0 or student.degree_pursuing == "MBA")):
+		if (not(student._degree_pursuing == 0 or student._degree_pursuing == "MBA")):
 			if (verbose):
 				print "Degree is not 0 or MBA"
 			return False
 		elif (not(self.has_remaining_MBA_spots())):
-			if (verbose):
-				print "This project does not have remaining MBA spots"
-			return False
+			# Wiggle spot already taken
+			if (len(self._students) > 4):
+				if (verbose):
+					print "This project does not have remaining MBA spots"
+				return False
+			# The wiggle spot is not taken. Can add this MBA.
+			else: 
+				self._MBA_list.append(student)
+				self._students.append(student)
 		else:
-			MBA_IDs  = [s.ID for s in self._MBA_list]
+			MBA_IDs  = [s.ID for s in self._students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
 			if (student.ID in MBA_IDs):
 				if (verbose):
 					print "Student is already on team"
 				return False
 				#error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
 				#raise FieldError(error)
-		self._MBA_list.append(student)
-		self._students.append(student)
-		self._remaining_MBA_spots -= 1
-		return True
+			self._MBA_list.append(student)
+			self._students.append(student)
+			self._remaining_MBA_spots -= 1
+			return True
 
 	# NOTE: returns a boolean!!!!
-	def add_student_to_MEngs(self, student):
+	def add_student_to_MEngs(self, student, verbose = False):
 		if (not(student.degree_pursuing == 1 or student.degree_pursuing == "MEng")):
+			if (verbose):
+				print "Degree is not 1 or MEng"
 			return False
 		elif (not(self.has_remaining_MEng_spots())):
-			return False
+			# Wiggle spot already taken
+			if (len(self._students) > 4):
+				if (verbose):
+					print "This project does not have remaining Meng spots"
+				return False
+			# The wiggle spot is not taken. Can add this MEng.
+			else: 
+				self._MEng_list.append(student)
+				self._students.append(student)
 		else:
-			MEng_IDs  = [s.ID for s in self._MEng_list]
+			MEng_IDs  = [s.ID for s in self._students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
 			if (student.ID in MEng_IDs):
 				return False
 				#error = "ID " + str(student.ID) + " is already on project " + str(self._ID) + "."
 				#raise FieldError(error)
-		self._MEng_list.append(student)
-		self._students.append(student)
-		self._remaining_MEng_spots -= 1
-		return True
+			self._MEng_list.append(student)
+			self._students.append(student)
+			self._remaining_MEng_spots -= 1
+			return True
 
 	# Returns a boolean of if the add was successful or not.
 	def add_student(self, student, verbose = False):
