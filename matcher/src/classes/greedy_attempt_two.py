@@ -50,35 +50,6 @@ def print_students_and_waiting(projects):
 		print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
 
-def create_students_from_input(file):
-	data = pd.read_csv(file)
-	data_array = np.array(data)
-	shape = data_array.shape
-	num_rows = shape[0]
-
-	students_lst = []
-
-	# Extract rows and create students
-	for i in range(0, num_rows):
-		student = data_array[i,:]
-		ID 	= student[0]
-		if (ID in student_ids):
-			raise CompError("Student IDs must be unique.")
-		student_ids.append(ID)
-		
-		degree_pursuing = student[1]
-		cs_ug = student[2]
-		coding_ability = student[3]
-		num_yrs_work_exp = student[4]
-
-		# Only take the desired number of project rankings that we want.
-		rankings = student[5:(5 + classes.number_project_rankings)]
-		name = student[10]
-
-		a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
-		students_lst.append(a)
-
-	return students_lst
 
 def create_feasible_projects(students, projects):
 	print "In create feasible projects"
@@ -93,25 +64,19 @@ def match_with_first_choice(students, projects):
 # Creates a random initial initial solution from only the feasible projects.
 # Have the option to sort the projects by the highest interest first, so there is a 
 # higher chance that the students matched to it actually ranked it.
-def make_initial_solution(students, projects, sorted = False):
-	if (len(projects) == 0):
-		raise FieldError ("Cannot make an initial solution with an empty initial project list.")
-	print "There are",
-	print len(students),
-	print "students"
+def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = False):
+
+	util.input_checks(students, projects, num_MBAs, num_MEngs, sorted = False) 
 
 	MBAs = filter(lambda student: student.degree_pursuing == 0 or student.degree_pursuing == "MBA", students)
 	MEngs = filter(lambda student: student.degree_pursuing == 1 or student.degree_pursuing == "MEng", students)
 
-	# NOTE:  #42 exists here.
-
+	
 	# Copying the students over.
 	unmatched_students = students[:]
 
 	matched_projects = []
-	print "Projects before even doing anything is " + str([p.ID for p in projects])
 	projects = util.sort_projects_by_demand(students, projects)
-	print "Projects is " + str([p.ID for p in projects])
 
 	index = 0
 	while (len(unmatched_students) > 0):
@@ -119,8 +84,7 @@ def make_initial_solution(students, projects, sorted = False):
 		print len(unmatched_students)
 		print "There are " + str(len(MBAs)) + " MBAs"
 		print "There are " + str(len(MEngs)) + " MEngs"
-		# Note if I make this >= 1, then it crashes.
-		if (len(unmatched_students) > 4):
+		if (len(unmatched_students) >= 4):
 			print "True"
 
 			if (sorted):
@@ -181,6 +145,12 @@ def make_initial_solution(students, projects, sorted = False):
 					print "Should remove project " + str(project.ID)
 					matched_projects.remove(project)
 		index += 1
+
+	# Sanity check to make sure that all students were matched to projects.
+	num_total_students = sum([len(project.students) for project in projects])
+	if (not (len(students) == num_total_students)):
+		raise CompError("Not all students were matched to projects.")
+
 
 	return [p for p in projects if len(p.students) > 0]
 
@@ -562,7 +532,7 @@ if __name__ == "__main__":
 
 	input_file = configParser.get('files', 'greedy_attempt_two_file')
 
-	students = create_students_from_input("tests.csv")
+	students = util.create_students_from_input("tests.csv")
 	all_projects = util.generate_all_projects()
 	initial_solution(students, all_projects)
 	#feasible_projects = create_feasible_projects(students)
