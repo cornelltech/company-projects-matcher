@@ -114,8 +114,8 @@ def read_input(file, normalize=True):
 	
 	projects = generate_all_projects()
 
-	simple_greedy_match(students_lst, projects)
-	rearrange_spots(students_lst, projects)
+	match_with_first_choice(students_lst, projects)
+	#rearrange_spots(students_lst, projects)
 
 	print ""
 	print "Students matched with first choices:"
@@ -257,14 +257,10 @@ def get_project_from_ID(ID, projects):
 	else:
 		return matching_ID_lst[0]
 
-def simple_greedy_match(students_lst, projects):
+def match_with_first_choice(students_lst, projects):
 	while(len(students_lst) > 0):
-		#print "Students list is " + str([s.ID for s in students_lst])
 		r = random_teams.random_index(len(students_lst))
 		cur_student = students_lst[r]
-		#print "Current student is: " + str(cur_student.ID)
-		#print "Student " + str(cur_student.ID) + "'s list is ",
-		#print cur_student.project_rankings
 
 		# Current spot in the student's ranking
 		cur_spot = 0
@@ -276,26 +272,18 @@ def simple_greedy_match(students_lst, projects):
 				error = "Student " + str(cur_student.ID) + " could not match to any of its desired projects."
 				raise CompError(error)
 			cur_spot_proj_ID = ranks[cur_spot]
-			#print "Current student's " + str(cur_spot) + " choice project is " + str(cur_spot_proj_ID)
 			top_project = get_project_from_ID(cur_spot_proj_ID, projects)
-
-			# print "Current student's type is: ",
-			# if (cur_student.degree_pursuing == 0):
-			# 	print "MBA"
-			# else:
-			# 	print "MEng"
-			#print "Before add: choice project's members are",
-			#top_project.print_project_members()
-
-			matched = top_project.add_student(cur_student)
-			#print "After add: choice project's members are",
-			#top_project.print_project_members()
-
-			#print "Matched is " + str(matched)
-			if (not(matched)):
-				cur_spot += 1
+			
+			
+			if (not (top_project in projects)):
+				cur_spot +=1
 			else:
-				students_lst.pop(r)
+				matched = top_project.add_student(cur_student)
+			
+				if (not(matched)):
+					cur_spot += 1
+				else:
+					students_lst.pop(r)
 	return projects
 
 def rearrange_spots(students_lst, projects):
