@@ -101,18 +101,18 @@ def get_project_from_ID(ID, projects):
 
 # Filter out projects with insufficient rankings to get matched.
 # Returns a list of projects which passed the test.
-def remove_infeasible_projects(students, projects, verbose = False):
+def remove_infeasible_projects(students, projects, verbose = True):
 	insufficient_IDs = []
 	for p in projects:
-		matched = filter(lambda x: p.ID in x.project_rankings, students)
+		matched = filter(lambda s: p.ID in s.project_rankings, students)
 		if (verbose):
 			print "For project " + str(p.ID) + ":"
 			print [s.ID for s in matched]
-		MBAs_ranked = [s for s in matched if s.degree_pursuing == "MBA"]
-		MEngs_ranked = [s for s in matched if s.degree_pursuing == "MEng"]
+		MBAs_ranked = [s for s in matched if s.degree_pursuing == "MBA" or s.degree_pursuing == 0]
+		MEngs_ranked = [s for s in matched if s.degree_pursuing == "MEng" or s.degree_pursuing == 1]
 		if (verbose):
-			print [s.ID for s in MBAs_ranked]
-			print [s.ID for s in MEngs_ranked]
+			print "MBAs" + str([s.ID for s in MBAs_ranked])
+			print "MEngs" + str([s.ID for s in MEngs_ranked])
 
 	 	if (len(MBAs_ranked) < p.num_MBAs or len(MEngs_ranked) < p.num_MEngs):
 	 		if (verbose):
