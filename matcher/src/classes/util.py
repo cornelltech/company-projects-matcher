@@ -42,7 +42,9 @@ def random_index(lst_length):
 # This method is used to perform the swap of the students. 
 # Need to find a non-empty random project so that we can swap
 # one of the students on the project. 
-def random_project(projects, verbose = False):
+# Reuse is a boolean that lets us pick if its ok that this project
+# already has students on it or if that's not ok.
+def random_project(projects, already_picked, reuse, verbose = False):
 	# Pick a random project
 	rand_index = random_index(len(projects))
 	# Ensures that the project that we pick is not empty
@@ -50,6 +52,12 @@ def random_project(projects, verbose = False):
 		print "Length of this project is " + str(len(projects[rand_index].students))
 	#while (len(projects[rand_index].students) == 0):
 	#	rand_index = random_index(len(projects))
+	if (not (reuse)):
+		project_to_return = projects[rand_index]
+		while (project_to_return in already_picked):
+			rand_index = random_index(len(projects))
+			project_to_return = projects[rand_index]
+	
 	return projects[rand_index]
 
 # From a project
@@ -107,7 +115,7 @@ def get_project_from_ID(ID, projects):
 
 # Filter out projects with insufficient rankings to get matched.
 # Returns a list of projects which passed the test.
-def remove_infeasible_projects(students, projects, verbose = True):
+def remove_infeasible_projects(students, projects, verbose = False):
 	insufficient_IDs = []
 	for p in projects:
 		matched = filter(lambda s: p.ID in s.project_rankings, students)
@@ -243,24 +251,24 @@ def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 	# It's the smaller of total mbas and total mbas divided by num mbas or num mengs.
 
 	if (len(MBAs) < len(MEngs)):
-		smaller = MBAs
-		num_req_per_team = num_MBAs
+	 	smaller = MBAs
+	 	num_req_per_team = num_MBAs
 	else:
-		smaller = MEngs
-		num_req_per_team = num_MEngs
+	 	smaller = MEngs
+	 	num_req_per_team = num_MEngs
 	
-	num_teams = smaller/num_req_per_team
+	num_teams = len(smaller)/num_req_per_team
 
 
 
 
-	num_MBAs_needed = num_MBAs * num_teams
-	num_MEngs_needed = num_MEngs * num_teams
+	# num_MBAs_needed = num_MBAs * num_teams
+	# num_MEngs_needed = num_MEngs * num_teams
 
-	if (len(MBAs) < num_MBAs_needed):
-		raise FieldError ("Not enough MBA students to produce teams of the desired makeup.")
-	elif (len(MEngs) < num_MEngs_needed):
-		raise FieldError ("Not enough MEng students to produce teams of the desired makeup.")
+	# if (len(MBAs) < num_MBAs_needed):
+	# 	raise FieldError ("Not enough MBA students to produce teams of the desired makeup.")
+	# elif (len(MEngs) < num_MEngs_needed):
+	# 	raise FieldError ("Not enough MEng students to produce teams of the desired makeup.")
 
 	# If team size is too big for input.
 	if (num_teams == 0):
