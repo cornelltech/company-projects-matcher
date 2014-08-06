@@ -215,6 +215,7 @@ def create_students_from_input(file):
 
 	return students_lst
 
+# num_MBAs and num_MEngs are the numbers required per team.
 def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 	if (len(projects) == 0):
 		raise FieldError ("Cannot make an initial solution with an empty project list.")
@@ -223,7 +224,6 @@ def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 		raise FieldError ("Cannot make an initial solution with an empty student list.")
 
 	team_size = num_MBAs + num_MEngs
-	num_teams = int(len(students) / team_size)
 
 	MBAs = filter(lambda student: student.degree_pursuing == 0 or student.degree_pursuing == "MBA", students)
 	MEngs = filter(lambda student: student.degree_pursuing == 1 or student.degree_pursuing == "MEng", students)
@@ -239,7 +239,21 @@ def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 	if (team_size == 0):
 		raise FieldError('Team size cannot be 0.')
 
-	# If we don't have enough MBAs or MEngs to make the correct teams, fail.
+	# Number of teams is not actually just the total students divided by the team size.
+	# It's the smaller of total mbas and total mbas divided by num mbas or num mengs.
+
+	if (len(MBAs) < len(MEngs)):
+		smaller = MBAs
+		num_req_per_team = num_MBAs
+	else:
+		smaller = MEngs
+		num_req_per_team = num_MEngs
+	
+	num_teams = smaller/num_req_per_team
+
+
+
+
 	num_MBAs_needed = num_MBAs * num_teams
 	num_MEngs_needed = num_MEngs * num_teams
 
