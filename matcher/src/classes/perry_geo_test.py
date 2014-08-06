@@ -114,6 +114,7 @@ if (__name__ == "__main__"):
 	def random_solutions_and_goodness(num_times = 1):
 		for i in range (0, num_times):
 			init = greedy_attempt_two.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
+			print "There are  " + str(len(feasible_projects)) + " feasible projects"
 			print "This random solution is: "
 			for p in init:
 				print str(p.ID) + ":" + str([s.ID for s in p.students])
