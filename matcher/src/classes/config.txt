@@ -20,14 +20,14 @@ num_degree_pursuing = 2
 
 # Field: valid IDs for our projects.
 # Currently is a list of 60 valid projects.
-num_valid_projects = 60
+num_valid_projects = 75
 
 # Field: number of project rankings.
-number_project_rankings = 5
+number_project_rankings = 10
 
 [files]
 # File to use in greedy_attempt_two.py
 
 # Don't put quotes around these -- the ConfigParser does otherwise.
-greedy_attempt_two_file = tests.csv
-perry_geo_main_file = tests.csv
+greedy_attempt_two_file = 2013_project_rankings.csv
+perry_geo_main_file = 2013_project_rankings.csv
