@@ -25,6 +25,10 @@ num_valid_projects = 75
 # Field: number of project rankings.
 number_project_rankings = 10
 
+# Field: number of students on each team.
+num_MBAs = 2
+num_MEngs = 2
+
 [files]
 # File to use in greedy_attempt_two.py
 
