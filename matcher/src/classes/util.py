@@ -125,47 +125,40 @@ def remove_infeasible_projects(students, projects, verbose = False):
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
 	return projects
 
-
-
 # For a specific project p, get the students' overall interest in the project.
 # Higher interest means that more students ranked it highly on their lists.
 # The "interest" variable determines if how high a student ranked the project on their
 # list counts extra towards the ranking, or if it's just how many students ranked it.
 # Currently set the default so that its just how many students ranked it.
-def get_project_interest_from_rankings(p, students, verbose = False, interest = False):
+def get_project_interest_from_rankings(p, students, verbose = False):
 
 	# Check which students ranked this project.
 	matched = filter(lambda s: p.ID in s.project_rankings, students)
-	
+
 	if (verbose):
 		print "The following students ranked project " + str(p.ID) + ":"
 		print [s.ID for s in matched]
 
 	# For each student, get their interest in this project.
 	# Add this to the sum of the overall interest.
-	if (interest):
-		overall_interest = 0
-		for s in matched:
-			rank = s.get_ranking(p.ID)
-			interest = s.get_interest_from_ranking(rank)
-	 		overall_interest = overall_interest + interest
-		return overall_interest
+	overall_interest = 0
+	for s in matched:
+		rank = s.get_ranking(p.ID)
+		interest = s.get_interest_from_ranking(rank)
+ 		overall_interest = overall_interest + interest
+	return overall_interest
 
-	else:
-		return len(matched)
-
+# Get the number of students who ranked this project in their top 10.
+def get_num_ranked(p, students):
+	matched = filter(lambda s: p.ID in s.project_rankings, students)
+	return len(matched)
 
 # Sort projects by highest demand to lowest demand.
-def sort_projects_by_demand(students, projects, interest = False):
-	projects.sort(key = lambda p: get_project_interest_from_rankings(p, students, interest = interest), reverse = True)
-	return projects
-
-
-
-
-
-
-
-
-
-
+def sort_projects_by_demand(students, projects, tup = False):
+	def liking (p):
+		return get_num_ranked(p, students)
+	projects.sort(key = liking, reverse = True)
+	if (tup):
+		return [liking(p) for p in projects]
+	else:
+		return projects
