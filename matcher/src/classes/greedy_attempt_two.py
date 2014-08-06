@@ -81,6 +81,7 @@ def create_students_from_input(file):
 	return students_lst
 
 def create_feasible_projects(students, projects):
+	print "In create feasible projects"
 	return util.remove_infeasible_projects(students, projects)
 
 def match_with_first_choice(students, projects):
@@ -92,7 +93,9 @@ def match_with_first_choice(students, projects):
 # Creates a random initial initial solution from only the feasible projects.
 # Have the option to sort the projects by the highest interest first, so there is a 
 # higher chance that the students matched to it actually ranked it.
-def make_initial_solution(students, projects, sorted = True):
+def make_initial_solution(students, projects, sorted = False):
+	if (len(projects) == 0):
+		raise FieldError ("Cannot make an initial solution with an empty initial project list.")
 	print "There are",
 	print len(students),
 	print "students"
@@ -102,10 +105,13 @@ def make_initial_solution(students, projects, sorted = True):
 
 	# NOTE:  #42 exists here.
 
-	unmatched_students = students
+	# Copying the students over.
+	unmatched_students = students[:]
 
 	matched_projects = []
+	print "Projects before even doing anything is " + str([p.ID for p in projects])
 	projects = util.sort_projects_by_demand(students, projects)
+	print "Projects is " + str([p.ID for p in projects])
 
 	index = 0
 	while (len(unmatched_students) > 0):
@@ -120,6 +126,7 @@ def make_initial_solution(students, projects, sorted = True):
 			if (sorted):
 				project = projects[index]
 			else:
+				# Bug here: projects is of length 0.
 				project = util.random_project(projects)
 			
 			MBA_one = util.random_student_lst(MBAs)
@@ -134,10 +141,10 @@ def make_initial_solution(students, projects, sorted = True):
 			MEng_two = util.random_student_lst(MEngs)
 			MEngs.remove(MEng_two)
 
-			project.add_student(MBA_one)
-			project.add_student(MBA_two)
-			project.add_student(MEng_one)
-			project.add_student(MEng_two)
+			project.students.append(MBA_one)
+			project.students.append(MBA_two)
+			project.students.append(MEng_one)
+			project.students.append(MEng_two)
 
 			unmatched_students.remove(MBA_one)
 			unmatched_students.remove(MBA_two)
