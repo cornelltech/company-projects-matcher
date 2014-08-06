@@ -156,6 +156,10 @@ class Annealer:
 
             # Calculate the energy of the new state.
             E = self.energy(state)
+            print "Best energy: " + str(bestEnergy)
+            print "Current energy: " + str(E)
+
+            # Change in energy
             dE = E - prevEnergy
             trials += 1
 
@@ -185,6 +189,11 @@ class Annealer:
                     trials, accepts, improves = 0, 0, 0
         
         # Return best state and energy
+        print "Best state is: " 
+        # Hard coded for our best state:
+        (projects, empty) = bestState
+        for p in projects:
+            print str(p.ID) + ": " + str(s.ID for s in p.students)
         return bestState, bestEnergy
     
     def auto(self, state, minutes, steps=2000):
