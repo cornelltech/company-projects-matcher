@@ -13,15 +13,6 @@ class DistanceError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
-def weight_interest(x):
-	# TODO: change this to be in the range of valid interest vals.
-	# If this dict doesn't exist, make it.
-	# Maybe don't need to do this if it's passed in the right time?
-	if (not(x in range(1, 11))):
-		raise DistanceError("Interest value is invalid.")
-	a = 10 * x
-	return a * math.sqrt(a)
-
 def is_positive_semidefinite(cov_matrix, verbose = False):
 #Calculates all eigenvalues of the matrix
 # If there are negative eigenvalues, returns false.
@@ -230,7 +221,7 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 	return result.sort()
 
 # This takes in the inverse of the cov mat, not the inverse sq cov mat.
-def use_python_distance_data(student_one, student_two, inv_cov_mat):
+def do_python_distance_data(student_one, student_two, inv_cov_mat):
 	return spatial.distance.mahalanobis(student_one, student_two, inv_cov_mat)
 
 # This takes in the inverse of the cov mat, not the inverse sq cov mat.
@@ -241,7 +232,7 @@ def do_all_python_distances_data(data, inv_cov_mat, unprocessed_data, start = 0,
 	res = []
 	for student_one in data:
 		for student_two in data:
-			d = use_python_distance_data(student_one, student_two, inv_cov_mat)
+			d = do_python_distance_data(student_one, student_two, inv_cov_mat)
 			tup = ((i, j), d)
 			keys = [t[0] for t in res]
 			if ((j, i) in keys):
@@ -439,8 +430,15 @@ if (__name__ == "__main__"):
 	#do_all_subtracted_distances_data(processed_data, unprocessed_data)
 
 
-	a = [1, 0, 0, 4]
-	b = [0, 3, 1, 4]
+	#fst = [1, 2, 1, 3]
+	#snd = [0, 4, 1, 1]
+	fst = processed_data[26]
+	snd = processed_data[32]
+	print do_python_distance_data(fst, snd, inv_cov)
+
+
+	#a = [1, 0, 0, 4]
+	#b = [0, 3, 1, 4]
 	#print subtract_distances(a, b)
 
 	# Testing weighted interest
