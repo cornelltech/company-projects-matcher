@@ -70,7 +70,6 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 
 	MBAs = filter(lambda student: student.degree_pursuing == 0 or student.degree_pursuing == "MBA", students)
 	MEngs = filter(lambda student: student.degree_pursuing == 1 or student.degree_pursuing == "MEng", students)
-
 	
 	# Copying the students over.
 	unmatched_students = students[:]
@@ -84,14 +83,13 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 		print len(unmatched_students)
 		print "There are " + str(len(MBAs)) + " MBAs"
 		print "There are " + str(len(MEngs)) + " MEngs"
+		
 		if (len(unmatched_students) >= 4):
-			print "True"
-
 			if (sorted):
 				project = projects[index]
 			else:
-				# Bug here: projects is of length 0.
-				project = util.random_project(projects)
+				# Need to check if this project has already been matched.
+				project = util.random_project(projects, matched_projects, False)
 			
 			MBA_one = util.random_student_lst(MBAs)
 			MBAs.remove(MBA_one)
@@ -118,14 +116,13 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 			matched_projects.append(project)
 			print "Len of matched projects is " + str(len(matched_projects))
 		else:
-			print "False"
 			# Less than 4 students left
 			for student in MBAs:
 				# Pick a random project and add this student to that project.
 				if (sorted):
 					project = projects[index]
 				else:
-					project = util.random_project(matched_projects)
+					project = util.random_project(matched_projects, [], True)
 				project.students.append(student)
 				MBAs.remove(student)
 				unmatched_students.remove(student)
@@ -135,7 +132,7 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 					print "Should remove project " + str(project.ID)
 					matched_projects.remove(project)
 			for student in MEngs:
-				project = util.random_project(matched_projects)
+				project = util.random_project(matched_projects, [], True)
 				project.students.append(student)
 				MEngs.remove(student)
 				unmatched_students.remove(student)
@@ -145,6 +142,7 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 					print "Should remove project " + str(project.ID)
 					matched_projects.remove(project)
 		index += 1
+		print [p.ID for p in projects if len(p.students) > 0]
 
 	# Sanity check to make sure that all students were matched to projects.
 	num_total_students = sum([len(project.students) for project in projects])
