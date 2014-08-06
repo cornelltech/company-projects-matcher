@@ -604,9 +604,11 @@ class Project(object):
 	def get_students(self):
 		return self._students
 
-	def set_students(self):
-		error = "Cannot manually set the students list. Must add students via add_student function."
-		raise FieldError(error)
+	def set_students(self, students):
+		self._students = students
+
+		#error = "Cannot manually set the students list. Must add students via add_student function."
+		#raise FieldError(error)
 
 	students = property(get_students, set_students, 
 						doc = "Get and set the students on this project.")
