@@ -2,6 +2,7 @@ import util
 import greedy_attempt_two
 import perry_geo_annealing as pg
 import ConfigParser
+import sys
 from anneal import Annealer
 
 #input_file = "tests.csv"
@@ -111,15 +112,24 @@ if (__name__ == "__main__"):
 			if (not(calculated[i] is None)):
 				print "There should be " + str(int(calculated[i])) + " projects with " + str(int((mapped[i]))) + " votes"	
 
-	def random_solutions_and_goodness(num_times = 1):
+	def random_solutions_and_goodness(num_times = 100000):
+		min_energy = float("inf")
+		min_sol = None
 		for i in range (0, num_times):
 			init = greedy_attempt_two.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
-			print "There are  " + str(len(feasible_projects)) + " feasible projects"
-			print "This random solution is: "
+		#	print "There are  " + str(len(feasible_projects)) + " feasible projects"
+			print "Random solution " + str(i) + ":"
 			for p in init:
 				print str(p.ID) + ":" + str([s.ID for s in p.students])
+			cur_energy = pg.energy((init, []))
+			if (cur_energy < min_energy):
+				min_sol = init
+		print cur_energy
+		for p in min_sol:
+				print str(p.ID) + ":" + str([s.ID for s in p.students])
 
-	random_solutions_and_goodness()
+	#random_solutions_and_goodness
+ 	greedy_attempt_two.initial_solution(students, feasible_projects)
 
 
 
