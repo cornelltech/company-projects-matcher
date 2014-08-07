@@ -47,7 +47,7 @@ def print_students_and_waiting(projects):
 		#pass
 	#	if (len(project.students) >= allowable_team_size):
 		print "For project " + str(project.ID) + ":"
-		print "     Students: " + str([s.ID for s in project.students])
+		print "     Students: " + str([(s.ID, s.degree_pursuing) for s in project.students])
 		print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
 def match_with_first_choice(students, projects):
@@ -162,8 +162,9 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 
 # Note: these projects are the feasible ones.
 def initial_solution(students, feasible_projects, verbose = True):
-	print "Feasible projects are:"
-	print [f.ID for f in feasible_projects]
+	if (verbose):
+		print "Feasible projects are:"
+		print [f.ID for f in feasible_projects]
 
 	# The index of the ranking that we are currently looking at.
 	ranking_spot = 0
@@ -172,10 +173,9 @@ def initial_solution(students, feasible_projects, verbose = True):
 	matched_projects = []
 	# The IDs of the students were already removed from unmatched_students.
 	matched_students = []
-	#random.shuffle(students)
+	random.shuffle(students)
 
 	while (ranking_spot < classes.number_project_rankings):
-		# TODO: change the order that students are selected.
 		for cur_student in students:
 			if (verbose):
 				print "Student number " + str(cur_student.ID)
@@ -193,7 +193,8 @@ def initial_solution(students, feasible_projects, verbose = True):
 						print "     Rank " + str(ranking_spot) + " is project " + str(cur_project_ID)
 				
 					# Try to add student to the project.
-					successful_add = cur_project.add_student(cur_student)
+					wiggle = False
+					successful_add = cur_project.add_student(cur_student, wiggle)
 					if (successful_add and verbose):
 						print "     Successful add of student " + str(cur_student.ID) + " to project " + str(cur_project.ID)
 						print "     Project " + str(cur_project.ID) + "'s student list is now: "
