@@ -56,8 +56,7 @@ if (__name__ == "__main__"):
 	all_projects = util.generate_all_projects()
 	print "All projects:"
 	print [p.ID for p in all_projects]
-	# Bug in create_feasible_projects
-	feasible_projects = greedy_attempt_two.create_feasible_projects(students, all_projects)
+	feasible_projects = util.create_feasible_projects(students, all_projects)
 	#print [s.ID for s in feasible_projects]
 
 	#Get projects from IDs 2860, 4225, 1820.
