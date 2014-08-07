@@ -250,6 +250,87 @@ def initial_solution(students, feasible_projects, verbose = True):
 
 	return (feasible_projects, unmatched_students)
 
+def randomly_add_unmatched_students((feasible_projects, unmatched_students), verbose = True):
+	'''
+		To be used after initial_solution. Initial_solution leaves some students unmatched
+		because all of their top choices were either non-feasible or were full by the time
+		that they got to the projects.
+
+		This function will check the list of unmatched students.
+		While the size of the list is greater than the team size, this function will create
+		teams. 
+		With the leftover students, the function will add them randomly to existing teams.
+
+	'''
+	team_size = 4 
+
+	# If there are any teams that are not full, remove all students from them.
+	for project in feasible_projects:
+		if (not(len(project.students) == team_size)):
+			project.students = []
+
+
+	matched_projects = [project for project in feasible_projects if len(project.students) >= 4]
+	
+	def can_make_team_with_waiting(u_students):
+		unmatched_MBAs = [s for s in u_students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
+		unmatched_MEngs = [s for s in u_students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
+
+		MBAs_ok = len(unmatched_MBAs) >= 2
+		MEngs_ok = len(unmatched_MEngs) >= 2
+		overall_number = (len(u_students)/ team_size) > 0
+		return overall_number and MBAs_ok and MEngs_ok
+	# 
+
+	unmatched_MBAs = [s for s in unmatched_students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
+	unmatched_MEngs = [s for s in unmatched_students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
+	
+	while (len(unmatched_students) > 0):
+		if (can_make_team_with_waiting(unmatched_students)):
+			# Pick a random project that does not have any students on it. 
+			project = util.random_project(feasible_projects, matched_projects, False)
+
+			MBA_one = util.random_student_lst(unmatched_MBAs)
+			unmatched_students.remove(MBA_one)
+			unmatched_MBAs.remove(MBA_one)
+			
+			MBA_two = util.random_student_lst(unmatched_MBAs)
+			unmatched_students.remove(MBA_two)
+			unmatched_MBAs.remove(MBA_two)
+
+			MEng_one = util.random_student_lst(unmatched_MEngs)
+			unmatched_students.remove(MEng_one)
+			unmatched_MEngs.remove(MEng_one)
+			
+			MEng_two = util.random_student_lst(unmatched_MEngs)
+			unmatched_students.remove(MEng_two)
+			unmatched_MEngs.remove(MEng_two)
+
+			project.students.append(MBA_one)
+			project.students.append(MBA_two)
+			project.students.append(MEng_one)
+			project.students.append(MEng_two)
+
+			matched_projects.append(project)
+
+			#unmatched_MBAs = [s for s in unmatched_students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
+			#unmatched_MEngs = [s for s in unmatched_students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
+		else:
+			print "Unmatched students are " + str([p.ID for p in unmatched_students])
+			unmatched_students = []
+
+	
+	if (verbose):
+		print "AFTER SECONDARY MATCHING PROCESS:"
+		print_students_and_waiting(feasible_projects)
+
+	#if (verbose):
+	#	print "Unmatched students:"
+	#	print [s.ID for s in unmatched_students]
+
+	return feasible_projects
+			
+
 def post_processing(feasible_projects, students, verbose = True):
 
 
