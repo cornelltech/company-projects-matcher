@@ -224,20 +224,14 @@ def create_feasible_projects(students, projects, verbose = True):
 		if (verbose):
 			print "MBAs" + str([s.ID for s in MBAs_ranked])
 			print "MEngs" + str([s.ID for s in MEngs_ranked])
-		print "p.num_MBAs is " + str(p.num_MBAs)
-		print "p.num_MEngs is " + str(p.num_MEngs)
-		print str(len(MBAs_ranked)) + " MBAs ranked this project."
-		print str(len(MEngs_ranked)) + " MEngs ranked this project."
-		print str(len(MBAs_ranked)) + " < " + str(2) + ":",
-		print (len(MBAs_ranked) < 2)
-		print str(len(MEngs_ranked)) + " < " + str(2) + ":",
-		print "p.num_MEngs is " + str(p.num_MEngs)
-		print "Its type is " + str(type(p.num_MEngs))
-
-		print (len(MEngs_ranked) < 2)
-		
-
-		print "The comparison that we are checking: " + str((len(MBAs_ranked) < p.num_MBAs) or (len(MEngs_ranked) < p.num_MEngs))
+			print "p.num_MBAs is " + str(p.num_MBAs)
+			print "p.num_MEngs is " + str(p.num_MEngs)
+			print str(len(MBAs_ranked)) + " MBAs ranked this project."
+			print str(len(MEngs_ranked)) + " MEngs ranked this project."
+			print str(len(MBAs_ranked)) + " < " + str(p.num_MBAs) + ":",
+			print str(len(MEngs_ranked)) + " < " + str(p.num_MEngs) + ":",
+			print "The comparison that we are checking: " + str((len(MBAs_ranked) < p.num_MBAs) or (len(MEngs_ranked) < p.num_MEngs))
+	 
 	 	if ((len(MBAs_ranked) < p.num_MBAs) or (len(MEngs_ranked) < p.num_MEngs)):
 	 		if (verbose):
 	 			string = "Not enough MBAs or MEngs ranked project "
