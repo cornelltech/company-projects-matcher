@@ -668,21 +668,21 @@ class Project(object):
 	# two different projects.
 
 	# This accounts for the wiggle room.
-	def add_student_to_MBAs(self, student, verbose = False):
+	def add_student_to_MBAs(self, student, wiggle, verbose = False):
 		if (not(student._degree_pursuing == 0 or student._degree_pursuing == "MBA")):
 			if (verbose):
 				print "Degree is not 0 or MBA"
 			return False
 		elif (not(self.has_remaining_MBA_spots())):
-			# Wiggle spot already taken
-			if (len(self._students) > 4):
-				if (verbose):
-					print "This project does not have remaining MBA spots"
-				return False
-			# The wiggle spot is not taken. Can add this MBA.
-			else: 
-				self._MBA_list.append(student)
-				self._students.append(student)
+			if (wiggle):
+				if (len(self._students) > 4):
+					if (verbose):
+						print "This project does not have remaining MBA spots"
+					return False
+				# The wiggle spot is not taken. Can add this MBA.
+				else: 
+					self._MBA_list.append(student)
+					self._students.append(student)
 		else:
 			MBA_IDs  = [s.ID for s in self._students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
 			if (student.ID in MBA_IDs):
@@ -697,21 +697,22 @@ class Project(object):
 			return True
 
 	# NOTE: returns a boolean!!!!
-	def add_student_to_MEngs(self, student, verbose = False):
+	def add_student_to_MEngs(self, student, wiggle, verbose = False):
 		if (not(student.degree_pursuing == 1 or student.degree_pursuing == "MEng")):
 			if (verbose):
 				print "Degree is not 1 or MEng"
 			return False
 		elif (not(self.has_remaining_MEng_spots())):
+			if (wiggle):
 			# Wiggle spot already taken
-			if (len(self._students) > 4):
-				if (verbose):
-					print "This project does not have remaining Meng spots"
-				return False
-			# The wiggle spot is not taken. Can add this MEng.
-			else: 
-				self._MEng_list.append(student)
-				self._students.append(student)
+				if (len(self._students) > 4):
+					if (verbose):
+						print "This project does not have remaining Meng spots"
+					return False
+				# The wiggle spot is not taken. Can add this MEng.
+				else: 
+					self._MEng_list.append(student)
+					self._students.append(student)
 		else:
 			MEng_IDs  = [s.ID for s in self._students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
 			if (student.ID in MEng_IDs):
@@ -724,15 +725,15 @@ class Project(object):
 			return True
 
 	# Returns a boolean of if the add was successful or not.
-	def add_student(self, student, verbose = False):
+	def add_student(self, student, wiggle, verbose = False):
 		if (student.degree_pursuing == "MBA" or student.degree_pursuing == 0):
 			if (verbose):
 				print "Adding an MBA. ID is " + str(student.ID)
-			return self.add_student_to_MBAs(student, verbose)
+			return self.add_student_to_MBAs(student, wiggle, verbose)
 		elif (student.degree_pursuing == "MEng" or student.degree_pursuing == 1):
 			if (verbose):
 				print "Adding an MEng. ID is " + str(student.ID)
-			return self.add_student_to_MEngs(student)
+			return self.add_student_to_MEngs(student, wiggle, verbose)
 		else:
 			raise FieldError("Are there more than two types?")
 
