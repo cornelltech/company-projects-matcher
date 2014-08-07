@@ -128,10 +128,8 @@ if (__name__ == "__main__"):
 				print str(p.ID) + ":" + str([s.ID for s in p.students])
 
 	#random_solutions_and_goodness
- 	#greedy_attempt_two.initial_solution(students, feasible_projects)
- 	feasible = util.better(students, all_projects)
- 	print "New function calculating feasible projects:"
- 	print [p.ID for p in feasible]
+ 	greedy_attempt_two.initial_solution(students, feasible_projects)
+
 
 
 
