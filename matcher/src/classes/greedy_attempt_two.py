@@ -5,6 +5,7 @@ import util
 import classes
 import ConfigParser
 import greedy_student_and_fix
+import random
 from classes import Student
 from classes import CompError
 from classes import FieldError
@@ -176,6 +177,7 @@ def initial_solution(students, feasible_projects, verbose = True):
 	matched_projects = []
 	# The IDs of the students were already removed from unmatched_students.
 	matched_students = []
+	#random.shuffle(students)
 
 	while (ranking_spot < classes.number_project_rankings):
 		# TODO: change the order that students are selected.
@@ -185,7 +187,10 @@ def initial_solution(students, feasible_projects, verbose = True):
 
 			# If the current student has not been matched yet:
 			if (not (cur_student.ID in matched_students)):
+				# Get the student's top ranking.
 				cur_project_ID = cur_student.project_rankings[ranking_spot]
+
+				# Try to get the project, assuming it's feasible.
 				try:
 					cur_project = util.get_project_from_ID(cur_project_ID, feasible_projects)
 					if (verbose):
@@ -501,17 +506,21 @@ def find_students_project(student, projects, newly_added_ID):
 		print "The project that " + str(student.ID) + " matched was:" + str(matched_projects[0].ID)
 		return matched_projects[0]	
 
-
+# NOTE: this is where the issue with indices and randomness came up.
+# ID is the ID of the project that we don't want them to be removed from.
 def remove_students_from_projects(students_to_remove, projects, ID, remove_from_waiting = False):
 	for project in projects:
 		# Get the student objects from the tuples of (rank, student) in waiting_students
 		objects_waiting_students = [tup[1] for tup in project.waiting_students]
+		# If we encounter a project that is not of the given ID 
+		# (meaning we DO want to remove students from this project):
 		if (not (project.ID == ID)):
 			for student in students_to_remove:
+				# If the student was on the project, remove it.
 				if student in project.students:
 					project.students.remove(student)
 
-				# If the student was waiting
+				# If the student was waiting, remove it.
 				if student in objects_waiting_students:
 					# Get the index that the student is in the waiting_students list
 					if (remove_from_waiting):
