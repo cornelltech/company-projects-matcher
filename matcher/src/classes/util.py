@@ -208,7 +208,7 @@ def get_project_from_ID(ID, projects):
 
 # Filter out projects with insufficient rankings to get matched.
 # Returns a list of projects which passed the test.
-def remove_infeasible_projects(students, projects, verbose = True):
+def create_feasible_projects(students, projects, verbose = True):
 	'''
 		Filters our the projects with insufficient rankings to get matched.
 
