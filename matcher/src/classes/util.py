@@ -7,6 +7,7 @@ from classes import CompError
 from classes import Student
 import pandas as pd
 import numpy as np
+import ConfigParser
 
 student_ids = []
 
@@ -22,15 +23,23 @@ class FunctionError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
-# FUNCTIONS FOR RANDOMNESS
-
-# TODO: Make this work for arbitrary number of student types. 
-# 		Can apply these (functions that apply to two teams) apply to 
-#		three or more teams by taking input in a list, and then
-# 		using map.
-# TODO: Make this work with more than one team size.
-
+# Functions for randomness
 def random_index(lst_length):
+	'''
+		Generate a random index for a list of length lst_length.
+		Handles the case that the list length is 1, which can be
+		problematic if using random.randint.
+		Fails on empty lists.
+
+		Parameters:
+		-----------
+		lst_length: length of the list (int).
+
+		Returns:
+		--------
+		r: a random index in the range [0, lst_length - 1] (int).
+
+	'''
 	if (lst_length == 0):
 		raise FunctionError("List has length of 0.")
 	elif (lst_length == 1):
@@ -39,19 +48,29 @@ def random_index(lst_length):
 		r = random.randint(0, lst_length - 1)
 	return r
 
-# This method is used to perform the swap of the students. 
-# Need to find a non-empty random project so that we can swap
-# one of the students on the project. 
-# Reuse is a boolean that lets us pick if its ok that this project
-# already has students on it or if that's not ok.
 def random_project(projects, already_picked, reuse, verbose = False):
-	# Pick a random project
+	'''
+		Pick a random project from the list of projects. If reuse = False,
+		then we will pick a project that is not in already_picked.
+
+		Parameters:
+		-----------
+		projects: the list of projects to choose from (Project list).
+
+		already_picked: the projects that have already been assigned students (Project list).
+
+		reuse: if False, then we would like to pick a project not included in already_picked (boolean).
+
+		verbose: print updates.
+
+		Returns:
+		--------
+		project: a project.
+
+	'''
 	rand_index = random_index(len(projects))
-	# Ensures that the project that we pick is not empty
 	if (verbose):
 		print "Length of this project is " + str(len(projects[rand_index].students))
-	#while (len(projects[rand_index].students) == 0):
-	#	rand_index = random_index(len(projects))
 	if (not (reuse)):
 		project_to_return = projects[rand_index]
 		while (project_to_return in already_picked):
@@ -60,26 +79,72 @@ def random_project(projects, already_picked, reuse, verbose = False):
 	
 	return projects[rand_index]
 
-# From a project
 def random_student(project):
+	'''
+		Picks a random student from a project.
+		Fails on projects with no students.
+
+		Parameters:
+		-----------
+		project: the project to pick a student from (Project).
+
+		Returns:
+		--------
+		student: a student on this project (Student).
+
+	'''
 	rand_index = random_index(len(project.students))
 	return project.students[rand_index]
 
-# From a list of students
 def random_student_lst(student_lst):
+	'''
+		Picks a random student from a list of students.
+		Fails on an empty list.
+
+		Parameters:
+		-----------
+		student_lst: a list of students (Student list).
+
+		Returns:
+		--------
+		student: a student in the list (Student).
+	'''
 	rand_index = random_index(len(student_lst))
 	return student_lst[rand_index]
 
 def random_two_choice():
+	'''	
+		Picks either 0 or 1, randomly.
+
+		Returns
+		-------
+		number: either 0 or 1 (int).
+	'''
 	non_int = random.random()
 	if (non_int > 0.5):
 		return 1
 	else:
 		return 0
 
-# For each of the IDs in classes' valid projects, create a project object with that ID.
-# As a default, each project requires 2 MBAs and 2 MEngs.
-def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
+def generate_all_projects():
+	'''
+		Creates a project for every ID in classes.valid_projects.
+		Takes the values for number of MBAs per team and number of
+		MEngs per team from config.txt.
+
+		Returns:
+		--------
+		projects_lst: a list of projects, on a one-to-one correspondence
+		with the IDs in classes.valid_projects. 
+
+	'''
+
+	configParser = ConfigParser.ConfigParser()
+	configFilePath = r'config.txt'
+	configParser.read(configFilePath)
+
+	num_MBAs = configParser.get('valid_values', 'num_MBAs')
+	num_MEngs = configParser.get('valid_values', 'num_MEngs')
 	projects_lst = []
 	for ID in classes.vals_valid_projects:
 		p = Project(ID, num_MBAs, num_MEngs)
@@ -87,28 +152,56 @@ def generate_all_projects(num_MBAs = 2, num_MEngs = 2):
 	return projects_lst
 
 def get_student_from_ID(ID, students):
+	'''
+		Given a student ID and a list of students, returns the
+		Student object associated with the given ID.
+
+		Parameters:
+		-----------
+		ID: ID for the student to search for (int).
+		students: list of students (Student list).
+
+		Returns:
+		--------
+		student: object whose ID is ID (Student).
+	'''
 	matching_ID_lst = filter(lambda x: x.ID == ID, students)
+	# No matching IDs
 	if (len(matching_ID_lst) == 0):
 		error = "ID " + str(ID) + " does not match to a valid project."
 		raise FieldError(error)
+	# Multiple matching IDs
 	elif (len(matching_ID_lst) > 1):
 		error = "There is more than one matching project. Problem!"
 		raise FieldError(error)
-	
 	# Otherwise, there is one element in the list and it matches our desired ID.
 	else:
 		return matching_ID_lst[0]
 
 
 def get_project_from_ID(ID, projects):
+	'''
+		Given a project ID and a list of projects, returns the
+		Project object associated with the given ID.
+
+		Parameters:
+		-----------
+		ID: ID for the project to search for (int).
+		projects: list of projects (Project list).
+
+		Returns:
+		--------
+		project: object whose ID is ID (Project).
+	'''
 	matching_ID_lst = filter(lambda x: x.ID == ID, projects)
+	# No matching IDs
 	if (len(matching_ID_lst) == 0):
 		error = "ID " + str(ID) + " does not match to a valid project."
 		raise FieldError(error)
+	# Multiple matching IDs
 	elif (len(matching_ID_lst) > 1):
 		error = "There is more than one matching project. Problem!"
 		raise FieldError(error)
-	
 	# Otherwise, there is one element in the list and it matches our desired ID.
 	else:
 		return matching_ID_lst[0]
@@ -116,6 +209,10 @@ def get_project_from_ID(ID, projects):
 # Filter out projects with insufficient rankings to get matched.
 # Returns a list of projects which passed the test.
 def remove_infeasible_projects(students, projects, verbose = False):
+	'''
+		Filters our the projects with insufficient rankings to get matched.
+
+	'''
 	insufficient_IDs = []
 	for p in projects:
 		matched = filter(lambda s: p.ID in s.project_rankings, students)
