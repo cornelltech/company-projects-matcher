@@ -143,8 +143,8 @@ def generate_all_projects():
 	configFilePath = r'config.txt'
 	configParser.read(configFilePath)
 
-	num_MBAs = configParser.get('valid_values', 'num_MBAs')
-	num_MEngs = configParser.get('valid_values', 'num_MEngs')
+	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
+	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
 	projects_lst = []
 	for ID in classes.vals_valid_projects:
 		p = Project(ID, num_MBAs, num_MEngs)
@@ -208,7 +208,7 @@ def get_project_from_ID(ID, projects):
 
 # Filter out projects with insufficient rankings to get matched.
 # Returns a list of projects which passed the test.
-def remove_infeasible_projects(students, projects, verbose = False):
+def remove_infeasible_projects(students, projects, verbose = True):
 	'''
 		Filters our the projects with insufficient rankings to get matched.
 
@@ -224,8 +224,21 @@ def remove_infeasible_projects(students, projects, verbose = False):
 		if (verbose):
 			print "MBAs" + str([s.ID for s in MBAs_ranked])
 			print "MEngs" + str([s.ID for s in MEngs_ranked])
+		print "p.num_MBAs is " + str(p.num_MBAs)
+		print "p.num_MEngs is " + str(p.num_MEngs)
+		print str(len(MBAs_ranked)) + " MBAs ranked this project."
+		print str(len(MEngs_ranked)) + " MEngs ranked this project."
+		print str(len(MBAs_ranked)) + " < " + str(2) + ":",
+		print (len(MBAs_ranked) < 2)
+		print str(len(MEngs_ranked)) + " < " + str(2) + ":",
+		print "p.num_MEngs is " + str(p.num_MEngs)
+		print "Its type is " + str(type(p.num_MEngs))
 
-	 	if (len(MBAs_ranked) < p.num_MBAs or len(MEngs_ranked) < p.num_MEngs):
+		print (len(MEngs_ranked) < 2)
+		
+
+		print "The comparison that we are checking: " + str((len(MBAs_ranked) < p.num_MBAs) or (len(MEngs_ranked) < p.num_MEngs))
+	 	if ((len(MBAs_ranked) < p.num_MBAs) or (len(MEngs_ranked) < p.num_MEngs)):
 	 		if (verbose):
 	 			string = "Not enough MBAs or MEngs ranked project "
 	 			string += str(p.ID)
@@ -235,6 +248,22 @@ def remove_infeasible_projects(students, projects, verbose = False):
 
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
 	return projects
+
+def better(students, projects):
+	def is_insufficient(p):
+		# All of the students who ranked this project:
+		matched = filter(lambda s: p.ID in s.project_rankings, students)
+		# All of the MBAs and MEngs who ranked this project
+		MBAs_ranked = [s for s in matched if s.degree_pursuing == "MBA" or s.degree_pursuing == 0]
+		MEngs_ranked = [s for s in matched if s.degree_pursuing == "MEng" or s.degree_pursuing == 1]
+		if (len(MBAs_ranked) < p.num_MBAs):
+			return True
+		elif (len(MEngs_ranked) < p.num_MEngs):
+			return True
+		else:
+			return False
+	return filter(lambda p: not(is_insufficient(p)), projects)
+#	pass
 
 # For a specific project p, get the students' overall interest in the project.
 # Higher interest means that more students ranked it highly on their lists.
