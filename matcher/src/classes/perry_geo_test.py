@@ -128,7 +128,8 @@ if (__name__ == "__main__"):
 				print str(p.ID) + ":" + str([s.ID for s in p.students])
 
 	#random_solutions_and_goodness
- 	greedy_attempt_two.initial_solution(students, feasible_projects)
+ 	res = greedy_attempt_two.initial_solution(students, feasible_projects)
+ 	res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
 
 
 
