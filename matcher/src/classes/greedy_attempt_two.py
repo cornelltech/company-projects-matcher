@@ -50,11 +50,6 @@ def print_students_and_waiting(projects):
 		print "     Students: " + str([s.ID for s in project.students])
 		print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
-
-
-def create_feasible_projects(students, projects):
-	return util.remove_infeasible_projects(students, projects)
-
 def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
 
@@ -560,6 +555,6 @@ if __name__ == "__main__":
 	students = util.create_students_from_input("tests.csv")
 	all_projects = util.generate_all_projects()
 	initial_solution(students, all_projects)
-	#feasible_projects = create_feasible_projects(students)
+	#feasible_projects = util.create_feasible_projects(students)
 
 
