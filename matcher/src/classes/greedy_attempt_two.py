@@ -52,7 +52,6 @@ def print_students_and_waiting(projects):
 
 
 def create_feasible_projects(students, projects):
-	print "In create feasible projects"
 	return util.remove_infeasible_projects(students, projects)
 
 def match_with_first_choice(students, projects):
@@ -64,9 +63,9 @@ def match_with_first_choice(students, projects):
 # Creates a random initial initial solution from only the feasible projects.
 # Have the option to sort the projects by the highest interest first, so there is a 
 # higher chance that the students matched to it actually ranked it.
-def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = False):
+def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sorted = False, verbose = False):
 
-	util.input_checks(students, projects, num_MBAs, num_MEngs, sorted = False) 
+	util.input_checks(students, unsorted_projects, num_MBAs, num_MEngs, sorted = False) 
 
 	MBAs = filter(lambda student: student.degree_pursuing == 0 or student.degree_pursuing == "MBA", students)
 	MEngs = filter(lambda student: student.degree_pursuing == 1 or student.degree_pursuing == "MEng", students)
@@ -75,21 +74,30 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 	unmatched_students = students[:]
 
 	matched_projects = []
-	projects = util.sort_projects_by_demand(students, projects)
+	projects_copy = unsorted_projects[:]
+	sorted_projects = util.sort_projects_by_demand(students, projects_copy)
 
 	index = 0
+
+	# Remove all students from these projects if there are students already there
+	# Should not already have students be here
+	for project in sorted_projects:
+		if (not(len(project.students) == 0)):
+			project.students = []
+
 	while (len(unmatched_students) > 0):
-		print "Len unmatched students is",
-		print len(unmatched_students)
-		print "There are " + str(len(MBAs)) + " MBAs"
-		print "There are " + str(len(MEngs)) + " MEngs"
+		if (verbose):
+			print "Len unmatched students is",
+			print len(unmatched_students)
+			print "There are " + str(len(MBAs)) + " MBAs"
+			print "There are " + str(len(MEngs)) + " MEngs"
 		
 		if (len(unmatched_students) >= 4):
 			if (sorted):
-				project = projects[index]
+				project = sorted_projects[index]
 			else:
 				# Need to check if this project has already been matched.
-				project = util.random_project(projects, matched_projects, False)
+				project = util.random_project(sorted_projects, matched_projects, False)
 			
 			MBA_one = util.random_student_lst(MBAs)
 			MBAs.remove(MBA_one)
@@ -114,13 +122,14 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 			unmatched_students.remove(MEng_two)
 
 			matched_projects.append(project)
-			print "Len of matched projects is " + str(len(matched_projects))
+			if (verbose):
+				print "Len of matched projects is " + str(len(matched_projects))
 		else:
 			# Less than 4 students left
 			for student in MBAs:
 				# Pick a random project and add this student to that project.
 				if (sorted):
-					project = projects[index]
+					project = sorted_projects[index]
 				else:
 					project = util.random_project(matched_projects, [], True)
 				project.students.append(student)
@@ -129,7 +138,8 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 
 				# Just trying to make sure that this project doesn't receive more than 1 extra person.
 				if (len(matched_projects) > 1):
-					print "Should remove project " + str(project.ID)
+					if (verbose):
+						print "Should remove project " + str(project.ID)
 					matched_projects.remove(project)
 			for student in MEngs:
 				project = util.random_project(matched_projects, [], True)
@@ -139,22 +149,23 @@ def make_initial_solution(students, projects, num_MBAs, num_MEngs, sorted = Fals
 
 				# Just trying to make sure that this project doesn't receive more than 1 extra person.
 				if (len(matched_projects) > 1):
-					print "Should remove project " + str(project.ID)
+					if (verbose):
+						print "Should remove project " + str(project.ID)
 					matched_projects.remove(project)
 		index += 1
-		print [p.ID for p in projects if len(p.students) > 0]
+		if (verbose):
+			print [p.ID for p in sorted_projects if len(p.students) > 0]
 
 	# Sanity check to make sure that all students were matched to projects.
-	num_total_students = sum([len(project.students) for project in projects])
+	num_total_students = sum([len(project.students) for project in sorted_projects])
 	if (not (len(students) == num_total_students)):
 		raise CompError("Not all students were matched to projects.")
 
 
-	return [p for p in projects if len(p.students) > 0]
+	return [p for p in sorted_projects if len(p.students) > 0]
 
-
-def initial_solution(students, projects, verbose = True):
-	feasible_projects = create_feasible_projects(students, projects)
+# Note: these projects are the feasible ones.
+def initial_solution(students, feasible_projects, verbose = True):
 	print "Feasible projects are:"
 	print [f.ID for f in feasible_projects]
 
@@ -168,21 +179,23 @@ def initial_solution(students, projects, verbose = True):
 
 	while (ranking_spot < classes.number_project_rankings):
 		# TODO: change the order that students are selected.
-		for student in students:
+		for cur_student in students:
 			if (verbose):
-				print "Student number " + str(student.ID)
-			if (not (student.ID in matched_students)):
-				cur_project_ID = student.project_rankings[ranking_spot]
+				print "Student number " + str(cur_student.ID)
+
+			# If the current student has not been matched yet:
+			if (not (cur_student.ID in matched_students)):
+				cur_project_ID = cur_student.project_rankings[ranking_spot]
 				try:
 					cur_project = util.get_project_from_ID(cur_project_ID, feasible_projects)
 					if (verbose):
-						print "     Student not matched (" + str(student.ID) + ")"
+						print "     Student not matched (" + str(cur_student.ID) + ")"
 						print "     Rank " + str(ranking_spot) + " is project " + str(cur_project_ID)
 				
 					# Try to add student to the project.
-					successful_add = cur_project.add_student(student)
+					successful_add = cur_project.add_student(cur_student)
 					if (successful_add and verbose):
-						print "     Successful add of student " + str(student.ID) + " to project " + str(cur_project.ID)
+						print "     Successful add of student " + str(cur_student.ID) + " to project " + str(cur_project.ID)
 						print "     Project " + str(cur_project.ID) + "'s student list is now: "
 						print "     " + str([s.ID for s in cur_project.students])
 
@@ -190,7 +203,7 @@ def initial_solution(students, projects, verbose = True):
 					else:
 						if (verbose):
 							print "     Not successful. Adding to waiting list"
-						cur_project.add_waiting_student(student)
+						cur_project.add_waiting_student(cur_student)
 
 					# If the project is full and its students havent been 
 					# removed yet, then remove it and its students.
@@ -229,6 +242,10 @@ def initial_solution(students, projects, verbose = True):
 		print_students_and_waiting(feasible_projects)
 
 	unmatched_students = [s for s in students if not(s.ID in matched_students)]
+
+	if (verbose):
+		print "Unmatched students:"
+		print [s.ID for s in unmatched_students]
 
 	return (feasible_projects, unmatched_students)
 
@@ -483,6 +500,7 @@ def find_students_project(student, projects, newly_added_ID):
 		# There is only one project in matched_projects.
 		print "The project that " + str(student.ID) + " matched was:" + str(matched_projects[0].ID)
 		return matched_projects[0]	
+
 
 def remove_students_from_projects(students_to_remove, projects, ID, remove_from_waiting = False):
 	for project in projects:
