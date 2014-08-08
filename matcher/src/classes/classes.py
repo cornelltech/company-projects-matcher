@@ -144,11 +144,13 @@ class Student(object):
 	def get_project_rankings(self):
 		return self._project_rankings
 
-	def check_valid_project_rankings(self, val):
+	def check_valid_project_rankings(self, val, rankings_can_be_empty = False):
 		# Because val is a list and we want to check if each of the projects 
 		# has a valid ID
 		try:
-			if (not (len(val) == number_project_rankings)):
+			if (len(val) == 0 and rankings_can_be_empty):
+				self._project_rankings = val
+			elif (not (len(val) == number_project_rankings)):
 				error = "There must be " + str(number_project_rankings) + " project rankings."
 				raise FieldError(error)
 		except TypeError:
@@ -161,22 +163,24 @@ class Student(object):
 				raise FieldError("Current student ID is " + str(self._ID) + ". Each project can only be entered once.")
 			past.append(elm)
 
-	def set_project_rankings(self, val):
-		self.check_valid_project_rankings(val)
+	def set_project_rankings(self, val, rankings_can_be_empty = False):
+		self.check_valid_project_rankings(val, rankings_can_be_empty)
 		self._project_rankings = val
 
 	project_rankings = property(get_project_rankings, set_project_rankings,
 					  doc = "Get and set the project rankings.")
 
-	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_lst):
+	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, 
+							project_lst, rankings_can_be_empty = False):
 		
 		self.set_degree_pursuing(degree_pursuing)
 		self.set_coding_ability(cod_abil)
 		self.set_cs_ug(cs_ug)
 		self.set_work_experience(num_yrs_work_exp)
-		self.set_project_rankings(project_lst)
+		self.set_project_rankings(project_lst, rankings_can_be_empty)
 
-	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks, is_normalized=False):
+	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks, 
+					is_normalized=False, rankings_can_be_empty = False):
 		''' 
 			Parameters
 			----------
@@ -185,13 +189,16 @@ class Student(object):
 			nywe  = num. years of work experience. Int from 0 to 4 (4 = 4+).
 			project_lst = an integer list size number_project_rankings. Ints are the project IDs. 
 						  The position of the int determines what rank it is.
+			rankings_can_be_empty = The ranking list can be empty. This is so that we can construct students
+									step by step. MIGHT REMOVE THIS.
 
 		'''
 		self._name				 	  = name
 		self._ID				 	  = ID
 		
 		if (not(is_normalized)):
-			self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, project_rnks)
+			self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, 
+										num_yrs_work_exp, project_rnks, rankings_can_be_empty)
 
 		# If the data is already normalized, then we don't want to check membership with the above lists. 
 		else:
