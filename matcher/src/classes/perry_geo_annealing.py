@@ -36,14 +36,14 @@ def energy(state):
 def move(state, verbose = True, super_verbose = False):
 	projects = state[0]
 
-	project_one = util.random_project(projects)
-	project_two = util.random_project(projects)
+	project_one = util.random_project(projects, [], True)
+	project_two = util.random_project(projects, [], True)
 
 
 	# Guarantee that the projects are not the same.
 	# Continue to swap project two until it is diff from project one.
 	while (project_one.ID == project_two.ID):
-		project_two = util.random_project(projects)
+		project_two = util.random_project(projects, [], True)
 		if (super_verbose):
 			print "Project one and project two are the same."
 
