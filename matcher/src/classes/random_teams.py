@@ -2,6 +2,7 @@
 import random
 import util
 from classes import Student
+import ConfigParser
 
 class InputError(Exception):
 	def __init__(self, value):
@@ -202,8 +203,8 @@ def random_student_ID():
 def random_degree_pursuing():
 	return random.randint(0, 1)
 
-def random_coding_ability():
-	return random.randint(0, 4)
+def random_coding_ability(n):
+	return random.randint(0, n)
 
 def random_cs_ug():
 	return random.randint(0, 1)
@@ -224,10 +225,10 @@ def random_project_ranks():
 	# print project_ranks
 	return project_ranks
 
-def random_yrs_work_experience():
-	return random.randint(0, 6)
+def random_yrs_work_experience(n):
+	return random.randint(0, n)
 
-def create_random_student(d = -1):
+def create_random_student(max_coding_ability, max_work_experience, empty_ranks = False, d = -1):
 	# 	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp, project_rnks, is_normalized=False):
 	'''
 		Given the numbers of students in each group, generate random fields
@@ -239,13 +240,16 @@ def create_random_student(d = -1):
 	if (d == -1):
 		d = random_degree_pursuing()
 	cs = random_cs_ug()
-	c = random_coding_ability()
-	n = random_yrs_work_experience()
-	rnks = random_project_ranks()
+	c = random_coding_ability(max_coding_ability)
+	n = random_yrs_work_experience(max_work_experience)
+	if (empty_ranks):
+		rnks = []
+	else:
+		rnks = random_project_ranks()
 
 	name = "Test"
 
-	s = Student(name, i, d, cs, c, n, rnks)
+	s = Student(name, i, d, cs, c, n, rnks, rankings_can_be_empty = empty_ranks)
 	return s
 
 	# first_ids = range(0, first_num)
@@ -282,11 +286,11 @@ def print_student_stats(a):
 		error = "Passed a " + str(type(a)) + " to a function that expects a Student."
 		raise FunctionError(error)
 
-def create_random_students(n, d = -1):
+def create_random_students(max_coding_ability, max_work_experience, n, empty_ranks = False, d = -1):
 	result = []
 	for i in range(0, n):
 		# print "Student " + str(i+1) + " is:"
-		s = create_random_student(d)
+		s = create_random_student(max_coding_ability, max_work_experience, empty_ranks = empty_ranks, d = d)
 		#print_student_stats(s)
 		result.append(s)
 	return result
@@ -301,11 +305,11 @@ def create_random_students(n, d = -1):
 # 		result.append(s)
 # 	return result
 
-def create_random_MBAs(n):
-	return create_random_students(n, d = 0)
+def create_random_MBAs(n, empty_ranks = False):
+	return create_random_students(n, empty_ranks, d = 0)
 
-def create_random_MEngs(n):
-	return create_random_students(n, d = 1)
+def create_random_MEngs(n, empty_ranks = False):
+	return create_random_students(n, empty_ranks, d = 1)
 
 def teams_with_empty_spots(output):
 	'''
@@ -875,7 +879,42 @@ if __name__ == "__main__":
 	# Create teams of size 6
 	#do_tests_three(MBAs, MEngs, 6)
 
-	do_new_tests()
+	configParser = ConfigParser.ConfigParser()
+	configFilePath = r'config.txt'
+	configParser.read(configFilePath)
+
+	# Declaring valid values for all fields.
+	vals_cs_ug = [True, False]
+	max_work_experience = configParser.getint('valid_values', 'max_work_experience')
+	vals_work_experience = range(0, max_work_experience+1)
+
+	# 0 = lowest, 4 = most
+	max_coding_ability = configParser.getint('valid_values', 'max_coding_ability')
+	vals_coding_ability = range(0, max_coding_ability+1)
+	 
+	# Keep these organized in alphabetical order. 
+	# NOTE: fix this.
+	vals_degree_pursuing = { 0 : "MBA", 1 : "MEng"}
+
+	# Valid IDs for our projects.
+	num_valid_projects = configParser.getint('valid_values', 'num_valid_projects')
+	vals_valid_projects = map(lambda x: x * 65, range(16, 16 + num_valid_projects))
+
+	# TODO: remove these.
+	degree_weight = 0.25
+	cs_ug_weight = 0.25
+	coding_ability_weight = 0.25
+	work_experience_weight = 0.25
+
+	# TODO: should change this to 10 when I'm testing.
+	number_project_rankings = configParser.getint('valid_values', 'number_project_rankings')
+
+	#do_new_tests()
+	#def create_random_student(max_coding_ability, max_work_experience, empty_ranks = False, d = -1):
+	r = create_random_students(max_coding_ability, max_work_experience, 25, empty_ranks = True, d = -1)
+	
+
+
 
 
 
