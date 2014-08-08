@@ -293,7 +293,14 @@ def sort_projects_by_demand(students, projects, tup = False):
 		return get_num_ranked(p, students)
 	projects.sort(key = liking, reverse = True)
 	if (tup):
-		return [liking(p) for p in projects]
+		lst_of_tuples = []
+		likings = [liking(p) for p in projects]
+		unique_likings = set(likings)
+		for num_votes in unique_likings:
+			count = likings.count(num_votes)
+			lst_of_tuples.append((num_votes, count))
+		return lst_of_tuples
+
 	else:
 		return projects
 
