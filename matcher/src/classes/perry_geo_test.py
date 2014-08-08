@@ -73,7 +73,7 @@ if (__name__ == "__main__"):
 
 	# Do we want to pass in only the feasible prjoects here?
 
-	sorted_projects = util.sort_projects_by_demand(students, all_projects)
+	sorted_projects = util.sort_projects_by_demand(students, all_projects, tup=True)
 	
 	def make_data_for_80_students():
 	
@@ -111,6 +111,8 @@ if (__name__ == "__main__"):
 			if (not(calculated[i] is None)):
 				print "There should be " + str(int(calculated[i])) + " projects with " + str(int((mapped[i]))) + " votes"	
 
+
+
 	def random_solutions_and_goodness(num_times = 100000):
 		min_energy = float("inf")
 		min_sol = None
@@ -127,13 +129,17 @@ if (__name__ == "__main__"):
 		for p in min_sol:
 				print str(p.ID) + ":" + str([s.ID for s in p.students])
 
-	#random_solutions_and_goodness
- 	res = greedy_attempt_two.initial_solution(students, feasible_projects)
- 	res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
+	def test_random_solutions_and_goodness():
+		#random_solutions_and_goodness
+ 		res = greedy_attempt_two.initial_solution(students, feasible_projects)
+ 		res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
+ 		print res_two
 
 
 
 
+ 	make_data_for_80_students()
 
+	
 
 
