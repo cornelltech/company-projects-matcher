@@ -133,13 +133,13 @@ if (__name__ == "__main__"):
 		print "Final Energy: " + str(e) 
 
 
-	def manual_schedule():
+	def manual_schedule(sol):
 		state = (sol, [])
 		# Manually set the annealing schedule.
 		state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
 		print_final_solution(state)
 
-	manual_schedule()
+	manual_schedule(sol)
 	
  
 	
