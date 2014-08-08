@@ -20,7 +20,7 @@ num_degree_pursuing = 2
 
 # Field: valid IDs for our projects.
 # Currently is a list of 60 valid projects.
-num_valid_projects = 55
+num_valid_projects = 75
 
 # Field: number of project rankings.
 number_project_rankings = 10
