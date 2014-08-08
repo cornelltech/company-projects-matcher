@@ -88,23 +88,26 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 			print "There are " + str(len(MBAs)) + " MBAs"
 			print "There are " + str(len(MEngs)) + " MEngs"
 		
-		if (len(unmatched_students) >= 4):
+		if (len(unmatched_students) >= 4 and len(MBAs) >= 2 and len(MEngs) >= 2):
 			if (sorted):
 				project = sorted_projects[index]
 			else:
 				# Need to check if this project has already been matched.
 				project = util.random_project(sorted_projects, matched_projects, False)
 			
-			MBA_one = util.random_student_lst(MBAs)
+			# def random_student_lst(student_lst, already_picked, reuse):
+
+			# Need to fix error here with popping from an empty list.
+			MBA_one = util.random_student_lst(MBAs, [], True)
 			MBAs.remove(MBA_one)
 			
-			MBA_two = util.random_student_lst(MBAs)
+			MBA_two = util.random_student_lst(MBAs, [], True)
 			MBAs.remove(MBA_two)
 			
-			MEng_one = util.random_student_lst(MEngs)
+			MEng_one = util.random_student_lst(MEngs, [], True)
 			MEngs.remove(MEng_one)
 			
-			MEng_two = util.random_student_lst(MEngs)
+			MEng_two = util.random_student_lst(MEngs, [], True)
 			MEngs.remove(MEng_two)
 
 			project.students.append(MBA_one)
