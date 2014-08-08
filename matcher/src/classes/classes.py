@@ -222,7 +222,7 @@ class Student(object):
 	# Get the number that this student ranked this project. 
 	def get_ranking(self, project_id): 
 		try:
-			rankings = (self._project_rankings).tolist()
+			rankings = self._project_rankings
 			ind = rankings.index(project_id)
 			return (ind + 1)
 		except(ValueError):
