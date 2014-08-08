@@ -2,7 +2,8 @@ import util
 import greedy_attempt_two
 import perry_geo_annealing as pg
 import ConfigParser
-import sys
+import random_teams
+
 from anneal import Annealer
 
 #input_file = "tests.csv"
@@ -62,7 +63,7 @@ if (__name__ == "__main__"):
 	#Get projects from IDs 2860, 4225, 1820.
 	#cur_project = util.get_project_from_ID(cur_project_ID, feasible_projects)
 	# NOTE: the following code is problematic because we dont always know if these projects are feasible.
-	proj_one = util.get_project_from_ID(2275, all_projects)
+	#proj_one = util.get_project_from_ID(2275, all_projects)
 	#print util.get_num_ranked(proj_one, students)
 	#proj_two = util.get_project_from_ID(1625, feasible_projects)
 	#proj_three = util.get_project_from_ID(1235, all_projects)
@@ -132,16 +133,25 @@ if (__name__ == "__main__"):
  		print res_two
 
  	def make_students_to_fit_data(scaled_projects):
- 		all_projects = util.generate_all_projects()
+ 		#all_projects = util.generate_all_projects()
  		remaining_num_MBAs = 37
  		remaining_num_MEngs = 35
+ 		MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs, empty_ranks = True)
+ 		MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs, empty_ranks = True)
+ 		random_teams.print_student_list(MBAs)
+ 		random_teams.print_student_list(MEngs)
  		projects_taken = []
  		for tup in scaled_projects:
  			num_votes = tup[0]
  			num_projects = tup[1]
- 			for (i in range(0, num_projects)):
- 				
- 		pass
+ 			for i in range(0, int(num_projects)):
+ 				project = util.random_project(all_projects, projects_taken, reuse = False)
+ 				for i in range (0, int(num_votes)):
+ 					# Pick a random student
+ 					# Assign this project to their highest spot
+ 					# ^^^ Will be changing above later.
+ 					pass
+ 		pass	
 
 
  	scaled_projects = make_data_for_80_students()
