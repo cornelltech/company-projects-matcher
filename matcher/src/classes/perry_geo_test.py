@@ -105,53 +105,6 @@ if (__name__ == "__main__"):
 		print "Scaled tups is " + str(scaled_tups)
 		print "There are " + str(num_projects) + " final projects"
 		print "There were " + str(sum([tup[0]*tup[1] for tup in scaled_tups])) + " total votes cast"
- 
-
-
-		# def votes_for_72_students(x):
-		# 	return round((x/13.0) * 72)
-		# votes_scaled =  map(votes_for_72_students, sorted_projects)
-		# #print "Mapped is " + str(votes_scaled)
-
-		# unique_votes_scaled = set(votes_scaled)
-		# #print "Unique mapped projects is " + str(unique_votes_scaled)
-
-		# # Each number in unique_mapped is some number of votes that a project would get.
-		# projects_votes = []
-		# for n_votes in unique_votes_scaled:
-		# 	num_projects_with_n_votes = votes_scaled.count(n_votes)
-		# 	new_num_projects =  round ((num_projects_with_n_votes/55.0)* 75)
-		# 	projects_votes.append((new_num_projects, n_votes))
-		# For each number of votes:
-			# Count how many projects got that many votes (n). (count from mapped).
-			# round ((n/55.0)*75) is the number of projects that would get n votes
-
-		#for tup in projects_votes:
-		#	print "There are " + str(tup[0]) + " projects with " + str(tup[1]) + " votes"
-
-		#projects = [tup[0] for tup in projects_votes]
-		#print "In the new scheme there are " + str(sum(projects)) + " projects"
-
-		# If there were x occurrences of a # of times ranked for 13 students, scale up to 80
-		# TODO: what is this magical fraction i'm multiplying by?
-		# already_seen = []
-		# def count(x, lst = mapped):
-		# 	if (not(x in already_seen)):
-		# 		contained = filter(lambda v: x == v, lst)
-		# 	#	print "length of contained is " + str(len(contained))
-		# 		already_seen.append(x)
-		# 		return round(len(contained) * (75.0/60.0))
-		
-		# calculated = map(count, mapped)
-		# no_nones = filter(lambda x: not(x is None), calculated)
-		# #print "Calculated is " + str(no_nones)
-		# a = sum(no_nones)
-		# print "There are " + str(a) + "projects"
-		# print "Number of votes: number of projects"
-		# for i in range(0, len(calculated)):	
-		# 	if (not(calculated[i] is None)):
-		# 		print "There should be " + str(int(calculated[i])) + " projects with " + str(int((mapped[i]))) + " votes"	
-
 
 
 	def random_solutions_and_goodness(num_times = 100000):
