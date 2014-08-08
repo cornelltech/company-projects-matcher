@@ -106,6 +106,8 @@ if (__name__ == "__main__"):
 		print "There are " + str(num_projects) + " final projects"
 		print "There were " + str(sum([tup[0]*tup[1] for tup in scaled_tups])) + " total votes cast"
 
+		return scaled_tups
+
 
 	def random_solutions_and_goodness(num_times = 100000):
 		min_energy = float("inf")
@@ -129,10 +131,21 @@ if (__name__ == "__main__"):
  		res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
  		print res_two
 
+ 	def make_students_to_fit_data(scaled_projects):
+ 		all_projects = util.generate_all_projects()
+ 		remaining_num_MBAs = 37
+ 		remaining_num_MEngs = 35
+ 		projects_taken = []
+ 		for tup in scaled_projects:
+ 			num_votes = tup[0]
+ 			num_projects = tup[1]
+ 			for (i in range(0, num_projects)):
+ 				
+ 		pass
 
 
-
- 	make_data_for_80_students()
+ 	scaled_projects = make_data_for_80_students()
+ 	make_students_to_fit_data(scaled_projects)
 
 	
 
