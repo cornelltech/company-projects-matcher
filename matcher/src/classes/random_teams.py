@@ -306,10 +306,10 @@ def create_random_students(max_coding_ability, max_work_experience, n, empty_ran
 # 	return result
 
 def create_random_MBAs(max_coding_ability, max_work_experience, n, empty_ranks = False):
-	return create_random_students(max_coding_ability, max_work_experience, n, empty_ranks = False, d = 0)
+	return create_random_students(max_coding_ability, max_work_experience, n, empty_ranks = empty_ranks, d = 0)
 
 def create_random_MEngs(max_coding_ability, max_work_experience, n, empty_ranks = False, d = -1):
-	return create_random_students(max_coding_ability, max_work_experience, n, empty_ranks = False, d = 1)
+	return create_random_students(max_coding_ability, max_work_experience, n, empty_ranks = empty_ranks, d = 1)
 
 def teams_with_empty_spots(output):
 	'''
