@@ -96,7 +96,7 @@ def random_student(project):
 	rand_index = random_index(len(project.students))
 	return project.students[rand_index]
 
-def random_student_lst(student_lst):
+def random_student_lst(student_lst, already_picked, reuse):
 	'''
 		Picks a random student from a list of students.
 		Fails on an empty list.
@@ -108,8 +108,15 @@ def random_student_lst(student_lst):
 		Returns:
 		--------
 		student: a student in the list (Student).
+
 	'''
 	rand_index = random_index(len(student_lst))
+	if (not (reuse)):
+		student_to_return = student_lst[rand_index]
+		while (student_to_return in already_picked):
+			rand_index = random_index(len(student_lst))
+			student_to_return = student_lst[rand_index]
+	
 	return student_lst[rand_index]
 
 def random_two_choice():
