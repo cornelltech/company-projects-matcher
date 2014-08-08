@@ -5,6 +5,9 @@ import ConfigParser
 import random_teams
 
 from anneal import Annealer
+import random
+from classes import CompError
+import perry_geo_main
 
 #input_file = "tests.csv"
 
@@ -51,30 +54,14 @@ if (__name__ == "__main__"):
 	annealer = Annealer(pg.energy, pg.move)
 
 	# Format for describing the state of the system.
-	students = util.create_students_from_input(input_file)
+	#students = util.create_students_from_input(input_file)
 	#print "All students:"
 	#print [s.ID for s in students]
 	all_projects = util.generate_all_projects()
 	#print "All projects:"
 	#print [p.ID for p in all_projects]
-	feasible_projects = util.create_feasible_projects(students, all_projects)
-	#print [s.ID for s in feasible_projects]
-
-	#Get projects from IDs 2860, 4225, 1820.
-	#cur_project = util.get_project_from_ID(cur_project_ID, feasible_projects)
-	# NOTE: the following code is problematic because we dont always know if these projects are feasible.
-	#proj_one = util.get_project_from_ID(2275, all_projects)
-	#print util.get_num_ranked(proj_one, students)
-	#proj_two = util.get_project_from_ID(1625, feasible_projects)
-	#proj_three = util.get_project_from_ID(1235, all_projects)
-
-	# Print the cost of this
-	#fake_state = ([proj_one, proj_two, proj_three], [])
-	#print pg.energy(fake_state)
-
-	# Do we want to pass in only the feasible prjoects here?
-
-#	sorted_projects = util.sort_projects_by_demand(students, all_projects)
+	#feasible_projects = util.create_feasible_projects(students, all_projects)
+	
 	
 	def make_data_for_80_students():
 		sorted_projects = util.sort_projects_by_demand(students, all_projects, tup=True)
@@ -141,21 +128,70 @@ if (__name__ == "__main__"):
  		random_teams.print_student_list(MBAs)
  		random_teams.print_student_list(MEngs)
  		projects_taken = []
+ 		students_taken = []
  		for tup in scaled_projects:
  			num_votes = tup[0]
  			num_projects = tup[1]
  			for i in range(0, int(num_projects)):
  				project = util.random_project(all_projects, projects_taken, reuse = False)
  				for i in range (0, int(num_votes)):
+ 					# These are the students that have already been assigned to this project.
+ 					already_picked = []
  					# Pick a random student
- 					# Assign this project to their highest spot
- 					# ^^^ Will be changing above later.
+ 					if (remaining_num_MBAs > 0 and remaining_num_MEngs > 0):
+ 						decider = random.randint(0, 1)
+ 						if (decider):
+		 					lst = MBAs
+		 					remaining_num_MBAs -= 1
+		 				else:
+		 					lst = MEngs
+		 					remaining_num_MEngs -= 1
+		 			elif (remaining_num_MBAs > 0):
+		 				lst = MBAs
+		 				remaining_num_MBAs -= 1
+		 			elif (remaining_num_MEngs > 0):
+		 				lst = MEngs
+		 				remaining_num_MEngs -= 1
+		 			else:
+		 				error = "There are no students with empty ranking spots."
+		 				raise CompError(error)
+
+		 			student = util.random_student_lst(lst, already_picked, False)
+		 			already_picked.append(student)
+	 				
+	 				# Get the student's ranking list
+	 				# Get the top spot on the list
+	 				# If the student is in students_taken, pick a new student.
+	 				# If the student has spots left:
+	 					# Assign this project's ID to the top spot on the list
+	 				# If not:
+	 					# Add this student to students_taken
  					pass
  		pass	
 
+ 	def print_final_solution(state):
+		print "Final Solution:"
+ 		(projects, unmatched) = state
+		for p in projects:
+		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
- 	scaled_projects = make_data_for_80_students()
- 	make_students_to_fit_data(scaled_projects)
+ 	#scaled_projects = make_data_for_80_students()
+ 	#make_students_to_fit_data(scaled_projects)
+ 	def manual_schedule(sol):
+		state = (sol, [])
+		# Manually set the annealing schedule.
+		state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
+		print_final_solution(state)
+
+ 	remaining_num_MBAs = 37
+ 	remaining_num_MEngs = 35
+ 	MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs)
+ 	MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs)
+ 	students = MBAs + MEngs
+
+ 	feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
+ 	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects, 37, 35, verbose = True)	
+ 	manual_schedule(sol)
 
 	
 
