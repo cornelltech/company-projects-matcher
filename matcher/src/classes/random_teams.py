@@ -305,11 +305,11 @@ def create_random_students(max_coding_ability, max_work_experience, n, empty_ran
 # 		result.append(s)
 # 	return result
 
-def create_random_MBAs(n, empty_ranks = False):
-	return create_random_students(n, empty_ranks, d = 0)
+def create_random_MBAs(max_coding_ability, max_work_experience, n, empty_ranks = False):
+	return create_random_students(max_coding_ability, max_work_experience, n, empty_ranks = False, d = 0)
 
-def create_random_MEngs(n, empty_ranks = False):
-	return create_random_students(n, empty_ranks, d = 1)
+def create_random_MEngs(max_coding_ability, max_work_experience, n, empty_ranks = False, d = -1):
+	return create_random_students(max_coding_ability, max_work_experience, n, empty_ranks = False, d = 1)
 
 def teams_with_empty_spots(output):
 	'''
@@ -911,8 +911,12 @@ if __name__ == "__main__":
 
 	#do_new_tests()
 	#def create_random_student(max_coding_ability, max_work_experience, empty_ranks = False, d = -1):
-	r = create_random_students(max_coding_ability, max_work_experience, 25, empty_ranks = True, d = -1)
-	
+	#r = create_random_students(max_coding_ability, max_work_experience, 25, empty_ranks = True, d = -1)
+	m = create_random_MBAs(max_coding_ability, max_work_experience, 37, empty_ranks = True)
+	n = create_random_MEngs(max_coding_ability, max_work_experience, 35, empty_ranks = True)
+	print_student_list(m)
+	print_student_list(n)
+
 
 
 
