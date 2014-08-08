@@ -51,11 +51,11 @@ if (__name__ == "__main__"):
 
 	# Format for describing the state of the system.
 	students = util.create_students_from_input(input_file)
-	print "All students:"
-	print [s.ID for s in students]
+	#print "All students:"
+	#print [s.ID for s in students]
 	all_projects = util.generate_all_projects()
-	print "All projects:"
-	print [p.ID for p in all_projects]
+	#print "All projects:"
+	#print [p.ID for p in all_projects]
 	feasible_projects = util.create_feasible_projects(students, all_projects)
 	#print [s.ID for s in feasible_projects]
 
@@ -63,7 +63,7 @@ if (__name__ == "__main__"):
 	#cur_project = util.get_project_from_ID(cur_project_ID, feasible_projects)
 	# NOTE: the following code is problematic because we dont always know if these projects are feasible.
 	proj_one = util.get_project_from_ID(2275, all_projects)
-	print util.get_num_ranked(proj_one, students)
+	#print util.get_num_ranked(proj_one, students)
 	#proj_two = util.get_project_from_ID(1625, feasible_projects)
 	#proj_three = util.get_project_from_ID(1235, all_projects)
 
@@ -73,43 +73,82 @@ if (__name__ == "__main__"):
 
 	# Do we want to pass in only the feasible prjoects here?
 
-	sorted_projects = util.sort_projects_by_demand(students, all_projects, tup=True)
+#	sorted_projects = util.sort_projects_by_demand(students, all_projects)
 	
 	def make_data_for_80_students():
-	
+		sorted_projects = util.sort_projects_by_demand(students, all_projects, tup=True)
+		print "Sorted projects is " + str(sorted_projects)
+
 		# This is the number of total votes cast.
-		print sum(sorted_projects)
+		print "There were " + str(sum([tup[0]*tup[1] for tup in sorted_projects])) + " total votes cast"
+		print "There are " + str(sum([tup[1] for tup in sorted_projects])) + " total orig projects"
 
 		#print "For project 1235: " + str(util.get_num_ranked(proj_three, students))
 
-		def calc(x):
-			return round((x/13.0) * 72)
-		mapped =  map(calc, sorted_projects)
-		#print mapped
-		#print "There are " + str(len(filter(lambda v: v == 0.0, mapped))) + "zeros"
+		# Input x is the number of students out of 13 who voted each project.
+		# Comes from sorted_projects
+		# This is number of students who would vote on the project but there are not the same 
+		# # of projects
 
-		# How many students out of 72 would rank it
-		#print mapped
+		def scale(tup):
+			num_votes = tup[0]
+			num_projects = tup[1]
+			scaled_votes = round ((num_votes * (72.0 / 13.0)))
+			scaled_projects = round ((num_projects) * (75.0 / 55.0))
+			return (scaled_votes, scaled_projects)
+		scaled_tups = map(scale, sorted_projects)
+
+		for tup in scaled_tups:
+			print "There were " + str(tup[1]) + " projects with " + str(tup[0]) + " votes"
+
+		num_projects = sum([tup[1] for tup in scaled_tups])
+		print num_projects
+
+
+
+		# def votes_for_72_students(x):
+		# 	return round((x/13.0) * 72)
+		# votes_scaled =  map(votes_for_72_students, sorted_projects)
+		# #print "Mapped is " + str(votes_scaled)
+
+		# unique_votes_scaled = set(votes_scaled)
+		# #print "Unique mapped projects is " + str(unique_votes_scaled)
+
+		# # Each number in unique_mapped is some number of votes that a project would get.
+		# projects_votes = []
+		# for n_votes in unique_votes_scaled:
+		# 	num_projects_with_n_votes = votes_scaled.count(n_votes)
+		# 	new_num_projects =  round ((num_projects_with_n_votes/55.0)* 75)
+		# 	projects_votes.append((new_num_projects, n_votes))
+		# For each number of votes:
+			# Count how many projects got that many votes (n). (count from mapped).
+			# round ((n/55.0)*75) is the number of projects that would get n votes
+
+		#for tup in projects_votes:
+		#	print "There are " + str(tup[0]) + " projects with " + str(tup[1]) + " votes"
+
+		#projects = [tup[0] for tup in projects_votes]
+		#print "In the new scheme there are " + str(sum(projects)) + " projects"
 
 		# If there were x occurrences of a # of times ranked for 13 students, scale up to 80
 		# TODO: what is this magical fraction i'm multiplying by?
-		already_seen = []
-		def count(x, lst = mapped):
-			if (not(x in already_seen)):
-				contained = filter(lambda v: x == v, lst)
-			#	print "length of contained is " + str(len(contained))
-				already_seen.append(x)
-				return round(len(contained) * (75.0/60.0))
+		# already_seen = []
+		# def count(x, lst = mapped):
+		# 	if (not(x in already_seen)):
+		# 		contained = filter(lambda v: x == v, lst)
+		# 	#	print "length of contained is " + str(len(contained))
+		# 		already_seen.append(x)
+		# 		return round(len(contained) * (75.0/60.0))
 		
-		calculated = map(count, mapped)
-		no_nones = filter(lambda x: not(x is None), calculated)
-		#print "Calculated is " + str(no_nones)
-		a = sum(no_nones)
-		print "There are " + str(a) + "projects"
-		print "Number of votes: number of projects"
-		for i in range(0, len(calculated)):	
-			if (not(calculated[i] is None)):
-				print "There should be " + str(int(calculated[i])) + " projects with " + str(int((mapped[i]))) + " votes"	
+		# calculated = map(count, mapped)
+		# no_nones = filter(lambda x: not(x is None), calculated)
+		# #print "Calculated is " + str(no_nones)
+		# a = sum(no_nones)
+		# print "There are " + str(a) + "projects"
+		# print "Number of votes: number of projects"
+		# for i in range(0, len(calculated)):	
+		# 	if (not(calculated[i] is None)):
+		# 		print "There should be " + str(int(calculated[i])) + " projects with " + str(int((mapped[i]))) + " votes"	
 
 
 
