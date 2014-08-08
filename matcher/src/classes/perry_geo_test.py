@@ -102,8 +102,10 @@ if (__name__ == "__main__"):
 			print "There were " + str(tup[1]) + " projects with " + str(tup[0]) + " votes"
 
 		num_projects = sum([tup[1] for tup in scaled_tups])
-		print num_projects
-
+		print "Scaled tups is " + str(scaled_tups)
+		print "There are " + str(num_projects) + " final projects"
+		print "There were " + str(sum([tup[0]*tup[1] for tup in scaled_tups])) + " total votes cast"
+ 
 
 
 		# def votes_for_72_students(x):
