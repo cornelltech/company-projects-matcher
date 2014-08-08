@@ -280,7 +280,6 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 		MEngs_ok = len(unmatched_MEngs) >= 2
 		overall_number = (len(u_students)/ team_size) > 0
 		return overall_number and MBAs_ok and MEngs_ok
-	# 
 
 	unmatched_MBAs = [s for s in unmatched_students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
 	unmatched_MEngs = [s for s in unmatched_students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
@@ -316,17 +315,23 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 			#unmatched_MBAs = [s for s in unmatched_students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
 			#unmatched_MEngs = [s for s in unmatched_students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
 		else:
-			print "Unmatched students are " + str([p.ID for p in unmatched_students])
-			unmatched_students = []
-
+			pass
+			#feasible_projects = filter(lambda project: len(project.students) >= team_size, feasible_projects)
+			#available_projects = feasible_projects[:]
+			#for student in unmatched_students:
+				#project = util.random_project(feasible_projects, [], True)
+				#project.add_student(student, True)
+				#available_projects.remove(project)
 	
 	if (verbose):
 		print "AFTER SECONDARY MATCHING PROCESS:"
 		print_students_and_waiting(feasible_projects)
 
-	#if (verbose):
-	#	print "Unmatched students:"
-	#	print [s.ID for s in unmatched_students]
+	if (verbose):
+		print "Unmatched students:"
+		print [s.ID for s in unmatched_students]
+
+	# Infinite loop
 
 	return feasible_projects
 			
