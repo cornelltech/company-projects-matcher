@@ -869,4 +869,9 @@ class Project(object):
 	 		print str(sum(lst) / len(lst)) + " pick."
 	 		print ""
 
+	def calculate_diversity(self):
+		diversity = 0
+		
+	 	return diversity
+
 
