@@ -1,6 +1,9 @@
 import random
 import math
 import ConfigParser
+import distance
+import clustering
+import itertools
 
 # TODO: move these to a globals file.
 '''To ensure that we do not create multiple students, teams, or projects with the same ID.'''
@@ -217,6 +220,19 @@ class Student(object):
 		tup.append(self._coding_ability)
 		tup.append(self._work_experience)
 		tup.append(self._project_rankings)
+		return tup
+
+	def get_numerical_student_properties(self):
+		tup = []
+		if (self._degree_pursuing == 0 or self._degree_pursuing == "MBA"):
+			tup.append(0)
+		elif (self._degree_pursuing == 1 or self._degree_pursuing == "MEng"):
+			tup.append(1)
+		else:
+			raise ValueError("What is this degree pursuing?")
+		tup.append(self._was_cs_ug)
+		tup.append(self._coding_ability)
+		tup.append(self._work_experience)
 		return tup
 
 	# Get the number that this student ranked this project. 
@@ -870,8 +886,37 @@ class Project(object):
 	 		print ""
 
 	def calculate_diversity(self):
+		tup = distance.create_inv_cov_mat_from_data()
+		inv_cov_mat = tup[0]
+		dict_key_vals = tup[1]
 		diversity = 0
-		
+		num_students = len(self._students)
+		if (num_students < self.num_MBAs + self.num_MEngs):
+			error = "Students on project " + str(self.ID) + " are " + str(self.students) + "."
+			error += " This project is not full. Do you want to calculate diversity?"
+			raise ValueError(error)
+		else:
+			attributes = []
+			for student in self._students:
+				attributes.append(dict_key_vals[student.ID])
+			# Make a list of indices in attributes (using range)
+			indices = range(len(attributes))
+
+			# Generate all possible combinations of those (not permutations)
+			pairs = itertools.combinations(indices, 2)
+			for tup in pairs:
+				fst = tup[0]
+				snd = tup[1]
+				fst_properties = attributes[fst]
+				snd_properties = attributes[snd]
+				d = distance.do_python_distance_data(fst_properties, snd_properties, inv_cov_mat)
+				diversity += d
+
+			# For all pairs in that:
+			# Get attributes[first], attributes[second]
+			# Calculate the diversity of these two lists
+			# Add it to the diversity variable
+
 	 	return diversity
 
 
