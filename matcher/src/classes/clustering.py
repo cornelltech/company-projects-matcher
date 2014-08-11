@@ -2,45 +2,67 @@ print (__doc__)
 
 import numpy as np 
 import pandas as pd 
-from matplotlib import pyplot
 from sklearn import preprocessing
 from sklearn.cluster import k_means_
 
 default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv"
 
-def __init__(file = default_file):
+class ClusteringError(Exception):
+	def __init__(self, value):
+		self.val = value
+	def __str__(self):
+		return repr(self.val)
+
+
+def __init__(file = default_file, verbose = False):
 	# print the full array instead of truncating
 	# np.set_printoptions(threshold=np.nan)
+	# Returns the relevant info and the IDs for use in distance.py
 	
 	""" Extract data from CSV file and place into numpy array. """
 	initial_array = pd.read_csv(file)
 	data_array = np.array(initial_array)
-	#print data_array
-	return data_array[:,[1, 2, 3, 4]]
+	IDs = data_array[:,0]
+	relevant_data = data_array[:,[1, 2, 3, 4]]
 
-def do_preprocessing(data_array):
+	# Create a dictionary hashing the student ID to the 
+
+	#print data_array
+	if (verbose):
+		print relevant_data, IDs
+	return (relevant_data, IDs)
+
+def do_preprocessing(data_array_tup, verbose = False):
 	""" Create a one-hot encoder, and encode the categorical data. Note: the quantitative data is
 		placed at the right side of the resulting matrix. """
 
 	# This is specifically for the format of data in survey_responses.csv.
 	# TODO: put this into a global config file.
+	data_array = data_array_tup[0]
+	if (verbose):
+		print "data array tup is " + str(data_array_tup)
+	IDs = data_array_tup[1]
 	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, False])
 	enc.fit(data_array)
 
 	#For 'survey_responses.csv,' this produces a 49 x 15 matrix. The last 4 columns are our quantitative data.
 	one_hot_data = enc.transform(data_array).toarray()
+	if (verbose):
+		print "OH data is " + str(one_hot_data)
 
-	#print "The parameters are: " + str(enc.get_params())
-	
-	#print "The feature indices are: "
-	#print enc.feature_indices_
 
-	#print "The number of values is " 
-	#print enc.n_values
+	if (not(len(IDs) == len(data_array))):
+		raise ClusteringError("IDs is not the same length as our data array.")
+	else:
+		dict_key_vals = {}
+		counter = 0
+		for ID in IDs:
+			dict_key_vals[ID] = one_hot_data[counter]
+			counter += 1
+		if (verbose):
+			print dict_key_vals
 
-	#print "The one hot data is " 
-	#print one_hot_data
-	return one_hot_data
+	return (one_hot_data, dict_key_vals)
 
 def do_normalize(data_array, verbose = False):
 	"""" Normalize the data before feeding into K means. """
@@ -104,10 +126,11 @@ def print_data(enc, transformed, kmeans):
 
 
 if __name__ == "__main__":
-	data_array = __init__()
+	data_array_tup = __init__()
 	#print "Length of data array is "
 	#print len(data_array)
-	pre_processed = do_preprocessing(data_array)
+	pre_processed_tup = do_preprocessing(data_array_tup)
+	pre_processed = pre_processed_tup[0]
 	normalized = do_normalize(pre_processed)
 	km = do_k_means(normalized, 3)
 	#plot_k_means(km)
