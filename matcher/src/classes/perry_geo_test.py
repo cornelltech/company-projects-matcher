@@ -97,7 +97,7 @@ if (__name__ == "__main__"):
 		return scaled_tups
 
 
-	def random_solutions_and_goodness(num_times = 100000):
+	def random_solutions_and_goodness(students, feasible_projects, num_MBAs, num_MEngs, num_times = 100000):
 		min_energy = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
@@ -109,9 +109,11 @@ if (__name__ == "__main__"):
 			cur_energy = pg.energy((init, []))
 			if (cur_energy < min_energy):
 				min_sol = init
-		print cur_energy
+				min_energy = cur_energy
 		for p in min_sol:
-				print str(p.ID) + ":" + str([s.ID for s in p.students])
+			print str(p.ID) + ":" + str([s.ID for s in p.students])
+		print "The minimum energy is " + str(min_energy)
+		return [p for p in min_sol if len(p.students) > 0]
 
 	def test_random_solutions_and_goodness():
 		#random_solutions_and_goodness
@@ -119,6 +121,7 @@ if (__name__ == "__main__"):
  		res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
  		print res_two
 
+ 	# Trying to make students to fit the data.
  	def make_students_to_fit_data(scaled_projects):
  		#all_projects = util.generate_all_projects()
  		remaining_num_MBAs = 37
@@ -182,6 +185,8 @@ if (__name__ == "__main__"):
 		# Manually set the annealing schedule.
 		state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
 		print_final_solution(state)
+		print "Final energy is " + str(e)
+		print "Calculated final energy is " + str(pg.energy(state))
 
  	remaining_num_MBAs = 37
  	remaining_num_MEngs = 35
@@ -190,7 +195,9 @@ if (__name__ == "__main__"):
  	students = MBAs + MEngs
 
  	feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
- 	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects, 37, 35, verbose = True)	
+ 	sol = random_solutions_and_goodness(students, feasible_projects, 37, 35, num_times = 100000)
+
+ #	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects, 37, 35, verbose = True)	
  	manual_schedule(sol)
 
 	
