@@ -5,7 +5,7 @@ from scipy import spatial
 import clustering
 import math
 
-default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv"
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data_analysis/data/new_new_survey_responses.csv"
 
 class DistanceError(Exception):
 	def __init__(self, value):
@@ -432,8 +432,8 @@ if (__name__ == "__main__"):
 
 	#fst = [1, 2, 1, 3]
 	#snd = [0, 4, 1, 1]
-	fst = processed_data[26]
-	snd = processed_data[32]
+	fst = processed_data[2]
+	snd = processed_data[4]
 	print do_python_distance_data(fst, snd, inv_cov)
 
 
