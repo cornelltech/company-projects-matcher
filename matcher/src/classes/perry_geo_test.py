@@ -204,8 +204,20 @@ if (__name__ == "__main__"):
 	 	
 	 	manual_schedule(sol)
 
-	make_data_for_80_students()
+	#make_data_for_80_students()
+	project = util.random_project(all_projects, [], reuse = False)
+	print "For project " + str(project.ID)
+	for i in range(5):
+		project.students.append(students[i])
+		print (students[i].get_student_properties())
+		#do_preprocessing[2]
+	print project.calculate_diversity()
 
-	
+	project_two = util.random_project(all_projects, [project], reuse = False)
+	print "For project " + str(project_two.ID)
+	for i in range(5, 10):
+		project_two.students.append(students[i])
+		print (students[i].get_student_properties())
+	print project_two.calculate_diversity()	
 
 
