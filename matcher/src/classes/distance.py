@@ -1,9 +1,9 @@
 #import teams
 import numpy as np
+import pandas as pd
 from scipy import linalg
 from scipy import spatial
 import clustering
-import math
 
 default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data_analysis/data/new_new_survey_responses.csv"
 
@@ -33,8 +33,12 @@ def is_positive_semidefinite(cov_matrix, verbose = False):
 # Fixes matrix if it's not positive semidefinite (adds a small version of the identity.)
 # Returns (data, covariance matrix.)
 def create_covariance_matrix(file = default_file, verbose = False):
-	data_array = clustering.__init__(file)
-	one_hot_data_preprocessed = clustering.do_preprocessing(data_array)
+	data_array_tup = clustering.__init__(file)
+	data_array = data_array_tup[0]
+	one_hot_data_preprocessed_tup = clustering.do_preprocessing(data_array_tup)
+
+	one_hot_data_preprocessed = one_hot_data_preprocessed_tup[0]
+	dict_key_vals = one_hot_data_preprocessed_tup[1]
 	
 	if (verbose):
 		print "One hot data preprocessed is: "
@@ -77,26 +81,26 @@ def create_covariance_matrix(file = default_file, verbose = False):
 			else:
 				covariance_matrix = result
 
-	return (data_array, one_hot_data_preprocessed, covariance_matrix)
+	return (data_array, one_hot_data_preprocessed, covariance_matrix, dict_key_vals)
 
 # Calcuate matrix square root using scipy linalg
 def sqrt_covariance_matrix(covariance_matrix):	
  	matrix_square_root = linalg.sqrtm(covariance_matrix)
 	return matrix_square_root
 
-def inverse_matrix(sqrt_covariance_matrix, use_pseudo_inv = True, verbose = False):
+def inverse_matrix(matrix, use_pseudo_inv = True, verbose = False):
 	
 	# Calculate real matrix inverse.
 	if (not(use_pseudo_inv)):
-	 	cov_inverse = linalg.inv(sqrt_covariance_matrix)
+	 	cov_inverse = linalg.inv(matrix)
 	 	if (verbose):
-	 		print "(Real) inverse of the sqrt. covariance matrix is: "
+	 		print "(Real) inverse of the input matrix is: "
 
 	# Calculate the matrix pseudoinverse.
 	else:
-	 	cov_inverse = np.linalg.pinv(sqrt_covariance_matrix)
+	 	cov_inverse = np.linalg.pinv(matrix)
 	 	if (verbose):
-			print "(Pseudo) inverse of the sqrt. covariance matrix is: "
+			print "(Pseudo) inverse of the input matrix is: "
 
 	#print cov_inverse
 	return cov_inverse
@@ -120,43 +124,15 @@ def calc_numerical_difference(x, y, verbose = False):
 		return (1.0 / ((abs(x-y))*1.0))
 
 def subtract_vectors(s_one_properties, s_two_properties, verbose = False):
-
-	# Extract the values of interest
-	# ca_one = s_one_properties[10]
-	# ca_two = s_two_properties[10]
-	# work_one = s_one_properties[11]
-	# work_two = s_two_properties[11]
-
-	# s_one_properties[10] = 0
-	# s_two_properties[10] = 0
-	# s_one_properties[11] = 0
-	# s_two_properties[11] = 0
-
-	# Calculate our function for these values
-
-	#coding_diff = calc_numerical_difference(ca_one, ca_two)
-	#work_diff = calc_numerical_difference(work_one, work_two)
-
 	a = np.subtract(s_one_properties, s_two_properties)
 	a = np.absolute(a)
 
 	print "Absolute value of subtracted vectors is:"
 	print a
 	
-	#res = res + coding_diff + work_diff
-
-	#return res
-
-	
+	return a
 	
 def do_mahal_distance(s_one_properties, s_two_properties, inv_sq_cov_mat, verbose = False, fixed_with_zeros = True):
-	
-	# TODO: not sure if we even want to use this.
-	# obs_zero = one_hot_data_preprocessed[0]
-	# obs_one = one_hot_data_preprocessed[1]
-	# print "Mahal distance is " + str(spatial.distance.mahalanobis(obs_zero, obs_one, cov_inverse))
-
-
 	if (fixed_with_zeros):
 	# Reset these values in copies the original vectors to 0
 	# so they don't affect the dot products.
@@ -223,6 +199,13 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 # This takes in the inverse of the cov mat, not the inverse sq cov mat.
 def do_python_distance_data(student_one, student_two, inv_cov_mat):
 	return spatial.distance.mahalanobis(student_one, student_two, inv_cov_mat)
+
+def create_inv_cov_mat_from_data(file = default_file):
+	quadruple = create_covariance_matrix(file)
+	cov_mat = quadruple[2]
+	dict_key_vals = quadruple[3]
+	inv_cov_mat = inverse_matrix(cov_mat)
+	return (inv_cov_mat, dict_key_vals)
 
 # This takes in the inverse of the cov mat, not the inverse sq cov mat.
 # TODO: make this actually return the result.
@@ -466,6 +449,8 @@ if (__name__ == "__main__"):
 	#print covariance_matrix - c
 	#print (c == covariance_matrix)
 	#inverse_matrix(sq_cov)
+
+	create_inv_cov_mat_from_data()
 
 
 
