@@ -8,6 +8,7 @@ from anneal import Annealer
 import random
 from classes import CompError
 import perry_geo_main
+import math
 
 #input_file = "tests.csv"
 
@@ -54,7 +55,7 @@ if (__name__ == "__main__"):
 	annealer = Annealer(pg.energy, pg.move)
 
 	# Format for describing the state of the system.
-	#students = util.create_students_from_input(input_file)
+	students = util.create_students_from_input(input_file)
 	#print "All students:"
 	#print [s.ID for s in students]
 	all_projects = util.generate_all_projects()
@@ -81,8 +82,10 @@ if (__name__ == "__main__"):
 		def scale(tup):
 			num_votes = tup[0]
 			num_projects = tup[1]
+			#scaled_votes = round ((num_votes * (72.0 / 13.0) / 75 * 55) + 1)
 			scaled_votes = round ((num_votes * (72.0 / 13.0)))
 			scaled_projects = round ((num_projects) * (75.0 / 55.0))
+			#scaled_projects = num_projects
 			return (scaled_votes, scaled_projects)
 		scaled_tups = map(scale, sorted_projects)
 
@@ -92,6 +95,7 @@ if (__name__ == "__main__"):
 		num_projects = sum([tup[1] for tup in scaled_tups])
 		print "Scaled tups is " + str(scaled_tups)
 		print "There are " + str(num_projects) + " final projects"
+
 		print "There were " + str(sum([tup[0]*tup[1] for tup in scaled_tups])) + " total votes cast"
 
 		return scaled_tups
@@ -188,17 +192,19 @@ if (__name__ == "__main__"):
 		print "Final energy is " + str(e)
 		print "Calculated final energy is " + str(pg.energy(state))
 
- 	remaining_num_MBAs = 37
- 	remaining_num_MEngs = 35
- 	MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs)
- 	MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs)
- 	students = MBAs + MEngs
+	def do_random():
+ 		remaining_num_MBAs = 37
+ 		remaining_num_MEngs = 35
+ 		MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs)
+ 		MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs)
+ 		students = MBAs + MEngs
 
- 	feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
- 	sol = random_solutions_and_goodness(students, feasible_projects, 37, 35, num_times = 100000)
+ 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
+	 	sol = random_solutions_and_goodness(students, feasible_projects, 37, 35, num_times = 100000)
+	 	
+	 	manual_schedule(sol)
 
- #	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects, 37, 35, verbose = True)	
- 	manual_schedule(sol)
+	make_data_for_80_students()
 
 	
 
