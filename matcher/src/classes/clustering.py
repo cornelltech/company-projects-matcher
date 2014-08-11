@@ -16,7 +16,7 @@ def __init__(file = default_file):
 	initial_array = pd.read_csv(file)
 	data_array = np.array(initial_array)
 	#print data_array
-	return data_array
+	return data_array[:,[1, 2, 3, 4]]
 
 def do_preprocessing(data_array):
 	""" Create a one-hot encoder, and encode the categorical data. Note: the quantitative data is
