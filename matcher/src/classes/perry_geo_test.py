@@ -6,6 +6,7 @@ import random_teams
 
 from anneal import Annealer
 import random
+import classes
 from classes import CompError
 import perry_geo_main
 import math
@@ -83,7 +84,7 @@ if (__name__ == "__main__"):
 			num_votes = tup[0]
 			num_projects = tup[1]
 			#scaled_votes = round ((num_votes * (72.0 / 13.0) / 75 * 55) + 1)
-			scaled_votes = round ((num_votes * (72.0 / 13.0)))
+			scaled_votes = round ((num_votes * (72.0 / 13.0)) / 1.31)
 			scaled_projects = round ((num_projects) * (75.0 / 55.0))
 			#scaled_projects = num_projects
 			return (scaled_votes, scaled_projects)
@@ -93,6 +94,11 @@ if (__name__ == "__main__"):
 			print "There were " + str(tup[1]) + " projects with " + str(tup[0]) + " votes"
 
 		num_projects = sum([tup[1] for tup in scaled_tups])
+		tup_to_change = scaled_tups[8]
+		fst = tup_to_change[0]
+		snd = tup_to_change[1]
+		scaled_tups[8] = (fst - 1, snd)
+
 		print "Scaled tups is " + str(scaled_tups)
 		print "There are " + str(num_projects) + " final projects"
 
@@ -119,62 +125,86 @@ if (__name__ == "__main__"):
 		print "The minimum energy is " + str(min_energy)
 		return [p for p in min_sol if len(p.students) > 0]
 
-	def test_random_solutions_and_goodness():
+	def test_random_solutions_and_goodness(feasible_projects):
 		#random_solutions_and_goodness
  		res = greedy_attempt_two.initial_solution(students, feasible_projects)
  		res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
  		print res_two
 
  	# Trying to make students to fit the data.
- 	def make_students_to_fit_data(scaled_projects):
- 		#all_projects = util.generate_all_projects()
+ 	def make_students_to_fit_data(scaled_tups):
  		remaining_num_MBAs = 37
  		remaining_num_MEngs = 35
+
+ 		# Creating our actual MBA and MEng Student objects.
+ 		# Creating them with empty student ranking lists ([]) so we can call append
+ 		# desired values onto them.
  		MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs, empty_ranks = True)
  		MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs, empty_ranks = True)
+ 		students_choices = MBAs + MEngs
+ 		random.shuffle(students_choices)
  		random_teams.print_student_list(MBAs)
  		random_teams.print_student_list(MEngs)
+ 		
+ 		# Empty lists showing which projects and students are already taken.
  		projects_taken = []
- 		students_taken = []
- 		for tup in scaled_projects:
+ 
+ 		for tup in scaled_tups:
  			num_votes = tup[0]
  			num_projects = tup[1]
+
+ 			# For each number of projects:
  			for i in range(0, int(num_projects)):
- 				project = util.random_project(all_projects, projects_taken, reuse = False)
+ 				print "Num_projects is " + str(num_projects)
+ 				print "Each of these projects needs " + str(num_votes) + " votes"
+ 				# Pick a random project that hasn't been picked already.
+ 				project = util.random_project(all_projects, projects_taken, reuse = False, verbose = True)
+ 				print "Project ID: " + str(project.ID)
+ 				
+ 				already_picked = []
+ 				# For the number of votes that this project needs:
  				for i in range (0, int(num_votes)):
- 					# These are the students that have already been assigned to this project.
- 					already_picked = []
- 					# Pick a random student
- 					if (remaining_num_MBAs > 0 and remaining_num_MEngs > 0):
- 						decider = random.randint(0, 1)
- 						if (decider):
-		 					lst = MBAs
-		 					remaining_num_MBAs -= 1
-		 				else:
-		 					lst = MEngs
-		 					remaining_num_MEngs -= 1
-		 			elif (remaining_num_MBAs > 0):
-		 				lst = MBAs
-		 				remaining_num_MBAs -= 1
-		 			elif (remaining_num_MEngs > 0):
-		 				lst = MEngs
-		 				remaining_num_MEngs -= 1
+ 					print "Current num votes achieved is: " + str(i)
+ 					# These are the students that have already ranked this project.
+
+ 					print "Already picked is " + str([p.ID for p in already_picked])
+ 					if (len(students_choices) > 0):
+ 						print "Length of students_choices is " + str(len(students_choices))
+ 						student = util.random_student_lst(students_choices, already_picked, reuse = False)
+ 						print "Student ID is " + str(student.ID)
+ 						print "Student in already_picked " + str(student in already_picked)
 		 			else:
 		 				error = "There are no students with empty ranking spots."
 		 				raise CompError(error)
 
-		 			student = util.random_student_lst(lst, already_picked, False)
-		 			already_picked.append(student)
-	 				
-	 				# Get the student's ranking list
-	 				# Get the top spot on the list
-	 				# If the student is in students_taken, pick a new student.
-	 				# If the student has spots left:
-	 					# Assign this project's ID to the top spot on the list
-	 				# If not:
-	 					# Add this student to students_taken
- 					pass
- 		pass	
+		 			# If the student is full: we should not pick them.
+		 			# This should be taken care of by the second "if" below this.
+
+		 			# This student has spots open.
+		 			if (len(student.project_rankings) < classes.number_project_rankings):
+		 				# Add this project's ID to the student's rankings.
+		 				print "Student " + str(student.ID) + " has spots available"
+		 				student.project_rankings.append(project.ID)
+		 				print "Added project " + str(project.ID) + " to student " + str(student.ID) + "'s rankings."
+		 				already_picked.append(student)
+		 				print "Student " + str(student.ID) + "'s project rankings are now " + str(student.project_rankings)
+		 				print "Already picked is now " + str([p.ID for p in already_picked])
+
+	 				# If the student does not have spots left:
+	 				# Don't want this to be an else because this could be the same student as above.
+	 				if (len(student.project_rankings) >= classes.number_project_rankings):
+	 					print "Student " + str(student.ID) + "'s rankings are full."
+	 					print "Removing this student from student_choices."
+	 					students_choices.remove(student)
+
+
+ 				projects_taken.append(project)
+ 		
+ 		for student in MBAs:
+ 			print "Student " + str(student.ID) + "'s choices: " + str(student.project_rankings)
+ 		for student in MEngs:
+ 			print "Student " + str(student.ID) + "'s choices: " + str(student.project_rankings)
+
 
  	def print_final_solution(state):
 		print "Final Solution:"
@@ -204,20 +234,24 @@ if (__name__ == "__main__"):
 	 	
 	 	manual_schedule(sol)
 
-	#make_data_for_80_students()
-	project = util.random_project(all_projects, [], reuse = False)
-	print "For project " + str(project.ID)
-	for i in range(5):
-		project.students.append(students[i])
-		print (students[i].get_student_properties())
-		#do_preprocessing[2]
-	print project.calculate_diversity()
+	def test_project_diversities():
+		project = util.random_project(all_projects, [], reuse = False)
+		print "For project " + str(project.ID)
+		for i in range(5):
+			project.students.append(students[i])
+			print (students[i].get_student_properties())
+			#do_preprocessing[2]
+		print project.calculate_diversity()
 
-	project_two = util.random_project(all_projects, [project], reuse = False)
-	print "For project " + str(project_two.ID)
-	for i in range(5, 10):
-		project_two.students.append(students[i])
-		print (students[i].get_student_properties())
-	print project_two.calculate_diversity()	
+		project_two = util.random_project(all_projects, [project], reuse = False)
+		print "For project " + str(project_two.ID)
+		for i in range(5, 10):
+			project_two.students.append(students[i])
+			print (students[i].get_student_properties())
+		print project_two.calculate_diversity()	
+
+	scaled_tups = [(0.0, 10.0), (4.0, 18.0), (8.0, 18.0), (13.0, 15.0), (17.0, 8.0), (21.0, 1.0), (25.0, 1.0), (30.0, 3.0), (37.0, 1.0)]
+	make_students_to_fit_data(scaled_tups)
+
 
 
