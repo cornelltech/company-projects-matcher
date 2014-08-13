@@ -155,7 +155,7 @@ def generate_all_projects():
 	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
 	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
 	projects_lst = []
-	for ID in classes.vals_valid_projects:
+	for ID in range(0, classes.num_valid_projects):
 		p = Project(ID, num_MBAs, num_MEngs)
 		projects_lst.append(p)
 	return projects_lst
