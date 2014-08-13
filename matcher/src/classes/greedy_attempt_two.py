@@ -12,19 +12,13 @@ from classes import FieldError
 
 student_ids = []
 
-def print_students_and_waiting(projects):
+def print_students(projects):
 	for project in projects:
 		#pass
 	#	if (len(project.students) >= allowable_team_size):
 		print "For project " + str(project.ID) + ":"
 		print "     Students: " + str([(s.ID, s.degree_pursuing) for s in project.students])
 		#print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
-
-def match_with_first_choice(students, projects):
-	return greedy_student_and_fix.match_with_first_choice(students, projects)
-
-# Matches projects in the order of highest interest first.
-
 
 # Creates a random initial initial solution from only the feasible projects.
 # Have the option to sort the projects by the highest interest first, so there is a 
@@ -213,7 +207,7 @@ def greedy_initial_solution(students, feasible_projects, verbose = True):
 	# See the status after the initial process.
 	if (verbose):
 		print "AFTER INITIAL MATCHING PROCESS:"
-		print_students_and_waiting(feasible_projects)
+		print_students(feasible_projects)
 
 	unmatched_students = [s for s in students if not(s.ID in matched_students)]
 
@@ -295,7 +289,7 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 	
 	if (verbose):
 		print "AFTER SECONDARY MATCHING PROCESS:"
-		print_students_and_waiting(feasible_projects)
+		print_students(feasible_projects)
 
 	if (verbose):
 		print "Unmatched students:"
@@ -522,7 +516,7 @@ def post_processing(feasible_projects, students, verbose = True):
 
 	# Printing things
 	if (verbose):
-		print_students_and_waiting(feasible_projects)
+		print_students(feasible_projects)
 
 
 	print "At the end the unmatched students are "
