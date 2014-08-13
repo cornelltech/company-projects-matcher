@@ -239,7 +239,8 @@ class Student(object):
 	# NOTE: returns 100 if the student did not rank the project.
 	def get_ranking(self, project_id): 
 		try:
-			rankings = self._project_rankings
+			rankings = self._project_rankings.tolist()
+			#print "Rankings is of type " + str(type(rankings))
 			ind = rankings.index(project_id)
 			return (ind + 1)
 		except(ValueError):
