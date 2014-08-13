@@ -5,7 +5,8 @@ from classes import CompError
 # A function to calculate the energy of a state.
 def energy(state):
 	projects = state[0]
-	unmatched_students = state[1]
+	inv_cov_mat_tup = state[1]
+
 	# Averages the costs on each project, and then averages across all projects.
 	def avg_project_costs():
 		project_costs = []
@@ -20,14 +21,16 @@ def energy(state):
 		energy = np.mean(project_costs)
 		return energy
 
-	def unmatched_student_cost():
-		return 10000 * len(unmatched_students) 
-
 	# 34
 	def team_diversity_cost():
-		return 0
+		diversities = []
+		for project in projects:
+			project_diversity = project.calculate_diversity(inv_cov_mat_tup)
+			diversities.append(project_diversity)
+		avg_diversity = np.mean(diversities)
+		return 1 / avg_diversity
 
-	return avg_project_costs() + unmatched_student_cost() + team_diversity_cost()
+	return avg_project_costs() + team_diversity_cost()
 
 # A function to make a random change to a state.
 # Returns None (just like the example).
@@ -35,6 +38,7 @@ def energy(state):
 # NOTE: there should be no teams of size 0 before calling the function.
 def move(state, verbose = True, super_verbose = False):
 	projects = state[0]
+	inv_cov_mat_tup = state[1]
 
 	project_one = util.random_project(projects, [], True)
 	project_two = util.random_project(projects, [], True)
@@ -98,7 +102,9 @@ def move(state, verbose = True, super_verbose = False):
 		for p in projects:
 		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
-	print energy((projects, []))
+	state_after_change = (projects, inv_cov_mat_tup)
+
+	print energy(state_after_change)
 
 	return projects
 
