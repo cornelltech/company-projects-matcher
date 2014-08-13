@@ -885,13 +885,12 @@ class Project(object):
 	 		print str(sum(lst) / len(lst)) + " pick."
 	 		print ""
 
-	def calculate_diversity(self, use_file, students):
-		if (use_file):
-			tup = distance.create_inv_cov_mat_from_data()
-		else:
-			
+	def calculate_diversity(self, tup):
+		#tup = distance.create_inv_cov_mat_from_data(use_file, students)
+	#	print "In calculate diversity: tup is " + str(tup)
 		inv_cov_mat = tup[0]
 		dict_key_vals = tup[1]
+	#	print "dict key vals is " + str(dict_key_vals)
 		diversity = 0
 		num_students = len(self._students)
 		if (num_students < self.num_MBAs + self.num_MEngs):
@@ -901,6 +900,9 @@ class Project(object):
 		else:
 			attributes = []
 			for student in self._students:
+			#	print "student id is " + str(student.ID)
+				#print "student id in dict_key_vals " + str()
+			#	attributes.append("")
 				attributes.append(dict_key_vals[student.ID])
 			# Make a list of indices in attributes (using range)
 			indices = range(len(attributes))
