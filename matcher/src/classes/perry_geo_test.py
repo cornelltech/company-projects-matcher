@@ -297,7 +297,8 @@ if (__name__ == "__main__"):
 	# This could be the second part of the tuple
 	# Unmatched students is just always an empty list now anyways
 
-	do_random()
-
+	#do_random()
+	students = util.create_students_from_input("eighty_students.csv")
+	#make_data_for_80_students(students)
 
 
