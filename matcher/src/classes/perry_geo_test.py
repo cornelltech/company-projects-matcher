@@ -106,8 +106,8 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 100):
 			if (cur_energy < min_energy):
 				min_sol = init
 				min_energy = cur_energy
-		for p in min_sol:
-			print str(p.ID) + ":" + str([s.ID for s in p.students])
+		# for p in min_sol:
+		# 	print str(p.ID) + ":" + str([s.ID for s in p.students])
 		print "The minimum energy is " + str(min_energy)
 		return [p for p in min_sol if len(p.students) > 0]
 
