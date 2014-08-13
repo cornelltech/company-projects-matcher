@@ -32,8 +32,11 @@ def is_positive_semidefinite(cov_matrix, verbose = False):
 # Preprocesses data with one hot encoding (changes categorical variables into numerical.)
 # Fixes matrix if it's not positive semidefinite (adds a small version of the identity.)
 # Returns (data, covariance matrix.)
-def create_covariance_matrix(file = default_file, verbose = False):
-	data_array_tup = clustering.__init__(file)
+def create_covariance_matrix(use_file, students, file = default_file, verbose = False):
+	if (use_file):
+		data_array_tup = clustering.__init__(file)
+	else:
+		
 	data_array = data_array_tup[0]
 	one_hot_data_preprocessed_tup = clustering.do_preprocessing(data_array_tup)
 
