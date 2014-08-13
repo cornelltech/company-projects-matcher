@@ -107,7 +107,7 @@ if (__name__ == "__main__"):
 		return scaled_tups
 
 
-	def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 1000):
+	def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100):
 		min_energy = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
@@ -140,81 +140,6 @@ if (__name__ == "__main__"):
  		res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
  		print res_two
 
- 	# Trying to make students to fit the data.
- 	def make_students_to_fit_data(scaled_tups):
- 		remaining_num_MBAs = 37
- 		remaining_num_MEngs = 35
-
- 		# Creating our actual MBA and MEng Student objects.
- 		# Creating them with empty student ranking lists ([]) so we can call append
- 		# desired values onto them.
- 		MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs, empty_ranks = True)
- 		MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs, empty_ranks = True)
- 		students_choices = MBAs + MEngs
- 		random.shuffle(students_choices)
- 		random_teams.print_student_list(MBAs)
- 		random_teams.print_student_list(MEngs)
- 		
- 		# Empty lists showing which projects and students are already taken.
- 		projects_taken = []
- 
- 		for tup in scaled_tups:
- 			num_votes = tup[0]
- 			num_projects = tup[1]
-
- 			# For each number of projects:
- 			for i in range(0, int(num_projects)):
- 				print "Num_projects is " + str(num_projects)
- 				print "Each of these projects needs " + str(num_votes) + " votes"
- 				# Pick a random project that hasn't been picked already.
- 				project = util.random_project(all_projects, projects_taken, reuse = False, verbose = True)
- 				print "Project ID: " + str(project.ID)
- 				
- 				already_picked = []
- 				# For the number of votes that this project needs:
- 				for i in range (0, int(num_votes)):
- 					print "Current num votes achieved is: " + str(i)
- 					# These are the students that have already ranked this project.
-
- 					print "Already picked is " + str([p.ID for p in already_picked])
- 					if (len(students_choices) > 0):
- 						print "Length of students_choices is " + str(len(students_choices))
- 						student = util.random_student_lst(students_choices, already_picked, reuse = False)
- 						print "Student ID is " + str(student.ID)
- 						print "Student in already_picked " + str(student in already_picked)
-		 			else:
-		 				error = "There are no students with empty ranking spots."
-		 				raise CompError(error)
-
-		 			# If the student is full: we should not pick them.
-		 			# This should be taken care of by the second "if" below this.
-
-		 			# This student has spots open.
-		 			if (len(student.project_rankings) < classes.number_project_rankings):
-		 				# Add this project's ID to the student's rankings.
-		 				print "Student " + str(student.ID) + " has spots available"
-		 				student.project_rankings.append(project.ID)
-		 				print "Added project " + str(project.ID) + " to student " + str(student.ID) + "'s rankings."
-		 				already_picked.append(student)
-		 				print "Student " + str(student.ID) + "'s project rankings are now " + str(student.project_rankings)
-		 				print "Already picked is now " + str([p.ID for p in already_picked])
-
-	 				# If the student does not have spots left:
-	 				# Don't want this to be an else because this could be the same student as above.
-	 				if (len(student.project_rankings) >= classes.number_project_rankings):
-	 					print "Student " + str(student.ID) + "'s rankings are full."
-	 					print "Removing this student from student_choices."
-	 					students_choices.remove(student)
-
-
- 				projects_taken.append(project)
- 		
- 		for student in MBAs:
- 			print "Student " + str(student.ID) + "'s choices: " + str(student.project_rankings)
- 		for student in MEngs:
- 			print "Student " + str(student.ID) + "'s choices: " + str(student.project_rankings)
-
-
  	def print_final_solution(state):
 		print "Final Solution:"
  		(projects, inv_cov_mat_tup) = state
@@ -246,13 +171,16 @@ if (__name__ == "__main__"):
 		print "Final energy is " + str(e)
 		print "Calculated final energy is " + str(pg.energy(state))
 
-	def do_random():
- 		remaining_num_MBAs = 37
+	def make_random_students():
+		remaining_num_MBAs = 37
  		remaining_num_MEngs = 35
  		MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs)
  		MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs)
  		students = MBAs + MEngs
+		return students
 
+	def do_random(students):
+ 		
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
 	 	
@@ -299,6 +227,7 @@ if (__name__ == "__main__"):
 
 	#do_random()
 	students = util.create_students_from_input("eighty_students.csv")
+	do_random(students)
 	#make_data_for_80_students(students)
 
 
