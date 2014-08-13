@@ -236,6 +236,7 @@ class Student(object):
 		return tup
 
 	# Get the number that this student ranked this project. 
+	# NOTE: returns 100 if the student did not rank the project.
 	def get_ranking(self, project_id): 
 		try:
 			rankings = self._project_rankings
