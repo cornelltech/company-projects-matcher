@@ -5,7 +5,7 @@ from scipy import linalg
 from scipy import spatial
 import clustering
 
-default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data_analysis/data/new_new_survey_responses.csv"
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/matcher/src/classes/eighty_students.csv"
 
 class DistanceError(Exception):
 	def __init__(self, value):
