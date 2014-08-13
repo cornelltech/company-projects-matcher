@@ -1,5 +1,5 @@
 import util
-import greedy_attempt_two
+import initial_solution
 import perry_geo_annealing as pg
 import ConfigParser
 from anneal import Annealer
@@ -44,14 +44,14 @@ if (__name__ == "__main__"):
 	annealer = Annealer(pg.energy, pg.move)
 
 	# Format for describing the state of the system.
-	students = greedy_attempt_two.create_students_from_input(input_file)
+	students = initial_solution.create_students_from_input(input_file)
 	all_projects = util.generate_all_projects()
-	feasible_projects = greedy_attempt_two.create_feasible_projects(students, all_projects)
+	feasible_projects = initial_solution.create_feasible_projects(students, all_projects)
 	print [s.ID for s in feasible_projects]
 
 	sorted_projects = util.sort_projects_by_demand(students, all_projects)
 
-	sol = greedy_attempt_two.make_initial_solution(students, feasible_projects)	
+	sol = initial_solution.make_initial_solution(students, feasible_projects)	
 
 	def print_final_solution(state):
 		print "Final Solution:"

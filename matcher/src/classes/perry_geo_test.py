@@ -1,5 +1,5 @@
 import util
-import greedy_attempt_two
+import initial_solution
 import perry_geo_annealing as pg
 import ConfigParser
 import random_teams
@@ -59,7 +59,7 @@ if (__name__ == "__main__"):
 		min_energy = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
-			init = greedy_attempt_two.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
+			init = initial_solution.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
 		#	print "There are  " + str(len(feasible_projects)) + " feasible projects"
 			print "Random solution " + str(i) + ":"
 			for p in init:
@@ -104,12 +104,13 @@ if (__name__ == "__main__"):
 
 		inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
 		state = (sol, inv_cov_mat_tup)
+		print "Initial energy is " + str(pg.energy(state))
 		# Manually set the annealing schedule.
-		state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
-		print_final_solution(state)
+	#	state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
+	#	print_final_solution(state)
 
-		print "Final energy is " + str(e)
-		print "Calculated final energy is " + str(pg.energy(state))
+	#	print "Final energy is " + str(e)
+	#	print "Calculated final energy is " + str(pg.energy(state))
 
 	def make_random_students():
 		remaining_num_MBAs = 37
@@ -119,15 +120,37 @@ if (__name__ == "__main__"):
  		students = MBAs + MEngs
 		return students
 
+	def greedy_solutions_and_goodness(students, feasible_projects, num_times = 100):
+		'''
+			Returns a list of projects.
+		'''
+		min_energy = float("inf")
+		min_sol = None
+		for i in range (0, num_times):
+			init = initial_solution.greedy_initial_solution_and_fill_unmatched(students, feasible_projects)
+		#	print "There are  " + str(len(feasible_projects)) + " feasible projects"
+			print "Greedy solution " + str(i) + ":"
+			for p in init:
+				print str(p.ID) + ":" + str([s.ID for s in p.students])
+			inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
+			cur_energy = pg.energy((init, inv_cov_mat_tup))
+			if (cur_energy < min_energy):
+				min_sol = init
+				min_energy = cur_energy
+		for p in min_sol:
+			print str(p.ID) + ":" + str([s.ID for s in p.students])
+		print "The minimum energy is " + str(min_energy)
+		return [p for p in min_sol if len(p.students) > 0]
+
 	def do_random_initial_solutions(students):
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
 	 	print "About to do manual schedule"
 	 	manual_schedule(False, students, sol)
 
-	def do_greedy_initial_solution(students, verbose = True):
+	def do_greedy_initial_solutions(students, verbose = True):
 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
-		sol = greedy_attempt_two.greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose)
+		sol = greedy_solutions_and_goodness(students, feasible_projects)
 		print "About to do manual schedule"
 	 	manual_schedule(False, students, sol)
 
@@ -148,6 +171,6 @@ if (__name__ == "__main__"):
 
 	students = util.create_students_from_input("eighty_students.csv")
 	#make_data_for_80_students(students)
-	do_greedy_initial_solution(students)
+	do_greedy_initial_solutions(students)
 
 
