@@ -109,7 +109,7 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 				if (len(matched_projects) > 1):
 					if (verbose):
 						print "Should remove project " + str(project.ID)
-					matched_projects.remove(project)
+					matched_projects.remove(project) 
 		index += 1
 		if (verbose):
 			print [p.ID for p in sorted_projects if len(p.students) > 0]
@@ -123,7 +123,7 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 	return [p for p in sorted_projects if len(p.students) > 0]
 
 # Note: these projects are the feasible ones.
-def greedy_initial_solution(students, feasible_projects, verbose = True):
+def greedy_initial_solution(students, feasible_projects, verbose = False):
 	if (verbose):
 		print "Feasible projects are:"
 		print [f.ID for f in feasible_projects]
@@ -212,7 +212,7 @@ def greedy_initial_solution(students, feasible_projects, verbose = True):
 
 	return (feasible_projects, unmatched_students)
 
-def randomly_add_unmatched_students((feasible_projects, unmatched_students), verbose = True):
+def randomly_add_unmatched_students((feasible_projects, unmatched_students), verbose = False):
 	'''
 		To be used after initial_solution. Initial_solution leaves some students unmatched
 		because all of their top choices were either non-feasible or were full by the time
