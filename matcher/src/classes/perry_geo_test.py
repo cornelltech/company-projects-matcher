@@ -5,11 +5,6 @@ import ConfigParser
 import random_teams
 
 from anneal import Annealer
-import random
-import classes
-from classes import CompError
-import perry_geo_main
-import math
 import distance
 import numpy as np
 #input_file = "tests.csv"
@@ -55,57 +50,7 @@ if (__name__ == "__main__"):
 
 	# Creating the annealer with our energy and move functions.
 	annealer = Annealer(pg.energy, pg.move)
-
-	# Format for describing the state of the system.
-	#print "All students:"
-	#print [s.ID for s in students]
 	all_projects = util.generate_all_projects()
-	#print "All projects:"
-	#print [p.ID for p in all_projects]
-	#feasible_projects = util.create_feasible_projects(students, all_projects)
-	
-	
-	def make_data_for_80_students(students):
-		sorted_projects = util.sort_projects_by_demand(students, all_projects, tup=True)
-		print "Sorted projects is " + str(sorted_projects)
-
-		# This is the number of total votes cast.
-		print "There were " + str(sum([tup[0]*tup[1] for tup in sorted_projects])) + " total votes cast"
-		print "There are " + str(sum([tup[1] for tup in sorted_projects])) + " total orig projects"
-
-		#print "For project 1235: " + str(util.get_num_ranked(proj_three, students))
-
-		# Input x is the number of students out of 13 who voted each project.
-		# Comes from sorted_projects
-		# This is number of students who would vote on the project but there are not the same 
-		# # of projects
-
-		def scale(tup):
-			num_votes = tup[0]
-			num_projects = tup[1]
-			#scaled_votes = round ((num_votes * (72.0 / 13.0) / 75 * 55) + 1)
-			scaled_votes = round ((num_votes * (72.0 / 13.0)) / 1.31)
-			scaled_projects = round ((num_projects) * (75.0 / 55.0))
-			#scaled_projects = num_projects
-			return (scaled_votes, scaled_projects)
-		scaled_tups = map(scale, sorted_projects)
-
-		for tup in scaled_tups:
-			print "There were " + str(tup[1]) + " projects with " + str(tup[0]) + " votes"
-
-		num_projects = sum([tup[1] for tup in scaled_tups])
-		tup_to_change = scaled_tups[8]
-		fst = tup_to_change[0]
-		snd = tup_to_change[1]
-		scaled_tups[8] = (fst - 1, snd)
-
-		print "Scaled tups is " + str(scaled_tups)
-		print "There are " + str(num_projects) + " final projects"
-
-		print "There were " + str(sum([tup[0]*tup[1] for tup in scaled_tups])) + " total votes cast"
-
-		return scaled_tups
-
 
 	def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100):
 		'''
@@ -154,8 +99,6 @@ if (__name__ == "__main__"):
 			avg_project_rank = np.mean(ranks)
 			print "Average project rank: " + str(avg_project_rank)
 
- 	#scaled_projects = make_data_for_80_students()
- 	#make_students_to_fit_data(scaled_projects)
  	def manual_schedule(use_file, students, sol):
  		#def create_inv_cov_mat_from_data(use_file, students, file = default_file):
 
@@ -184,7 +127,6 @@ if (__name__ == "__main__"):
 
 	def do_greedy_initial_solution(students, verbose = True):
 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
-		#def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose = True):
 		sol = greedy_attempt_two.greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose)
 		print "About to do manual schedule"
 	 	manual_schedule(False, students, sol)
@@ -195,7 +137,6 @@ if (__name__ == "__main__"):
 		for i in range(5):
 			project.students.append(students[i])
 			print (students[i].get_student_properties())
-			#do_preprocessing[2]
 		print project.calculate_diversity()
 
 		project_two = util.random_project(all_projects, [project], reuse = False)
@@ -205,37 +146,8 @@ if (__name__ == "__main__"):
 			print (students[i].get_student_properties())
 		print project_two.calculate_diversity()	
 
-	#scaled_tups = [(0.0, 10.0), (4.0, 18.0), (8.0, 18.0), (13.0, 15.0), (17.0, 8.0), (21.0, 1.0), (25.0, 1.0), (30.0, 3.0), (37.0, 1.0)]
-	#make_students_to_fit_data(scaled_tups)
-
-
-	# def create_inv_cov_mat_from_data(use_file, students, file = default_file):
-	# quadruple = create_covariance_matrix(use_file, file)
-	# #def create_covariance_matrix(use_file, students, file = default_file, verbose = False):
-
-	# cov_mat = quadruple[2]
-	# dict_key_vals = quadruple[3]
-	# inv_cov_mat = inverse_matrix(cov_mat)
-	# return (inv_cov_mat, dict_key_vals)
-
-	# Just create the inverse cov mat from data once. 
-	
-	#inv_cov_mat = distance.create_inv_cov_mat_from_data(use_file, students)
-	#print inv_cov_mat
-	# Pass this into energy every time.
-
-	# This could be the second part of the tuple
-	# Unmatched students is just always an empty list now anyways
-
-	#do_random()
 	students = util.create_students_from_input("eighty_students.csv")
-	#do_random(students)
-#	feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
-	#(feasible_projects, unmatched_students) = greedy_attempt_two.greedy_initial_solution(students, feasible_projects)
-	#def randomly_add_unmatched_students((feasible_projects, unmatched_students), verbose = True):
-	#greedy_attempt_two.randomly_add_unmatched_students((feasible_projects, unmatched_students))
 	#make_data_for_80_students(students)
-
 	do_greedy_initial_solution(students)
 
 
