@@ -345,7 +345,7 @@ def create_students_from_input(file):
 		if (ID in student_ids):
 			raise CompError("Student IDs must be unique.")
 		student_ids.append(ID)
-		
+		 
 		degree_pursuing = student[1]
 		cs_ug = student[2]
 		coding_ability = student[3]
