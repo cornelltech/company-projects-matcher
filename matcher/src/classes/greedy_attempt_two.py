@@ -18,7 +18,7 @@ def print_students_and_waiting(projects):
 	#	if (len(project.students) >= allowable_team_size):
 		print "For project " + str(project.ID) + ":"
 		print "     Students: " + str([(s.ID, s.degree_pursuing) for s in project.students])
-		print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
+		#print "     Waiting: " + str([(rank, s.ID) for (rank, s) in project.waiting_students])
 
 def match_with_first_choice(students, projects):
 	return greedy_student_and_fix.match_with_first_choice(students, projects)
@@ -176,8 +176,8 @@ def greedy_initial_solution(students, feasible_projects, verbose = True):
 					# If there were no spots available, add this student to the waiting list.
 					else:
 						if (verbose):
-							print "     Not successful. Adding to waiting list"
-						cur_project.add_waiting_student(cur_student)
+							print "     Not successful. "
+						#cur_project.add_waiting_student(cur_student)
 
 					# If the project is full and its students havent been 
 					# removed yet, then remove it and its students.
@@ -306,7 +306,7 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose = True):
 	initial_res = greedy_initial_solution(students, feasible_projects, verbose)
 	feasible_projects = randomly_add_unmatched_students(initial_res, verbose)
-	return feasible_projects	
+	return [p for p in feasible_projects if len(p.students) > 0]
 
 def post_processing(feasible_projects, students, verbose = True):
 
