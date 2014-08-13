@@ -11,6 +11,7 @@ from classes import CompError
 import perry_geo_main
 import math
 import distance
+import numpy as np
 #input_file = "tests.csv"
 
 # Framework to use perrygeo's python-simulated-annealing library.
@@ -212,7 +213,17 @@ if (__name__ == "__main__"):
  		(projects, inv_cov_mat_tup) = state
 		for p in projects:
 		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
+		 	print "Student attributes: " + str([s.get_numerical_student_properties()])
 		 	print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
+			ranks = []
+			# NOTE: get ranking returns 100 if the student did not rank the project.
+		 	for student in p.students:
+				rank = student.get_ranking(p.ID)
+				print "rank"
+				#cost = student.get_cost_from_ranking(rank)
+				ranks.append(rank)
+			avg_project_rank = np.mean(ranks)
+			print "Average project rank: " + str(avg_project_rank)
 
  	#scaled_projects = make_data_for_80_students()
  	#make_students_to_fit_data(scaled_projects)
