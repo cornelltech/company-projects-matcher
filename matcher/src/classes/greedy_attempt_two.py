@@ -12,36 +12,6 @@ from classes import FieldError
 
 student_ids = []
 
-names_projects = {3705: 'Goldman Sachs',
-				2990: 'American Express',
-				4225: 'Google',
-				2860: 'Facebook',
-				2145: '500px',
-				1820: 'FlightCar',
-				3055: 'Flatiron',
-				1040: 'Realize',
-				1950: 'Shapeways',
-				1625: 'charity:water',
-				3445: 'Bonobos',
-				3900: 'Bloomberg'}
-
-names_students = {2886650: 'Anaita',
-				4990324: 'Evie',
-				6249314: 'Shane',
-				5092102: 'Tsvi',
-				5467123: 'Pei',
-				9191919: 'Shri',
-				3333333: 'Jisha',
-				7894231: 'Andrea',
-				1678231: 'Nina',
-				8291021: 'Joseph',
-				4102938: 'Gabe',
-				3922650: 'Ryder',
-				8888888: 'Dan',
-				6666666: 'Ariana'
-	
-}
-
 def print_students_and_waiting(projects):
 	for project in projects:
 		#pass
@@ -164,7 +134,7 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 	return [p for p in sorted_projects if len(p.students) > 0]
 
 # Note: these projects are the feasible ones.
-def initial_solution(students, feasible_projects, verbose = True):
+def greedy_initial_solution(students, feasible_projects, verbose = True):
 	if (verbose):
 		print "Feasible projects are:"
 		print [f.ID for f in feasible_projects]
@@ -272,7 +242,6 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 		if (not(len(project.students) == team_size)):
 			project.students = []
 
-
 	matched_projects = [project for project in feasible_projects if len(project.students) >= 4]
 	
 	def can_make_team_with_waiting(u_students):
@@ -292,19 +261,19 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 			# Pick a random project that does not have any students on it. 
 			project = util.random_project(feasible_projects, matched_projects, False)
 
-			MBA_one = util.random_student_lst(unmatched_MBAs)
+			MBA_one = util.random_student_lst(unmatched_MBAs, [], False)
 			unmatched_students.remove(MBA_one)
 			unmatched_MBAs.remove(MBA_one)
 			
-			MBA_two = util.random_student_lst(unmatched_MBAs)
+			MBA_two = util.random_student_lst(unmatched_MBAs, [], False)
 			unmatched_students.remove(MBA_two)
 			unmatched_MBAs.remove(MBA_two)
 
-			MEng_one = util.random_student_lst(unmatched_MEngs)
+			MEng_one = util.random_student_lst(unmatched_MEngs, [], False)
 			unmatched_students.remove(MEng_one)
 			unmatched_MEngs.remove(MEng_one)
 			
-			MEng_two = util.random_student_lst(unmatched_MEngs)
+			MEng_two = util.random_student_lst(unmatched_MEngs, [], False)
 			unmatched_students.remove(MEng_two)
 			unmatched_MEngs.remove(MEng_two)
 
@@ -314,17 +283,15 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 			project.students.append(MEng_two)
 
 			matched_projects.append(project)
-
-			#unmatched_MBAs = [s for s in unmatched_students if s.degree_pursuing == 0 or s.degree_pursuing == "MBA"]
-			#unmatched_MEngs = [s for s in unmatched_students if s.degree_pursuing == 1 or s.degree_pursuing == "MEng"]
 		else:
-			pass
-			#feasible_projects = filter(lambda project: len(project.students) >= team_size, feasible_projects)
-			#available_projects = feasible_projects[:]
-			#for student in unmatched_students:
-				#project = util.random_project(feasible_projects, [], True)
-				#project.add_student(student, True)
-				#available_projects.remove(project)
+			#pass
+			feasible_projects = filter(lambda project: len(project.students) == team_size, feasible_projects)
+			available_projects = feasible_projects[:]
+			for student in unmatched_students:
+				project = util.random_project(available_projects, [], True)
+				project.add_student(student, True)
+				available_projects.remove(project)
+			unmatched_students = []
 	
 	if (verbose):
 		print "AFTER SECONDARY MATCHING PROCESS:"
@@ -334,8 +301,11 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 		print "Unmatched students:"
 		print [s.ID for s in unmatched_students]
 
-	# Infinite loop
+	return feasible_projects
 
+def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose = True):
+	initial_res = greedy_initial_solution(students, feasible_projects, verbose)
+	feasible_projects = randomly_add_unmatched_students(initial_res, verbose)
 	return feasible_projects
 			
 
