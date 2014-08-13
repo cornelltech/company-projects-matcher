@@ -340,6 +340,7 @@ def create_students_from_input(file):
 	# Extract rows and create students
 	for i in range(0, num_rows):
 		student = data_array[i,:]
+
 		ID 	= student[0]
 		if (ID in student_ids):
 			raise CompError("Student IDs must be unique.")
@@ -352,7 +353,9 @@ def create_students_from_input(file):
 
 		# Only take the desired number of project rankings that we want.
 		rankings = student[5:(5 + classes.number_project_rankings)]
-		name = student[10]
+		first_name = student[5 + classes.number_project_rankings]
+		last_name = student[5 + classes.number_project_rankings + 1]
+		name = first_name + " " + last_name
 
 		a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
 		students_lst.append(a)
