@@ -885,8 +885,11 @@ class Project(object):
 	 		print str(sum(lst) / len(lst)) + " pick."
 	 		print ""
 
-	def calculate_diversity(self):
-		tup = distance.create_inv_cov_mat_from_data()
+	def calculate_diversity(self, use_file, students):
+		if (use_file):
+			tup = distance.create_inv_cov_mat_from_data()
+		else:
+			
 		inv_cov_mat = tup[0]
 		dict_key_vals = tup[1]
 		diversity = 0
@@ -918,5 +921,6 @@ class Project(object):
 			# Add it to the diversity variable
 
 	 	return diversity
+
 
 
