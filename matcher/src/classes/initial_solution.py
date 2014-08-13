@@ -349,7 +349,7 @@ if __name__ == "__main__":
 	configFilePath = r'config.txt'
 	configParser.read(configFilePath)
 
-	input_file = configParser.get('files', 'greedy_attempt_two_file')
+	input_file = configParser.get('files', 'initial_solution_file')
 
 	students = util.create_students_from_input("tests.csv")
 	all_projects = util.generate_all_projects()
