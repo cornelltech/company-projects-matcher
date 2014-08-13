@@ -10,7 +10,7 @@ import classes
 from classes import CompError
 import perry_geo_main
 import math
-
+import distance
 #input_file = "tests.csv"
 
 # Framework to use perrygeo's python-simulated-annealing library.
@@ -56,7 +56,6 @@ if (__name__ == "__main__"):
 	annealer = Annealer(pg.energy, pg.move)
 
 	# Format for describing the state of the system.
-	students = util.create_students_from_input(input_file)
 	#print "All students:"
 	#print [s.ID for s in students]
 	all_projects = util.generate_all_projects()
@@ -65,7 +64,7 @@ if (__name__ == "__main__"):
 	#feasible_projects = util.create_feasible_projects(students, all_projects)
 	
 	
-	def make_data_for_80_students():
+	def make_data_for_80_students(students):
 		sorted_projects = util.sort_projects_by_demand(students, all_projects, tup=True)
 		print "Sorted projects is " + str(sorted_projects)
 
@@ -107,7 +106,7 @@ if (__name__ == "__main__"):
 		return scaled_tups
 
 
-	def random_solutions_and_goodness(students, feasible_projects, num_MBAs, num_MEngs, num_times = 100000):
+	def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100000):
 		min_energy = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
@@ -116,7 +115,9 @@ if (__name__ == "__main__"):
 			print "Random solution " + str(i) + ":"
 			for p in init:
 				print str(p.ID) + ":" + str([s.ID for s in p.students])
-			cur_energy = pg.energy((init, []))
+			inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
+			#inv_cov_mat = inv_cov_mat_tup[0]
+			cur_energy = pg.energy((init, inv_cov_mat_tup))
 			if (cur_energy < min_energy):
 				min_sol = init
 				min_energy = cur_energy
@@ -125,7 +126,7 @@ if (__name__ == "__main__"):
 		print "The minimum energy is " + str(min_energy)
 		return [p for p in min_sol if len(p.students) > 0]
 
-	def test_random_solutions_and_goodness(feasible_projects):
+	def test_random_solutions_and_goodness(students, feasible_projects):
 		#random_solutions_and_goodness
  		res = greedy_attempt_two.initial_solution(students, feasible_projects)
  		res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
@@ -208,17 +209,22 @@ if (__name__ == "__main__"):
 
  	def print_final_solution(state):
 		print "Final Solution:"
- 		(projects, unmatched) = state
+ 		(projects, inv_cov_mat_tup) = state
 		for p in projects:
 		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
+		 	print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
 
  	#scaled_projects = make_data_for_80_students()
  	#make_students_to_fit_data(scaled_projects)
- 	def manual_schedule(sol):
-		state = (sol, [])
+ 	def manual_schedule(use_file, students, sol):
+ 		#def create_inv_cov_mat_from_data(use_file, students, file = default_file):
+
+		inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
+		state = (sol, inv_cov_mat_tup)
 		# Manually set the annealing schedule.
 		state, e = annealer.anneal(state, 1000000, 0.01, 54000, updates=0)
 		print_final_solution(state)
+
 		print "Final energy is " + str(e)
 		print "Calculated final energy is " + str(pg.energy(state))
 
@@ -230,11 +236,12 @@ if (__name__ == "__main__"):
  		students = MBAs + MEngs
 
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
-	 	sol = random_solutions_and_goodness(students, feasible_projects, 37, 35, num_times = 1)
+	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 1)
 	 	
-	 	manual_schedule(sol)
+	 	print "about to do manual schedule"
+	 	manual_schedule(False, students, sol)
 
-	def test_project_diversities():
+	def test_project_diversities(students):
 		project = util.random_project(all_projects, [], reuse = False)
 		print "For project " + str(project.ID)
 		for i in range(5):
@@ -252,6 +259,26 @@ if (__name__ == "__main__"):
 
 	#scaled_tups = [(0.0, 10.0), (4.0, 18.0), (8.0, 18.0), (13.0, 15.0), (17.0, 8.0), (21.0, 1.0), (25.0, 1.0), (30.0, 3.0), (37.0, 1.0)]
 	#make_students_to_fit_data(scaled_tups)
+
+
+	# def create_inv_cov_mat_from_data(use_file, students, file = default_file):
+	# quadruple = create_covariance_matrix(use_file, file)
+	# #def create_covariance_matrix(use_file, students, file = default_file, verbose = False):
+
+	# cov_mat = quadruple[2]
+	# dict_key_vals = quadruple[3]
+	# inv_cov_mat = inverse_matrix(cov_mat)
+	# return (inv_cov_mat, dict_key_vals)
+
+	# Just create the inverse cov mat from data once. 
+	
+	#inv_cov_mat = distance.create_inv_cov_mat_from_data(use_file, students)
+	#print inv_cov_mat
+	# Pass this into energy every time.
+
+	# This could be the second part of the tuple
+	# Unmatched students is just always an empty list now anyways
+
 	do_random()
 
 
