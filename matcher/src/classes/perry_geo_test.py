@@ -108,6 +108,9 @@ if (__name__ == "__main__"):
 
 
 	def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100):
+		'''
+			Returns a list of projects.
+		'''
 		min_energy = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
@@ -133,12 +136,6 @@ if (__name__ == "__main__"):
 		# Make another random solution without any of those projects.
 		# Pick "best and different."
 		pass
-
-	def test_random_solutions_and_goodness(students, feasible_projects):
-		#random_solutions_and_goodness
- 		res = greedy_attempt_two.initial_solution(students, feasible_projects)
- 		res_two = greedy_attempt_two.randomly_add_unmatched_students(res)
- 		print res_two
 
  	def print_final_solution(state):
 		print "Final Solution:"
@@ -179,12 +176,17 @@ if (__name__ == "__main__"):
  		students = MBAs + MEngs
 		return students
 
-	def do_random(students):
- 		
+	def do_random_initial_solutions(students):
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
-	 	
-	 	print "about to do manual schedule"
+	 	print "About to do manual schedule"
+	 	manual_schedule(False, students, sol)
+
+	def do_greedy_initial_solution(students, verbose = True):
+		feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
+		#def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose = True):
+		sol = greedy_attempt_two.greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose)
+		print "About to do manual schedule"
 	 	manual_schedule(False, students, sol)
 
 	def test_project_diversities(students):
@@ -227,7 +229,13 @@ if (__name__ == "__main__"):
 
 	#do_random()
 	students = util.create_students_from_input("eighty_students.csv")
-	do_random(students)
+	#do_random(students)
+#	feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
+	#(feasible_projects, unmatched_students) = greedy_attempt_two.greedy_initial_solution(students, feasible_projects)
+	#def randomly_add_unmatched_students((feasible_projects, unmatched_students), verbose = True):
+	#greedy_attempt_two.randomly_add_unmatched_students((feasible_projects, unmatched_students))
 	#make_data_for_80_students(students)
+
+	do_greedy_initial_solution(students)
 
 
