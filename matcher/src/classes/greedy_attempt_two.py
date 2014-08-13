@@ -306,8 +306,7 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose = True):
 	initial_res = greedy_initial_solution(students, feasible_projects, verbose)
 	feasible_projects = randomly_add_unmatched_students(initial_res, verbose)
-	return feasible_projects
-			
+	return feasible_projects	
 
 def post_processing(feasible_projects, students, verbose = True):
 
