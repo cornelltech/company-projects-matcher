@@ -27,7 +27,7 @@ vals_degree_pursuing = { 0 : "MBA", 1 : "MEng"}
 
 # Valid IDs for our projects.
 num_valid_projects = configParser.getint('valid_values', 'num_valid_projects')
-vals_valid_projects = map(lambda x: x * 65, range(16, 16 + num_valid_projects))
+#vals_valid_projects = map(lambda x: x * 65, range(16, 16 + num_valid_projects))
 
 # TODO: remove these.
 degree_weight = 0.25
@@ -59,7 +59,7 @@ class Student(object):
 	global vals_cs_ug
 	global vals_yrs_work_experience
 	global vals_coding_ability
-	global vals_valid_projects
+	#global vals_valid_projects
 	global number_project_rankings
 
 	# Defining checks for setting properties.
@@ -161,7 +161,7 @@ class Student(object):
 
 		past = []
 		for elm in val:
-			self.check_valid(elm, vals_valid_projects, s = " project ID")
+		#	self.check_valid(elm, vals_valid_projects, s = " project ID")
 			if (elm in past):
 				raise FieldError("Current student ID is " + str(self._ID) + ". Each project can only be entered once.")
 			past.append(elm)
@@ -328,11 +328,11 @@ class Team(object):
 		return self._project_ID
 
 	def set_project_ID(self, val):
-		if (not(val in vals_valid_projects)):
-			error = str(val) + " is not a valid project ID for team " + str(self._ID)
-			raise FieldError(error)
-		else:
-			self._project_ID
+		#if (not(val in vals_valid_projects)):
+		#	error = str(val) + " is not a valid project ID for team " + str(self._ID)
+		#	raise FieldError(error)
+		#else:
+		self._project_ID
 
 	project_ID = property(get_project_ID, set_project_ID,
 					  doc = "Get and set the team's project ID.")
@@ -575,9 +575,9 @@ class Project(object):
 		if (val in existing_project_IDs):
 			error = "ID " + str(val) + " is already taken."
 			raise FieldError(error)
-		elif(not(val in vals_valid_projects)):
-			error = "ID " + str(val) + " is not valid."
-			raise FieldError(error)
+	#	elif(not(val in vals_valid_projects)):
+	#		error = "ID " + str(val) + " is not valid."
+	#		raise FieldError(error)
 		else:
 			self._ID = val
 			existing_project_IDs.append(val)
