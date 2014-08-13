@@ -230,7 +230,7 @@ if (__name__ == "__main__"):
  		students = MBAs + MEngs
 
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
-	 	sol = random_solutions_and_goodness(students, feasible_projects, 37, 35, num_times = 100000)
+	 	sol = random_solutions_and_goodness(students, feasible_projects, 37, 35, num_times = 1)
 	 	
 	 	manual_schedule(sol)
 
@@ -250,8 +250,9 @@ if (__name__ == "__main__"):
 			print (students[i].get_student_properties())
 		print project_two.calculate_diversity()	
 
-	scaled_tups = [(0.0, 10.0), (4.0, 18.0), (8.0, 18.0), (13.0, 15.0), (17.0, 8.0), (21.0, 1.0), (25.0, 1.0), (30.0, 3.0), (37.0, 1.0)]
-	make_students_to_fit_data(scaled_tups)
+	#scaled_tups = [(0.0, 10.0), (4.0, 18.0), (8.0, 18.0), (13.0, 15.0), (17.0, 8.0), (21.0, 1.0), (25.0, 1.0), (30.0, 3.0), (37.0, 1.0)]
+	#make_students_to_fit_data(scaled_tups)
+	do_random()
 
 
 
