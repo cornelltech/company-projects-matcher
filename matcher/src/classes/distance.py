@@ -35,8 +35,21 @@ def is_positive_semidefinite(cov_matrix, verbose = False):
 def create_covariance_matrix(use_file, students, file = default_file, verbose = False):
 	if (use_file):
 		data_array_tup = clustering.__init__(file)
+	# Create covariance matrix from students themselves.
 	else:
-		
+		multi_array = []
+		for student in students:
+ 			# add their attributes to multi array
+ 			attributes = student.get_numerical_student_properties()
+ 			multi_array.append(attributes)
+ 		IDs = [s.ID for s in students]
+ 		data_array = np.array(multi_array)
+ 		if (verbose):
+	 		print "Multi array is " + str(data_array)
+ 		data_array_tup = (data_array, IDs)
+
+	data_array = data_array_tup[0]
+
 	data_array = data_array_tup[0]
 	one_hot_data_preprocessed_tup = clustering.do_preprocessing(data_array_tup)
 
@@ -203,11 +216,14 @@ def do_and_sort_all_mahal_dists(set_of_teams):
 def do_python_distance_data(student_one, student_two, inv_cov_mat):
 	return spatial.distance.mahalanobis(student_one, student_two, inv_cov_mat)
 
-def create_inv_cov_mat_from_data(file = default_file):
-	quadruple = create_covariance_matrix(file)
+def create_inv_cov_mat_from_data(use_file, students, file = default_file):
+	quadruple = create_covariance_matrix(use_file, students, file)
+	#def create_covariance_matrix(use_file, students, file = default_file, verbose = False):
+
 	cov_mat = quadruple[2]
 	dict_key_vals = quadruple[3]
 	inv_cov_mat = inverse_matrix(cov_mat)
+	print "in creating inv cov mat from data, here is the result:"
 	return (inv_cov_mat, dict_key_vals)
 
 # This takes in the inverse of the cov mat, not the inverse sq cov mat.
