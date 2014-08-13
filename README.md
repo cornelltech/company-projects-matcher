@@ -13,6 +13,8 @@ After installing Python itself, we must look to Python packages, or code extensi
 So, the first step is to install Anaconda for your appropriate platform. Information and instructions are [here](http://continuum.io/downloads).
 Note: If you are having any issues, check out the [Anaconda FAQ] (http://docs.continuum.io/anaconda/faq.html#install-maclinux).
 
+Folders
+--------
 [data analysis:] (https://github.com/cornelltech/company-projects-matcher/tree/master/data_analysis) Contains the initial survey sent out to faculty and friends, and contains code and results of data analysis on the survey responses. 
 
 [matcher] (https://github.com/cornelltech/company-projects-matcher/tree/master/matcher): Contains test data, classes, and code for performing the match. The matcher performs [simulated annealing] (http://en.wikipedia.org/wiki/Simulated_annealing), and uses [perrygeo](https://github.com/perrygeo)'s [implementation](https://github.com/perrygeo/python-simulated-annealing).
