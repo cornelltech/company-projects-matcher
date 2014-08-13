@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.cluster import k_means_
 
-default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/data/survey_responses_altered.csv"
+default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/matcher/src/classes/eighty_students.csv"
 
 class ClusteringError(Exception):
 	def __init__(self, value):
