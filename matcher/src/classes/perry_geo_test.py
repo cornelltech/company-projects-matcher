@@ -107,7 +107,7 @@ if (__name__ == "__main__"):
 		return scaled_tups
 
 
-	def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100000):
+	def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 1000):
 		min_energy = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
@@ -126,6 +126,13 @@ if (__name__ == "__main__"):
 			print str(p.ID) + ":" + str([s.ID for s in p.students])
 		print "The minimum energy is " + str(min_energy)
 		return [p for p in min_sol if len(p.students) > 0]
+
+	def pick_disjoint_seeds(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 10):
+		# Make an initial random solution.
+		# Record the projects that are on that solution.
+		# Make another random solution without any of those projects.
+		# Pick "best and different."
+		pass
 
 	def test_random_solutions_and_goodness(students, feasible_projects):
 		#random_solutions_and_goodness
@@ -247,7 +254,7 @@ if (__name__ == "__main__"):
  		students = MBAs + MEngs
 
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
-	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 1)
+	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
 	 	
 	 	print "about to do manual schedule"
 	 	manual_schedule(False, students, sol)
