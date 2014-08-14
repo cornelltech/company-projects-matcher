@@ -161,7 +161,7 @@ class Student(object):
 		for elm in val:
 			self.check_valid(elm, vals_valid_projects, s = " project ID")
 			if (elm in past):
-				raise FieldError("Current student ID is " + str(self._ID) + ". Each project can only be entered once.")
+				raise FieldError("Student " + str(self._ID) + " entered project " + str(elm) + " twice.")
 			past.append(elm)
 
 	def set_project_rankings(self, val, rankings_can_be_empty = False):
