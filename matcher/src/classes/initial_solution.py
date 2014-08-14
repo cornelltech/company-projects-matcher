@@ -123,7 +123,10 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 	return [p for p in sorted_projects if len(p.students) > 0]
 
 # Note: these projects are the feasible ones.
-def greedy_initial_solution(students, feasible_projects, verbose = False):
+def greedy_initial_solution(original_students, original_feasible_projects, verbose = False):
+	students = original_students[:]
+	feasible_projects = original_feasible_projects[:]
+
 	if (verbose):
 		print "Feasible projects are:"
 		print [f.ID for f in feasible_projects]
@@ -212,7 +215,7 @@ def greedy_initial_solution(students, feasible_projects, verbose = False):
 
 	return (feasible_projects, unmatched_students)
 
-def randomly_add_unmatched_students((feasible_projects, unmatched_students), verbose = False):
+def randomly_add_unmatched_students((original_feasible_projects, original_unmatched_students), verbose = False):
 	'''
 		To be used after initial_solution. Initial_solution leaves some students unmatched
 		because all of their top choices were either non-feasible or were full by the time
@@ -224,6 +227,9 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 		With the leftover students, the function will add them randomly to existing teams.
 
 	'''
+	feasible_projects = original_feasible_projects[:]
+	unmatched_students = original_unmatched_students[:]
+
 	team_size = 4 
 
 	# If there are any teams that are not full, remove all students from them.
@@ -293,6 +299,7 @@ def randomly_add_unmatched_students((feasible_projects, unmatched_students), ver
 	return feasible_projects
 
 def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose = False):
+	print "There are " + str(len(students)) + " students"
 	initial_res = greedy_initial_solution(students, feasible_projects, verbose)
 	feasible_projects = randomly_add_unmatched_students(initial_res, verbose)
 	return [p for p in feasible_projects if len(p.students) > 0]

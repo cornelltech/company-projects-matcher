@@ -7,6 +7,12 @@ import distance
 import numpy as np
 #input_file = "tests.csv"
 
+class CompError(Exception):
+	def __init__(self, value):
+		self.val = value
+	def __str__(self):
+		return repr(self.val)
+
 # Framework to use perrygeo's python-simulated-annealing library.
 
 def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100):
@@ -89,18 +95,27 @@ def make_random_students():
  		students = MBAs + MEngs
 		return students
 
-def greedy_solutions_and_goodness(students, feasible_projects, num_times = 100):
+def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000):
 		'''
 			Returns a list of projects.
 		'''
 		min_energy = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
+			#Reset the feasible projects.
+			for project in feasible_projects:
+				project.students = []
+			
+			#print "Feasible projects is: "
+			#for proj in feasible_projects:
+			#	print "Project " + str(proj.ID) + ": " + str([s.ID for s in proj.students])
+
 			init = initial_solution.greedy_initial_solution_and_fill_unmatched(students, feasible_projects)
-		#	print "There are  " + str(len(feasible_projects)) + " feasible projects"
 			print "Greedy solution " + str(i) + ":"
 			for p in init:
 				print str(p.ID) + ":" + str([s.ID for s in p.students])
+			if (len(init) < 17):
+				raise CompError("Not 17 projects.")
 			inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
 			cur_energy = pg.energy((init, inv_cov_mat_tup))
 			if (cur_energy < min_energy):
@@ -120,8 +135,10 @@ def do_random_initial_solutions(students, all_projects, annealer):
 def do_greedy_initial_solutions(students, all_projects, annealer, verbose = False):
 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
 		sol = greedy_solutions_and_goodness(students, feasible_projects)
+		print "finished greedy solutions and goodness. The solution we got is:"
+		print [p.ID for p in sol]
 		print "About to do manual schedule"
-	 	manual_schedule(False, students, sol, annealer)
+	# 	manual_schedule(False, students, sol, annealer)
 
 def test_project_diversities(students, all_projects):
 		project = util.random_project(all_projects, [], reuse = False)
