@@ -68,17 +68,21 @@ def random_project(projects, already_picked, reuse, verbose = False):
 		project: a project.
 
 	'''
+	#print "in random_project"
+	#print "reuse is " + str(reuse)
 	if (verbose):
 		print "Length of projects is " + str(len(projects))
 	rand_index = random_index(len(projects))
 	if (verbose):
 		print "Length of project " + str(projects[rand_index].ID) + " is " + str(len(projects[rand_index].students))
 	if (not (reuse)):
+	#	print "in if statement"
 		project_to_return = projects[rand_index]
 		while (project_to_return in already_picked):
+	#		print "in while"
 			rand_index = random_index(len(projects))
 			project_to_return = projects[rand_index]
-	
+#	print "about to return in random_project"
 	return projects[rand_index]
 
 def random_student(project):
