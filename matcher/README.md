@@ -45,6 +45,6 @@ We also must input the project name that corresponds with each ID, so that when 
 
 	* Note: when number of project rankings changes, so will the exact configuration of the input test file that you will have to input. eighty_students.csv is just a rough model of what the data should look like (with 10 examples, currently).
 
-5.. Run the main files -- for creating teams with the project rankings, run ranked_teams_main.py; for creating diverse teams, run diversity_main.py.  
+5. Run the main files -- for creating teams with the project rankings, run ranked_teams_main.py; for creating diverse teams, run diversity_main.py.  
 
 
