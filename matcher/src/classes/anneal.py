@@ -134,13 +134,13 @@ class Annealer:
 
         # Keeps track of the current energy. 
         E = self.energy(state)
-        #prevState = copy.deepcopy(state)
-        prevState = state[:]
+        prevState = copy.deepcopy(state)
+        #prevState = state[:]
         prevEnergy = E
-        #bestState = copy.deepcopy(state)
 
         # Best state and energy are the initial.
-        bestState = state[:]
+        bestState = copy.deepcopy(state)
+        #bestState = state[:]
         bestEnergy = E
         trials, accepts, improves = 0, 0, 0
         if updates > 0:
@@ -166,8 +166,8 @@ class Annealer:
             # If it increases energy and we decide to accept it:
             if dE > 0.0 and math.exp(-dE/T) < random.random():
                 # Restore previous state
-                #state = copy.deepcopy(prevState)
-                state = prevState[:]
+                state = copy.deepcopy(prevState)
+                #state = prevState[:]
                 E = prevEnergy
 
             # If it decreases energy (we always accept it):
@@ -176,12 +176,12 @@ class Annealer:
                 accepts += 1
                 if dE < 0.0:
                     improves += 1
-                #prevState = copy.deepcopy(state)
-                prevState = state[:]
+                prevState = copy.deepcopy(state)
+                #prevState = state[:]
                 prevEnergy = E
                 if E < bestEnergy:
-                    #bestState = copy.deepcopy(state)
-                    bestState = state[:]
+                    bestState = copy.deepcopy(state)
+                    #bestState = state[:]
                     bestEnergy = E
             if updates > 1:
                 if step // updateWavelength > (step-1) // updateWavelength:
@@ -211,8 +211,8 @@ class Annealer:
             """Anneals a system at constant temperature and returns the state,
             energy, rate of acceptance, and rate of improvement."""
             E = self.energy(state)
-            #prevState = copy.deepcopy(state)
-            prevState = state[:]
+            prevState = copy.deepcopy(state)
+            #prevState = state[:]
             prevEnergy = E
             accepts, improves = 0, 0
             for step in range(steps):
@@ -220,15 +220,15 @@ class Annealer:
                 E = self.energy(state)
                 dE = E - prevEnergy
                 if dE > 0.0 and math.exp(-dE/T) < random.random():
-                    #state = copy.deepcopy(prevState)
-                    state = prevState[:]
+                    state = copy.deepcopy(prevState)
+                    #state = prevState[:]
                     E = prevEnergy
                 else:
                     accepts += 1
                     if dE < 0.0:
                         improves += 1
-                    #prevState = copy.deepcopy(state)
-                    prevState = state[:]
+                    prevState = copy.deepcopy(state)
+                    #prevState = state[:]
                     prevEnergy = E
             return state, E, float(accepts)/steps, float(improves)/steps
         
