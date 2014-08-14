@@ -41,9 +41,9 @@ We also must input the project name that corresponds with each ID, so that when 
 
 4. Create or obtain data with information on students, their backgrounds, and their project rankings. Project rankings are entered in the form of Project ID. Make sure that this data follows the format of the example data in eighty_students.csv. All project rankings must be valid (described in #3) and students must select num_project_rankings *distinct* project IDs to include in his/her rankings.
 
-If you are trying to create diverse teams, you can use the exact same file that you would use to match students to projects. The diversity algorithm also relies on Project and Student objects, but ignores the student rankings as part of the energy function. Each team is assigned to a "project" -- this name is purely for organizational purposes, so that we can group the students easily.
+* If you are trying to create diverse teams, you can use the exact same file that you would use to match students to projects. The diversity algorithm also relies on Project and Student objects, but ignores the student rankings as part of the energy function. Each team is assigned to a "project" -- this name is purely for organizational purposes, so that we can group the students easily.
 
-Note: when number of project rankings changes, so will the exact configuration of the input test file that you will have to input. eighty_students.csv is just a rough model of what the data should look like (with 10 examples, currently).
+* Note: when number of project rankings changes, so will the exact configuration of the input test file that you will have to input. eighty_students.csv is just a rough model of what the data should look like (with 10 examples, currently).
 
 5. Run the main files -- for creating teams with the project rankings, run ranked_teams_main.py; for creating diverse teams, run diversity_main.py.  
 
