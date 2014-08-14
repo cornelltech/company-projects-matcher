@@ -46,23 +46,6 @@ def pick_disjoint_seeds(use_file, students, feasible_projects, num_MBAs, num_MEn
 		# Pick "best and different."
 		pass
 
-def print_final_solution(state):
-		print "Final Solution:"
- 		(projects, inv_cov_mat_tup) = state
-		for p in projects:
-		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
-		 	print "Student attributes: " + str([s.get_numerical_student_properties()])
-		 	print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
-			ranks = []
-			# NOTE: get ranking returns 100 if the student did not rank the project.
-		 	for student in p.students:
-				rank = student.get_ranking(p.ID)
-				print "rank"
-				#cost = student.get_cost_from_ranking(rank)
-				ranks.append(rank)
-			avg_project_rank = np.mean(ranks)
-			print "Average project rank: " + str(avg_project_rank)
-
 def manual_schedule(use_file, students, sol, annealer):
  		#def create_inv_cov_mat_from_data(use_file, students, file = default_file):
 
@@ -70,8 +53,8 @@ def manual_schedule(use_file, students, sol, annealer):
 		state = (sol, inv_cov_mat_tup)
 		print "Initial energy is " + str(pg.energy(state))
 		# Manually set the annealing schedule.
-		state, e = annealer.anneal(state, 10000000, 0.01, 54000, updates=0)
-		print_final_solution(state)
+		state, e = annealer.anneal(state, 1, 0.01, 54000, updates=0)
+		util.print_final_solution(state)
 
 		print "Final energy is " + str(e)
 		print "Calculated final energy is " + str(pg.energy(state))
@@ -120,7 +103,6 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 				overall_average_rank = np.mean(avgs)
 				return overall_average_rank
 
-		#energy_sol_pairs = {}
 		for i in range (0, num_times):
 			#Reset the feasible projects.
 			for project in feasible_projects:
@@ -132,8 +114,6 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 			cur_avg_rank = calculate_avg_rank(cur_sol)
 			
 			print "Solution " + str(i) + " average rank: " + str(cur_avg_rank)
-
-			#energy_sol_pairs[cur_avg_rank] = cur_sol[:]
 
 			if (len(cur_sol) < 17):
 				raise CompError("Not 17 projects.")
@@ -149,17 +129,12 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 			if (cur_avg_rank < min_rank):
 				min_rank = cur_avg_rank
 				min_sol = copy.deepcopy(cur_sol)
-			#	print "Reassigned min sol"
-			#	print "Min sol rep" + min_sol.__repr__()
 
-		# for p in min_sol:
-		# 	print str(p.ID) + ":" + str([s.ID for s in p.students])
 	#	print "The minimum energy is " + str(min_energy)
 		print "The minimum avg rank is " + str(min_rank)
 		min_sol_projects = [p for p in min_sol if len(p.students) > 0]
 		print "The returned solution has an avg rank of " + str(calculate_avg_rank(min_sol_projects, verbose = False))
-
-	#	print "Min sol rep" + min_sol.__repr__()
+		return min_sol_projects
 
 	#	print "All keys are:"
 	#	print energy_sol_pairs.keys()
@@ -176,8 +151,6 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 	#	print "Min sol dict energy = " + str(min_rank)
 	#	print "Min sol dict calculated energy = " + str(calculate_avg_rank(min_sol_from_dict))
 
-		return min_sol_projects
-
 def do_random_initial_solutions(students, all_projects, annealer):
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
@@ -189,8 +162,16 @@ def do_greedy_initial_solutions(students, all_projects, annealer, verbose = Fals
 		sol = greedy_solutions_and_goodness(students, feasible_projects)
 		print "finished greedy solutions and goodness. The solution we got is:"
 		print [p.ID for p in sol]
+		print "Type of our sol is " + str(type(sol))
 		print "About to do manual schedule"
-	# 	manual_schedule(False, students, sol, annealer)
+	 	manual_schedule(False, students, sol, annealer)
+
+def do_test_initial_solution(students, all_projects, annealer, verbose = False):
+	feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
+	sol = greedy_solutions_and_goodness(students, feasible_projects)
+	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
+	state = (sol, inv_cov_mat_tup)
+	util.print_final_solution(state)
 
 def test_project_diversities(students, all_projects):
 		project = util.random_project(all_projects, [], reuse = False)
