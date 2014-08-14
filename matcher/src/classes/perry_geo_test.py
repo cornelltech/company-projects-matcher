@@ -53,23 +53,11 @@ def manual_schedule(use_file, students, sol, annealer):
 		state = (sol, inv_cov_mat_tup)
 		print "Initial energy is " + str(pg.energy(state))
 		# Manually set the annealing schedule.
-		state, e = annealer.anneal(state, 1, 0.01, 54000, updates=0)
+		state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
 		util.print_final_solution(state)
 
 		print "Final energy is " + str(e)
 		print "Calculated final energy is " + str(pg.energy(state))
-
-		# def anneal(self, state, Tmax, Tmin, steps, updates=0):
-  #       """Minimizes the energy of a system by simulated annealing.
-        
-  #       Keyword arguments:
-  #       state -- an initial arrangement of the system
-  #       Tmax -- maximum temperature (in units of energy)
-  #       Tmin -- minimum temperature (must be greater than zero)
-  #       steps -- the number of steps requested
-  #       updates -- the number of updates to print during annealing
-        
-  #       Returns the best state and energy found."""
 
 def make_random_students():
 		remaining_num_MBAs = 37
@@ -115,9 +103,6 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 			
 			print "Solution " + str(i) + " average rank: " + str(cur_avg_rank)
 
-			if (len(cur_sol) < 17):
-				raise CompError("Not 17 projects.")
-
 			# Actually calculating the energy.
 			#	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
 			#cur_energy = pg.energy((init, inv_cov_mat_tup))
@@ -136,21 +121,6 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 		print "The returned solution has an avg rank of " + str(calculate_avg_rank(min_sol_projects, verbose = False))
 		return min_sol_projects
 
-	#	print "All keys are:"
-	#	print energy_sol_pairs.keys()
-
-
-		#for key in energy_sol_pairs.keys():
-		#	print "Old energy was " + str(key)
-		#	print "Now "
-		#	print "New energy is " + str(calculate_avg_rank(energy_sol_pairs.get(key), verbose = False))
-	#	min_sol_from_dict = energy_sol_pairs[min_rank]
-	#	print "Min sol from dict "
-	#	for p in min_sol_from_dict:
-	#		print str(p.ID) + ": " + str([s.ID for s in p.students])
-	#	print "Min sol dict energy = " + str(min_rank)
-	#	print "Min sol dict calculated energy = " + str(calculate_avg_rank(min_sol_from_dict))
-
 def do_random_initial_solutions(students, all_projects, annealer):
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
@@ -163,8 +133,7 @@ def do_greedy_initial_solutions(students, all_projects, annealer, verbose = Fals
 		print "finished greedy solutions and goodness. The solution we got is:"
 		print [p.ID for p in sol]
 		print "Type of our sol is " + str(type(sol))
-		print "About to do manual schedule"
-	 	manual_schedule(False, students, sol, annealer)
+		return sol
 
 def do_test_initial_solution(students, all_projects, annealer, verbose = False):
 	feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
