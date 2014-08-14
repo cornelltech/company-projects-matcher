@@ -4,7 +4,7 @@ Matcher
 ##Overview
 [classes.py](https://github.com/cornelltech/company-projects-matcher/blob/master/matcher/src/classes/classes.py)
 
-Configuration
+###Configuration
 --------------
 The most important file in the classes folder is config.txt. Config.txt allows us to specify certain parameters, including team size, number of projects, number of rankings that students have, and paths to certain files that we will read data from. Various different files read from config.txt, including classes.py and ranked_teams_main.py
 
