@@ -858,35 +858,6 @@ class Project(object):
 			else:
 				raise FieldError("Are there more than two degrees pursuing?")
 
-	# num: should we print the project number?
-	def print_student_IDs(self, num = True, name = False, dct = ""):
-		lst = []
-	 	students = self._MBA_list + self._MEng_list
-	 	if (len(students) > 0):
-	 		if (num):
-	 			print "Project " + str(self._ID) + ":"
-	 		else:
-	 			print dct[self._ID] + " project:"
-	 		if (not(name)):
-	 			for s in students:
-	 				print s.ID,
-	 			print""
-	 		else:
-	 			for s in students:
-	 				print s.name,
-	 				if (s.degree_pursuing == 0):
-	 					deg = "MBA"
-	 				else:
-	 					deg = "MEng"
-	 				msg = "(Degree: " + deg + ", "
-	 				msg += "rank: " + str(s.get_ranking(self._ID) + 1) + ")"
-					lst.append(s.get_ranking(self._ID))
-	 				print msg
-	 		lst = [1.0 * (elm + 1) for elm in lst]
-	 		print "On average, students got their",
-	 		print str(sum(lst) / len(lst)) + " pick."
-	 		print ""
-
 	def calculate_diversity(self, tup):
 		#tup = distance.create_inv_cov_mat_from_data(use_file, students)
 	#	print "In calculate diversity: tup is " + str(tup)
