@@ -30,8 +30,8 @@ num_MBAs = 2
 num_MEngs = 2
 
 [files]
-# File to use in greedy_attempt_two.py
+# File to use in initial_solution.py
 
 # Don't put quotes around these -- the ConfigParser does otherwise.
-greedy_attempt_two_file = 2013_project_rankings.csv
+initial_solution_file = 2013_project_rankings.csv
 perry_geo_main_file = 2013_project_rankings.csv

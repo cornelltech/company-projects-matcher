@@ -480,4 +480,29 @@ def list_unranked_students(state, file = "project_ids_and_names.csv"):
 		print "There were no students assigned to projects that they did not rank."
 	print
 
+def list_low_interest_students(state, file = "project_ids_and_names.csv"):
+	dict_project_names = read_project_ids_and_names_from_input(file)
+	unranked = False
+	print
+	threshold = classes.number_project_rankings / 2
+	print "The following students were assigned to a project below rank " + str(threshold) + ":"
+	print "-----------------------------------------------------------------------------"
+	(projects, inv_cov_mat_tup) = state
+	for p in projects:
+		for student in p.students:
+			# Get the student's rank of this project.
+			rank = student.get_ranking(p.ID)
+			# The student didn't rank this
+			if (rank > threshold):
+				print student.name + " (" + str(student.degree_pursuing) + "):"
+				for i in range (0, len(student.project_rankings)):
+					print "Rank " + str(i + 1) + ":",
+					rank_i_project_id = student.project_rankings[i]
+					print dict_project_names[rank_i_project_id]
+				unranked = True
+				print
+	if (not(unranked)):
+		print "There were no students assigned to a low threshold project.."
+	print
+
 
