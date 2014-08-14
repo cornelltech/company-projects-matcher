@@ -424,7 +424,7 @@ def read_project_ids_and_names_from_input(file):
 
 	return dict_project_names
 
-def print_final_solution(state, file = "project_ids_and_names.csv"):
+def print_final_solution(state, use_diversity, file = "project_ids_and_names.csv"):
 		dict_project_names = read_project_ids_and_names_from_input(file)
 		print "Final Solution:"
  		(projects, inv_cov_mat_tup) = state
@@ -432,18 +432,52 @@ def print_final_solution(state, file = "project_ids_and_names.csv"):
 		for p in projects:
 			project_name = dict_project_names[p.ID]
 		 	print project_name + ": " + str([s.ID for s in p.students])
+		 	print "------------------------------"
 			ranks = []
 			# NOTE: get ranking returns 100 if the student did not rank the project.
 		 	for student in p.students:
-		 		print "Student " + str(student.name) + ": rank",
+				print student.name + " (" + str(student.degree_pursuing) + "):",
 				rank = student.get_ranking(p.ID)
-				print rank,
-				print ", attributes:" + str(student.get_numerical_student_properties())
+				if (not(use_diversity)):
+		 			print "Rank:",
+					print rank
+				print "Attributes: " + str(student.get_numerical_student_properties())
+				print
 				#cost = student.get_cost_from_ranking(rank)
 				ranks.append(rank)
 			avg_project_rank = np.mean(ranks)
 			all_avg_ranks.append(avg_project_rank)
 			print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
-			print "Average project rank: " + str(avg_project_rank)
-		print "Overall, this solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
+			if (not(use_diversity)):
+				print "Average project rank: " + str(avg_project_rank)
+			print
+			print
+		if (not(use_diversity)):
+			print
+			print "This solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
+
+def list_unranked_students(state, file = "project_ids_and_names.csv"):
+	dict_project_names = read_project_ids_and_names_from_input(file)
+	unranked = False
+	print
+	print "The following students were assigned to projects that they did not rank:"
+	print "-------------------------------------------------------------------------"
+	(projects, inv_cov_mat_tup) = state
+	for p in projects:
+		for student in p.students:
+			# Get the student's rank of this project.
+			rank = student.get_ranking(p.ID)
+			# The student didn't rank this
+			if (rank > classes.number_project_rankings):
+				print student.name + " (" + str(student.degree_pursuing) + "):"
+				for i in range (0, len(student.project_rankings)):
+					print "Rank " + str(i + 1) + ":",
+					rank_i_project_id = student.project_rankings[i]
+					print dict_project_names[rank_i_project_id]
+				unranked = True
+				print
+	if (not(unranked)):
+		print "There were no students assigned to projects that they did not rank."
+	print
+
 
