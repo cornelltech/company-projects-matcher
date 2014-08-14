@@ -1,8 +1,6 @@
-import random
 import math
 import ConfigParser
 import distance
-import clustering
 import itertools
 
 # TODO: move these to a globals file.
@@ -494,17 +492,6 @@ class Project(object):
 			# raise FieldError(error)
 			pass
 		else:
-			# deg = student.degree_pursuing
-			# if ((deg == "MBA" or deg == 0)):
-			# 	value = self.add_student_to_MBAs(student)
-			# 	if (verbose):
-			# 		print value
-			# elif ((deg == "MEng" or deg == 1) and self.has_remaining_MEng_spots()):
-			# 	value = self.add_student_to_MEngs(student)
-			# 	if (verbose):
-			# 		print value
-			# else:
-			
 			# Get the rank that this student gave this project.
 			rank = student.get_ranking(self._ID)
 			# Create a tuple of the project ranking and the student.
@@ -544,19 +531,6 @@ class Project(object):
 				print ""
 		else:
 			print "None"
-
-	def create_team_from_project(self):
-		student_list = self._MBA_list + self._MEng_list
-		print "Project ID " + str(self._ID)
-		print "Length of student list is " + str(len(student_list))
-		for s in student_list:
-			print s.get_student_properties()
-		if (not(len(student_list) == 4)):
-			return
-		t = Team(student_list, project_ID = self._ID)
-		return t
-		# project: def __init__(self, ID, num_MBAs, num_MEngs):
-		# team:  def __init__(self, student_list, ID=-1, project_ID = 0):
 
 	def remove_student_from_project(self, student_ID):
 		student_list = self._MBA_list + self._MEng_list
