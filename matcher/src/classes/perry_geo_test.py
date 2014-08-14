@@ -5,6 +5,7 @@ import random_teams
 
 import distance
 import numpy as np
+import copy
 #input_file = "tests.csv"
 
 class CompError(Exception):
@@ -99,32 +100,42 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 		'''
 			Returns a list of projects.
 		'''
-		min_energy = float("inf")
+	#	min_energy = float("inf")
 		min_rank = float("inf")
 		min_sol = None
+
+		def calculate_avg_rank(solution, verbose = True):
+				avgs = []
+				for p in solution:
+					if (verbose):
+						print str(p.ID) + ":" + str([s.ID for s in p.students])
+						print "Ranks:",
+					rankings = [s.get_ranking(p.ID) for s in p.students]
+					if (verbose):
+						print rankings
+					avg_rank = np.mean(rankings)
+					if (verbose):
+						print "Average rank: " + str(avg_rank)
+					avgs.append(avg_rank)
+				overall_average_rank = np.mean(avgs)
+				return overall_average_rank
+
+		#energy_sol_pairs = {}
 		for i in range (0, num_times):
 			#Reset the feasible projects.
 			for project in feasible_projects:
 				project.students = []
 			
-			init = initial_solution.greedy_initial_solution_and_fill_unmatched(students, feasible_projects)
+			cur_sol = initial_solution.greedy_initial_solution_and_fill_unmatched(students, feasible_projects)
 			print "Greedy solution " + str(i) + ":"
-			avgs = []
-			def calculate_avg_rank(solution):
-				for p in solution:
-					print str(p.ID) + ":" + str([s.ID for s in p.students])
-					print "Ranks:",
-					rankings = [s.get_ranking(p.ID) for s in p.students]
-					print rankings
-					avg_rank = np.mean(rankings)
-					print "Average rank: " + str(avg_rank)
-					avgs.append(avg_rank)
-				overall_average_rank = np.mean(avgs)
-				return overall_average_rank
-			cur_avg_rank = calculate_avg_rank(init)
-			print "Overall average rank: " + str(cur_avg_rank)
 
-			if (len(init) < 17):
+			cur_avg_rank = calculate_avg_rank(cur_sol)
+			
+			print "Solution " + str(i) + " average rank: " + str(cur_avg_rank)
+
+			#energy_sol_pairs[cur_avg_rank] = cur_sol[:]
+
+			if (len(cur_sol) < 17):
 				raise CompError("Not 17 projects.")
 
 			# Actually calculating the energy.
@@ -136,17 +147,35 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 
 			# Just compare the average ranks.
 			if (cur_avg_rank < min_rank):
-				min_sol = init
 				min_rank = cur_avg_rank
-
+				min_sol = copy.deepcopy(cur_sol)
+			#	print "Reassigned min sol"
+			#	print "Min sol rep" + min_sol.__repr__()
 
 		# for p in min_sol:
 		# 	print str(p.ID) + ":" + str([s.ID for s in p.students])
 	#	print "The minimum energy is " + str(min_energy)
-		print "The minimum overall avg rank is " + str(min_rank)
+		print "The minimum avg rank is " + str(min_rank)
 		min_sol_projects = [p for p in min_sol if len(p.students) > 0]
-		print [p.ID for p in min_sol_projects]
-		print "This solution has an overall avg rank of " + str(calculate_avg_rank(min_sol_projects))
+		print "The returned solution has an avg rank of " + str(calculate_avg_rank(min_sol_projects, verbose = False))
+
+	#	print "Min sol rep" + min_sol.__repr__()
+
+	#	print "All keys are:"
+	#	print energy_sol_pairs.keys()
+
+
+		#for key in energy_sol_pairs.keys():
+		#	print "Old energy was " + str(key)
+		#	print "Now "
+		#	print "New energy is " + str(calculate_avg_rank(energy_sol_pairs.get(key), verbose = False))
+	#	min_sol_from_dict = energy_sol_pairs[min_rank]
+	#	print "Min sol from dict "
+	#	for p in min_sol_from_dict:
+	#		print str(p.ID) + ": " + str([s.ID for s in p.students])
+	#	print "Min sol dict energy = " + str(min_rank)
+	#	print "Min sol dict calculated energy = " + str(calculate_avg_rank(min_sol_from_dict))
+
 		return min_sol_projects
 
 def do_random_initial_solutions(students, all_projects, annealer):
