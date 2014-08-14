@@ -5,19 +5,22 @@ The matching algorithm for [Company Projects: CS 5999] (http://tech.cornell.edu/
 
 Dependencies
 ------------
-This software requires an installation of Python. It was written and tested in Python 2.7.6. Earlier versions of Python seem to be ok, as Python 2.7 has some backwards compatibility. However, there are some key [differences](https://wiki.python.org/moin/Python2orPython3) between Python 2 and Python 3 that could cause problems. To be safe, install the same working version of Python as I have (2.7.6).
+###Installation of Python
+This software requires an installation of Python. It was written and tested in Python 2.7.6. Earlier versions of Python seem to be ok, as Python 2.7 has some backwards compatibility. However, there are some key [differences](https://wiki.python.org/moin/Python2orPython3) between Python 2 and Python 3 that could cause problems. To be safe, Python 2.7 (specifically 2.7.6) is recommended.
 
+###Packages
+This software also relies on various Python packages, including numpy and pandas, among others. Installing these packages separately and resolving the dependencies can be difficult; therefore, a tool like Anaconda Scientific Python distribution is helpful. Anaconda is a collection of over 195 of the “most popular Python packages for science, math, engineering, data analysis” (according to their [homepage] (https://store.continuum.io/cshop/anaconda/)). NOTE: As of August 14, 2014, Anaconda comes with installers for Python 2.7 and 3.4.
 
-After installing Python itself, we must look to Python packages, or code extensions of the core functionality that python offers. This software relies on various Python packages, including numpy, pandas, and matplotlib, among others. Installing these packages separately and resolving the dependencies can be difficult; therefore, I recommend installing Anaconda Scientific Python distribution, which installs over 195 of the “most popular Python packages for science, math, engineering, data analysis” (according to their [homepage] (https://store.continuum.io/cshop/anaconda/)).
+To install Anaconda for your appropriate platform, view [information and instructions](http://continuum.io/downloads).
+For help with installation questions, check out the [Anaconda FAQ] (http://docs.continuum.io/anaconda/faq.html#install-maclinux).
 
-So, the first step is to install Anaconda for your appropriate platform. Information and instructions are [here](http://continuum.io/downloads).
-Note: If you are having any issues, check out the [Anaconda FAQ] (http://docs.continuum.io/anaconda/faq.html#install-maclinux).
+When running the scripts that depend on Anaconda packages, make sure to use the version of Python installed by Anaconda. To find out which version of Python you are running, run "which python."
 
 Folders
 --------
 [data analysis:] (https://github.com/cornelltech/company-projects-matcher/tree/master/data_analysis) Contains the initial survey sent out to faculty and friends, and contains code and results of data analysis on the survey responses. 
 
-[matcher] (https://github.com/cornelltech/company-projects-matcher/tree/master/matcher): Contains test data, classes, and code for performing the match. The matcher performs [simulated annealing] (http://en.wikipedia.org/wiki/Simulated_annealing), and uses [perrygeo](https://github.com/perrygeo)'s [implementation](https://github.com/perrygeo/python-simulated-annealing).
+[matcher] (https://github.com/cornelltech/company-projects-matcher/tree/master/matcher): Contains test data, classes, and code for performing the match. Contains files for creating teams of students matched to projects, or diverse teams of a given size. The matcher performs [simulated annealing] (http://en.wikipedia.org/wiki/Simulated_annealing), and uses [perrygeo](https://github.com/perrygeo)'s [implementation](https://github.com/perrygeo/python-simulated-annealing).
 
 
 
