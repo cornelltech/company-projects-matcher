@@ -428,6 +428,7 @@ def print_final_solution(state, file = "project_ids_and_names.csv"):
 		dict_project_names = read_project_ids_and_names_from_input(file)
 		print "Final Solution:"
  		(projects, inv_cov_mat_tup) = state
+ 		all_avg_ranks = []
 		for p in projects:
 			project_name = dict_project_names[p.ID]
 		 	print project_name + ": " + str([s.ID for s in p.students])
@@ -441,6 +442,8 @@ def print_final_solution(state, file = "project_ids_and_names.csv"):
 				#cost = student.get_cost_from_ranking(rank)
 				ranks.append(rank)
 			avg_project_rank = np.mean(ranks)
+			all_avg_ranks.append(avg_project_rank)
 			print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
 			print "Average project rank: " + str(avg_project_rank)
+		print "Overall, this solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
 
