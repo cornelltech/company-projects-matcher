@@ -45,7 +45,7 @@ if (__name__ == "__main__"):
 	# Creating the annealer with our energy and move functions.
 	annealer = Annealer(pgd.energy, pgd.move)
 	all_projects = util.generate_all_projects()
-	students = util.create_students_from_input("eighty_students.csv")
+	students = util.create_students_from_input(input_file)
 
 	sol = test.do_greedy_initial_solutions(students, all_projects, annealer)
 	use_diversity = True
