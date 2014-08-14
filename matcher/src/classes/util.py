@@ -411,7 +411,14 @@ def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 		pass
 
 # Use on project_ids_and_names.csv
-def read_project_ids_and_names_from_input(file):
+def read_project_ids_and_names_from_input():
+
+	configParser = ConfigParser.ConfigParser()
+	configFilePath = r'config.txt'
+	configParser.read(configFilePath)
+
+	file = configParser.get('files', 'project_id_mappings')
+
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 	shape = data_array.shape
@@ -422,14 +429,16 @@ def read_project_ids_and_names_from_input(file):
 	# Extract rows and create students
 	for i in range(0, num_rows):
 		project_tup = data_array[i,:]
+		print "project tup is " + str(project_tup)
 		ID 	= project_tup[0]
 		name = project_tup[1]
-		dict_project_names[ID] = name
+		company = project_tup[2]
+		dict_project_names[ID] = str(company) + ": " + str(name)
 
 	return dict_project_names
 
-def print_final_solution(state, use_diversity, file = "project_ids_and_names.csv"):
-		dict_project_names = read_project_ids_and_names_from_input(file)
+def print_final_solution(state, use_diversity):
+		dict_project_names = read_project_ids_and_names_from_input()
 		print "Final Solution:"
  		(projects, inv_cov_mat_tup) = state
  		all_avg_ranks = []
@@ -460,8 +469,8 @@ def print_final_solution(state, use_diversity, file = "project_ids_and_names.csv
 			print
 			print "This solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
 
-def list_unranked_students(state, file = "project_ids_and_names.csv"):
-	dict_project_names = read_project_ids_and_names_from_input(file)
+def list_unranked_students(state):
+	dict_project_names = read_project_ids_and_names_from_input()
 	unranked = False
 	print
 	print "The following students were assigned to projects that they did not rank:"
@@ -484,8 +493,8 @@ def list_unranked_students(state, file = "project_ids_and_names.csv"):
 		print "There were no students assigned to projects that they did not rank."
 	print
 
-def list_low_interest_students(state, file = "project_ids_and_names.csv"):
-	dict_project_names = read_project_ids_and_names_from_input(file)
+def list_low_interest_students(state):
+	dict_project_names = read_project_ids_and_names_from_input()
 	unranked = False
 	print
 	threshold = classes.number_project_rankings / 2
