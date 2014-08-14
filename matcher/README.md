@@ -8,7 +8,7 @@ Matcher
 --------------
 The most important file in the classes folder is config.txt. Config.txt allows us to specify certain parameters, including team size, number of projects, number of rankings that students have, and paths to certain files that we will read data from. Various different files read from config.txt, including classes.py and ranked_teams_main.py
 
-Code
+###Code
 -----
 
 Currently, all code for the algorithm is included in the classes folder. This might change soon.
@@ -24,7 +24,7 @@ There are four different types of modules in the classes folder:
 * Main modules: i.e. diversity_main.py, ranked_teams_main.py. These modules contain the code that will extract data from relevant places and actually run the algorithms and functions written in the function implementation modules.
 
 
-Data
+###Data
 -----
 
 Data is included in this folder as well. We can specify which files to read from in config.txt, but files must follow the format shown by eighty_students.csv. The diverse subroutines will pull from config.txt also (the exact same file as perry_geo_main_file). 
