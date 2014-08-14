@@ -100,31 +100,54 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 			Returns a list of projects.
 		'''
 		min_energy = float("inf")
+		min_rank = float("inf")
 		min_sol = None
 		for i in range (0, num_times):
 			#Reset the feasible projects.
 			for project in feasible_projects:
 				project.students = []
 			
-			#print "Feasible projects is: "
-			#for proj in feasible_projects:
-			#	print "Project " + str(proj.ID) + ": " + str([s.ID for s in proj.students])
-
 			init = initial_solution.greedy_initial_solution_and_fill_unmatched(students, feasible_projects)
 			print "Greedy solution " + str(i) + ":"
-			for p in init:
-				print str(p.ID) + ":" + str([s.ID for s in p.students])
+			avgs = []
+			def calculate_avg_rank(solution):
+				for p in solution:
+					print str(p.ID) + ":" + str([s.ID for s in p.students])
+					print "Ranks:",
+					rankings = [s.get_ranking(p.ID) for s in p.students]
+					print rankings
+					avg_rank = np.mean(rankings)
+					print "Average rank: " + str(avg_rank)
+					avgs.append(avg_rank)
+				overall_average_rank = np.mean(avgs)
+				return overall_average_rank
+			cur_avg_rank = calculate_avg_rank(init)
+			print "Overall average rank: " + str(cur_avg_rank)
+
 			if (len(init) < 17):
 				raise CompError("Not 17 projects.")
-			inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
-			cur_energy = pg.energy((init, inv_cov_mat_tup))
-			if (cur_energy < min_energy):
+
+			# Actually calculating the energy.
+			#	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
+			#cur_energy = pg.energy((init, inv_cov_mat_tup))
+			#if (cur_energy < min_energy):
+			#	min_sol = init
+			#	min_energy = cur_energy
+
+			# Just compare the average ranks.
+			if (cur_avg_rank < min_rank):
 				min_sol = init
-				min_energy = cur_energy
+				min_rank = cur_avg_rank
+
+
 		# for p in min_sol:
 		# 	print str(p.ID) + ":" + str([s.ID for s in p.students])
-		print "The minimum energy is " + str(min_energy)
-		return [p for p in min_sol if len(p.students) > 0]
+	#	print "The minimum energy is " + str(min_energy)
+		print "The minimum overall avg rank is " + str(min_rank)
+		min_sol_projects = [p for p in min_sol if len(p.students) > 0]
+		print [p.ID for p in min_sol_projects]
+		print "This solution has an overall avg rank of " + str(calculate_avg_rank(min_sol_projects))
+		return min_sol_projects
 
 def do_random_initial_solutions(students, all_projects, annealer):
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)

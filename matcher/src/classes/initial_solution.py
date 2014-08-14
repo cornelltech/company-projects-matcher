@@ -299,7 +299,6 @@ def randomly_add_unmatched_students((original_feasible_projects, original_unmatc
 	return feasible_projects
 
 def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verbose = False):
-	print "There are " + str(len(students)) + " students"
 	initial_res = greedy_initial_solution(students, feasible_projects, verbose)
 	feasible_projects = randomly_add_unmatched_students(initial_res, verbose)
 	return [p for p in feasible_projects if len(p.students) > 0]
