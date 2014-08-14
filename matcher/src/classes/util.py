@@ -435,10 +435,10 @@ def print_final_solution(state, file = "project_ids_and_names.csv"):
 			ranks = []
 			# NOTE: get ranking returns 100 if the student did not rank the project.
 		 	for student in p.students:
-		 		print "Student " + str(student.name) + " ranked this project",
+		 		print "Student " + str(student.name) + ": rank",
 				rank = student.get_ranking(p.ID)
-				print rank
-				print "Student " + str(student.name) + "'s attributes:" + str(s.get_numerical_student_properties())
+				print rank,
+				print ", attributes:" + str(student.get_numerical_student_properties())
 				#cost = student.get_cost_from_ranking(rank)
 				ranks.append(rank)
 			avg_project_rank = np.mean(ranks)
