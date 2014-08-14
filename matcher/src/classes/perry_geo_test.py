@@ -1,6 +1,7 @@
 import util
 import initial_solution
 import perry_geo_annealing as pg
+import perry_geo_annealing_diversity as diversity
 import random_teams
 
 import distance
@@ -46,18 +47,54 @@ def pick_disjoint_seeds(use_file, students, feasible_projects, num_MBAs, num_MEn
 		# Pick "best and different."
 		pass
 
-def manual_schedule(use_file, students, sol, annealer):
+def manual_schedule(use_file, students, sol, annealer, use_diversity):
+	'''
+		use_diversity tells us which energy function to use.
+		If use_diversity is True, then we use the energy function from
+		perry_geo_annealing_diversity.
+		If use_diversity is False, then we use the energy function from 
+		perry_geo_annealing.py.
+
+	'''
  		#def create_inv_cov_mat_from_data(use_file, students, file = default_file):
 
-		inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
-		state = (sol, inv_cov_mat_tup)
-		print "Initial energy is " + str(pg.energy(state))
-		# Manually set the annealing schedule.
-		state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
-		util.print_final_solution(state)
+	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
+	state = (sol, inv_cov_mat_tup)
+	print "Initial energy is " + str(pg.energy(state))
+	# Manually set the annealing schedule.
+	state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
+	util.print_final_solution(state, use_diversity)
 
-		print "Final energy is " + str(e)
+	print "Final energy is " + str(e)
+	if (use_diversity):
+		print "Calculated final energy is " + str(diversity.energy(state))
+	else:
 		print "Calculated final energy is " + str(pg.energy(state))
+
+def test_printing(students, sol, use_diversity):
+	'''
+		use_diversity tells us which energy function to use.
+		If use_diversity is True, then we use the energy function from
+		perry_geo_annealing_diversity.
+		If use_diversity is False, then we use the energy function from 
+		perry_geo_annealing.py.
+
+	'''
+ 		#def create_inv_cov_mat_from_data(use_file, students, file = default_file):
+
+	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
+	state = (sol, inv_cov_mat_tup)
+	print "Initial energy is " + str(pg.energy(state))
+	# Manually set the annealing schedule.
+	if (use_diversity):
+		print "Calculated final energy is " + str(diversity.energy(state))
+	else:
+		print "Calculated final energy is " + str(pg.energy(state))
+	util.print_final_solution(state, use_diversity)
+	util.list_unranked_students(state)
+
+	
+
 
 def make_random_students():
 		remaining_num_MBAs = 37
@@ -121,41 +158,21 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 		print "The returned solution has an avg rank of " + str(calculate_avg_rank(min_sol_projects, verbose = False))
 		return min_sol_projects
 
-def do_random_initial_solutions(students, all_projects, annealer):
+def do_random_initial_solutions(students, all_projects, annealer, use_diversity):
  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
 	 	print "About to do manual schedule"
-	 	manual_schedule(False, students, sol, annealer)
+	 	manual_schedule(False, students, sol, annealer, use_diversity)
 
 def do_greedy_initial_solutions(students, all_projects, annealer, verbose = False):
+		'''
+			Creates the feasible projects, and iterates 1000 (default number) of greedy 
+			solutions, randomizing the order in which students get their "first pick."
+
+			Returns the solution with the lowest initial energy.
+			Result is usually very good.
+		'''
 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
 		sol = greedy_solutions_and_goodness(students, feasible_projects)
-		print "finished greedy solutions and goodness. The solution we got is:"
 		print [p.ID for p in sol]
-		print "Type of our sol is " + str(type(sol))
 		return sol
-
-def do_test_initial_solution(students, all_projects, annealer, verbose = False):
-	feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
-	sol = greedy_solutions_and_goodness(students, feasible_projects)
-	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
-	state = (sol, inv_cov_mat_tup)
-	util.print_final_solution(state)
-
-def test_project_diversities(students, all_projects):
-		project = util.random_project(all_projects, [], reuse = False)
-		print "For project " + str(project.ID)
-		for i in range(5):
-			project.students.append(students[i])
-			print (students[i].get_student_properties())
-		print project.calculate_diversity()
-
-		project_two = util.random_project(all_projects, [project], reuse = False)
-		print "For project " + str(project_two.ID)
-		for i in range(5, 10):
-			project_two.students.append(students[i])
-			print (students[i].get_student_properties())
-		print project_two.calculate_diversity()	
-
-
-
