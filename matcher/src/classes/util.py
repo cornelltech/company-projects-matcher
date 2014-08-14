@@ -398,17 +398,6 @@ def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 	
 	num_teams = len(smaller)/num_req_per_team
 
-
-
-
-	# num_MBAs_needed = num_MBAs * num_teams
-	# num_MEngs_needed = num_MEngs * num_teams
-
-	# if (len(MBAs) < num_MBAs_needed):
-	# 	raise FieldError ("Not enough MBA students to produce teams of the desired makeup.")
-	# elif (len(MEngs) < num_MEngs_needed):
-	# 	raise FieldError ("Not enough MEng students to produce teams of the desired makeup.")
-
 	# If team size is too big for input.
 	if (num_teams == 0):
 		raise FieldError ("Team size is too large for given input.")
@@ -417,5 +406,41 @@ def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 	else:
 		pass
 
+# Use on project_ids_and_names.csv
+def read_project_ids_and_names_from_input(file):
+	data = pd.read_csv(file)
+	data_array = np.array(data)
+	shape = data_array.shape
+	num_rows = shape[0]
 
+	dict_project_names = {}
+
+	# Extract rows and create students
+	for i in range(0, num_rows):
+		project_tup = data_array[i,:]
+		ID 	= project_tup[0]
+		name = project_tup[1]
+		dict_project_names[ID] = name
+
+	return dict_project_names
+
+def print_final_solution(state, file = "project_ids_and_names.csv"):
+		dict_project_names = read_project_ids_and_names_from_input(file)
+		print "Final Solution:"
+ 		(projects, inv_cov_mat_tup) = state
+		for p in projects:
+			project_name = dict_project_names[p.ID]
+		 	print project_name + ": " + str([s.ID for s in p.students])
+			ranks = []
+			# NOTE: get ranking returns 100 if the student did not rank the project.
+		 	for student in p.students:
+		 		print "Student " + str(student.name) + " ranked this project",
+				rank = student.get_ranking(p.ID)
+				print rank
+				print "Student " + str(student.name) + "'s attributes:" + str(s.get_numerical_student_properties())
+				#cost = student.get_cost_from_ranking(rank)
+				ranks.append(rank)
+			avg_project_rank = np.mean(ranks)
+			print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
+			print "Average project rank: " + str(avg_project_rank)
 
