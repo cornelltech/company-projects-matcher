@@ -48,7 +48,9 @@ if (__name__ == "__main__"):
 	students = util.create_students_from_input("eighty_students.csv")
 
 	sol = test.do_greedy_initial_solutions(students, all_projects, annealer)
-	test.manual_schedule(False, students, sol, annealer)
+	use_diversity = True
+	use_file = False
+	test.manual_schedule(use_file, students, sol, annealer, use_diversity)
 
 
 
