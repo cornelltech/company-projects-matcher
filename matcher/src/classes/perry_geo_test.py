@@ -63,13 +63,18 @@ def manual_schedule(use_file, students, sol, annealer, use_diversity):
 	print "Initial energy is " + str(pg.energy(state))
 	# Manually set the annealing schedule.
 	state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
-	util.print_final_solution(state, use_diversity)
 
 	print "Final energy is " + str(e)
 	if (use_diversity):
 		print "Calculated final energy is " + str(diversity.energy(state))
 	else:
 		print "Calculated final energy is " + str(pg.energy(state))
+
+	util.print_final_solution(state, use_diversity)
+
+	# Only print the unranked students if we a care about the students' rankings.
+	if (not(use_diversity)):
+		util.list_unranked_students(state)
 
 def test_printing(students, sol, use_diversity):
 	'''
