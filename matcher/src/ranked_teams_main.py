@@ -1,4 +1,5 @@
-#!~/anaconda/bin/python
+#!/Users/ameyaacharya/anaconda/bin/python ranked_teams_main.py
+
 import util
 import perry_geo_annealing as pg
 import ConfigParser

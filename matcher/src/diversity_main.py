@@ -1,4 +1,4 @@
-#!/Users/ameyaacharya/anaconda/bin/python
+#!/Users/ameyaacharya/anaconda/bin/python diversity_main.py
 
 import util
 import ConfigParser
