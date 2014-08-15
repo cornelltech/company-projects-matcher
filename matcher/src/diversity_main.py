@@ -5,6 +5,8 @@ import ConfigParser
 import perry_geo_annealing_diversity as pgd
 import perry_geo_test as test
 
+import sys, getopt
+
 from anneal import Annealer
 
 if (__name__ == "__main__"):
@@ -35,12 +37,32 @@ if (__name__ == "__main__"):
 
 	'''
 
+	try:
+		argv = sys.argv[2:]
+		opts, args = getopt.getopt(argv, "i:", ["input"])
+	except (getopt.GetoptError):
+		print "Unrecognized arguments."
+		print " usage: ./diversity_main.py -i <inputfile>"
+		sys.exit(2)
+
+	set_input_file = False
+
+	for opt, arg in opts:
+		if (opt == "-i"):
+			input_file = arg
+			set_input_file = True
+
+	if (not(set_input_file)):
+		print "Please specify an input file."
+		print " usage: ./diversity_main.py -i <inputfile>"
+		sys.exit(2)
+
 	# Create config parser to get various fields.
 	configParser = ConfigParser.ConfigParser()
 	configFilePath = r'config.txt'
 	configParser.read(configFilePath)
 
-	input_file = configParser.get('files', 'main_file')
+	#input_file = configParser.get('files', 'main_file')
 	project_id_mappings = configParser.get('files', 'project_id_mappings')
 	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
 	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
