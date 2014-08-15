@@ -68,21 +68,16 @@ def random_project(projects, already_picked, reuse, verbose = False):
 		project: a project.
 
 	'''
-	#print "in random_project"
-	#print "reuse is " + str(reuse)
 	if (verbose):
 		print "Length of projects is " + str(len(projects))
 	rand_index = random_index(len(projects))
 	if (verbose):
 		print "Length of project " + str(projects[rand_index].ID) + " is " + str(len(projects[rand_index].students))
 	if (not (reuse)):
-	#	print "in if statement"
 		project_to_return = projects[rand_index]
 		while (project_to_return in already_picked):
-	#		print "in while"
 			rand_index = random_index(len(projects))
 			project_to_return = projects[rand_index]
-#	print "about to return in random_project"
 	return projects[rand_index]
 
 def random_student(project):
@@ -334,6 +329,20 @@ def are_unique(l1, l2):
 	return (set(l1).intersection(set(l2)) == set([]))
 
 def create_students_from_input(file):
+	'''
+		There is a check for how many columns are in the student data input file.
+		If the data does not have all of the following information, this function
+		will fail.
+		Currently assumes:
+			- 1 column for ID
+			- 1 column for degree degree_pursuing
+			- 1 column for cs_ug
+			- 1 column for coding coding_ability
+			- 1 column for work experience
+			- classes.number_project_rankings columns for project rankings
+			- 1 column for first name
+			- 1 column for last name
+	'''
 	data = pd.read_csv(file)
 	data_array = np.array(data)
 	shape = data_array.shape
@@ -344,6 +353,9 @@ def create_students_from_input(file):
 	# Extract rows and create students
 	for i in range(0, num_rows):
 		student = data_array[i,:]
+		if (not(len(student) == classes.number_project_rankings + 7)):
+			error = "Row " + str(i) + " in " + str(file) + " does not have the number of fields required by the config file."
+			raise InputError(error)
 
 		ID 	= student[0]
 		if (ID in student_ids):
@@ -369,10 +381,10 @@ def create_students_from_input(file):
 # num_MBAs and num_MEngs are the numbers required per team.
 def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 	if (len(projects) == 0):
-		raise FieldError ("Cannot make an initial solution with an empty project list.")
+		raise FieldError ("There are no feasible projects.")
 
 	elif (len(students) == 0):
-		raise FieldError ("Cannot make an initial solution with an empty student list.")
+		raise FieldError ("There are no students.")
 
 	team_size = num_MBAs + num_MEngs
 
