@@ -441,10 +441,10 @@ def print_final_solution(state, use_diversity, output_file):
  		(projects, inv_cov_mat_tup) = state
  		all_avg_ranks = []
 		for p in projects:
-			cur_project_output = []
+			cur_project_output = ""
 			if (not(use_diversity)):
 				project_name = dict_project_names[p.ID]
-				cur_project_output.append(project_name)
+				cur_project_output = cur_project_output + project_name
 		 		print project_name + ": " + str([s.ID for s in p.students])
 		 	print "------------------------------"
 			ranks = []
@@ -459,7 +459,8 @@ def print_final_solution(state, use_diversity, output_file):
 					print "Attributes: " + str(student.get_numerical_student_properties())
 				print
 				ranks.append(rank)
-			cur_project_output = cur_project_output + [student.name for student in p.students]
+				cur_project_output = cur_project_output + "\t" + student.name
+			#cur_project_output = cur_project_output + [student.name for student in p.students]
 			avg_project_rank = np.mean(ranks)
 			all_avg_ranks.append(avg_project_rank)
 			output.append(cur_project_output)
@@ -473,9 +474,11 @@ def print_final_solution(state, use_diversity, output_file):
 			print
 			print "This solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
 		numpy_version_of_output = np.array(output)
+		print "numpy version of output is " + str(numpy_version_of_output)
 		dataframe_output = pd.DataFrame(numpy_version_of_output)
+		print "data farme output = " + str(dataframe_output)
 
-		dataframe_output.to_csv(output_file, sep='\t', index = False)
+		dataframe_output.to_csv(output_file, sep=',', index = False)
 		print
 		print
 		print "Completed annealing and wrote results to " + output_file + "!"
