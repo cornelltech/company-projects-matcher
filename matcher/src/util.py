@@ -471,11 +471,14 @@ def read_project_ids_and_names_from_input():
 
 def print_final_solution(state, use_diversity):
 		dict_project_names = read_project_ids_and_names_from_input()
+		output = []
 		print "Final Solution:"
  		(projects, inv_cov_mat_tup) = state
  		all_avg_ranks = []
 		for p in projects:
+			cur_project_output = []
 			project_name = dict_project_names[p.ID]
+			cur_project_output.append(project_name)
 		 	print project_name + ": " + str([s.ID for s in p.students])
 		 	print "------------------------------"
 			ranks = []
@@ -490,8 +493,10 @@ def print_final_solution(state, use_diversity):
 				print
 				#cost = student.get_cost_from_ranking(rank)
 				ranks.append(rank)
+			cur_project_output = cur_project_output + [student.name for student in p.students]
 			avg_project_rank = np.mean(ranks)
 			all_avg_ranks.append(avg_project_rank)
+			output.append(cur_project_output)
 			print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
 			if (not(use_diversity)):
 				print "Average project rank: " + str(avg_project_rank)
@@ -500,6 +505,15 @@ def print_final_solution(state, use_diversity):
 		if (not(use_diversity)):
 			print
 			print "This solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
+		numpy_version_of_output = np.array(output)
+		dataframe_output = pd.DataFrame(numpy_version_of_output)
+
+		dataframe_output.to_csv("output.csv", sep='\t', index = False)
+		print
+		print
+		print "Completed annealing and wrote results to output.csv!"
+		print
+
 
 def list_unranked_students(state):
 	dict_project_names = read_project_ids_and_names_from_input()
