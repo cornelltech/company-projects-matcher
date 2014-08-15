@@ -39,18 +39,22 @@ if (__name__ == "__main__"):
 
 	try:
 		argv = sys.argv[2:]
-		opts, args = getopt.getopt(argv, "i:", ["input"])
+		opts, args = getopt.getopt(argv, "i:o:", ["input", "output"])
 	except (getopt.GetoptError):
 		print "Unrecognized arguments."
-		print " usage: ./diversity_main.py -i <inputfile>"
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>]"
 		sys.exit(2)
 
 	set_input_file = False
+	set_output_file = False
 
 	for opt, arg in opts:
 		if (opt == "-i"):
 			input_file = arg
 			set_input_file = True
+		elif (opt == "-o"):
+			output_file = arg
+			set_output_file = True
 
 	if (not(set_input_file)):
 		print "Please specify an input file."
@@ -77,7 +81,11 @@ if (__name__ == "__main__"):
 	sol = test.do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings)
 	use_diversity = True
 	use_file = False
-	test.manual_schedule(use_file, students, sol, annealer, use_diversity)
+	if (set_output_file):
+		test.manual_schedule(use_file, students, sol, annealer, use_diversity, output_file)
+	else:
+		test.manual_schedule(use_file, students, sol, annealer, use_diversity)
+
 
 
 

@@ -461,7 +461,6 @@ def read_project_ids_and_names_from_input():
 	# Extract rows and create students
 	for i in range(0, num_rows):
 		project_tup = data_array[i,:]
-		print "project tup is " + str(project_tup)
 		ID 	= project_tup[0]
 		name = project_tup[1]
 		company = project_tup[2]
@@ -469,7 +468,7 @@ def read_project_ids_and_names_from_input():
 
 	return dict_project_names
 
-def print_final_solution(state, use_diversity):
+def print_final_solution(state, use_diversity, output_file):
 		'''
 			This prints the final solution in a pretty format.
 			Writes the final teams to an Excel file (csv format).
@@ -514,10 +513,10 @@ def print_final_solution(state, use_diversity):
 		numpy_version_of_output = np.array(output)
 		dataframe_output = pd.DataFrame(numpy_version_of_output)
 
-		dataframe_output.to_csv("output.csv", sep='\t', index = False)
+		dataframe_output.to_csv(output_file, sep='\t', index = False)
 		print
 		print
-		print "Completed annealing and wrote results to output.csv!"
+		print "Completed annealing and wrote results to " + output_file + "!"
 		print
 
 
@@ -567,7 +566,7 @@ def list_low_interest_students(state):
 				unranked = True
 				print
 	if (not(unranked)):
-		print "There were no students assigned to a low threshold project.."
+		print "There were no students assigned to a low threshold project."
 	print
 
 
