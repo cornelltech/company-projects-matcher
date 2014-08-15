@@ -1,4 +1,4 @@
-#!/Users/ameyaacharya/anaconda/bin/python diversity_main.py
+#!/usr/bin/env python
 
 import util
 import ConfigParser
@@ -40,7 +40,7 @@ if (__name__ == "__main__"):
 	start_time = time.time()
 
 	try:
-		argv = sys.argv[2:]
+		argv = sys.argv[1:]
 		opts, args = getopt.getopt(argv, "i:o:", ["input", "output"])
 	except (getopt.GetoptError):
 		print "Unrecognized arguments."
