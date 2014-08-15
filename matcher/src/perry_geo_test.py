@@ -7,6 +7,7 @@ import random_teams
 import distance
 import numpy as np
 import copy
+import ConfigParser
 
 class CompError(Exception):
 	def __init__(self, value):
@@ -52,7 +53,8 @@ def manual_schedule(use_file, students, sol, annealer, use_diversity):
 	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
 	if (len(sol) < 2):
 		error = "There is only one team, so we cannot perform simulated annealing."
-		raise CompError(error )
+		raise CompError(error)
+
 	state = (sol, inv_cov_mat_tup)
 	print "Initial energy is " + str(pg.energy(state))
 	# Manually set the annealing schedule.
@@ -169,7 +171,18 @@ def do_greedy_initial_solutions(students, all_projects, annealer, verbose = Fals
 			Returns the solution with the lowest initial energy.
 			Result is usually very good.
 		'''
+
+		configParser = ConfigParser.ConfigParser()
+		configFilePath = r'config.txt'
+		configParser.read(configFilePath)
+
+		# Declaring valid values for all fields.
+		num_MBAs = configParser.getint('valid_values', 'num_MBAs')
+		num_MEngs = configParser.getint('valid_values', 'num_MEngs')
+
 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
+		util.input_checks(students, feasible_projects, num_MBAs, num_MEngs, sorted = False) 
+
 		sol = greedy_solutions_and_goodness(students, feasible_projects)
 		print [p.ID for p in sol]
 		return sol
