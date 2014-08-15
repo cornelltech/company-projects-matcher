@@ -33,7 +33,7 @@ We also must input the project name that corresponds with each ID, so that when 
 
 ##Instructions
 
-1. Decide on the parameters for the problem, and set all values in config.txt. How many MBA/MEng students would we like each team to have? What scales should our diversity metrics be on? How many projects are we allowing students to select from? For a complete list of parameters to consider, look at config.txt.
+1. Decide on the parameters for the problem, and set appropriate values in config.txt. How many MBA/MEng students would we like each team to have? What scales should our diversity metrics be on? How many projects are we allowing students to select from? For a complete list of parameters to consider, look at config.txt.
 
 2. Assign an ID number for each project that students may rank. ID numbers must be in [1, number of projects], inclusive. 
 
@@ -45,6 +45,6 @@ We also must input the project name that corresponds with each ID, so that when 
 
 	* Note: when number of project rankings changes, so will the exact configuration of the input test file that you will have to input. eighty_students.csv is just a rough model of what the data should look like (with 10 examples, currently).
 
-5. Run the main files -- for creating teams with the project rankings, run ranked_teams_main.py; for creating diverse teams, run diversity_main.py.  
+5. Run the main files -- for creating teams with the project rankings, the format is ./ranked_teams_main.py -i <inputfile> [-o <outputfile>]; for creating diverse teams, do ./diversity_main.py -i <inputfile> [-o <outputfile>].  
 
 
