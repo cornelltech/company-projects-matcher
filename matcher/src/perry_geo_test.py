@@ -58,9 +58,9 @@ def manual_schedule(use_file, students, sol, annealer, use_diversity, output_fil
 	state = (sol, inv_cov_mat_tup)
 	print "Initial energy is " + str(pg.energy(state))
 	# Manually set the annealing schedule.
-	#state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
+	state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
 
-	#print "Final energy is " + str(e)
+	print "Final energy is " + str(e)
 	if (use_diversity):
 		print "Calculated final energy is " + str(diversity.energy(state))
 	else:
