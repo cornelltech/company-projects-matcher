@@ -470,6 +470,10 @@ def read_project_ids_and_names_from_input():
 	return dict_project_names
 
 def print_final_solution(state, use_diversity):
+		'''
+			This prints the final solution in a pretty format.
+			Writes the final teams to an Excel file (csv format).
+		'''
 		dict_project_names = read_project_ids_and_names_from_input()
 		output = []
 		print "Final Solution:"
@@ -477,9 +481,10 @@ def print_final_solution(state, use_diversity):
  		all_avg_ranks = []
 		for p in projects:
 			cur_project_output = []
-			project_name = dict_project_names[p.ID]
-			cur_project_output.append(project_name)
-		 	print project_name + ": " + str([s.ID for s in p.students])
+			if (not(use_diversity)):
+				project_name = dict_project_names[p.ID]
+				cur_project_output.append(project_name)
+		 		print project_name + ": " + str([s.ID for s in p.students])
 		 	print "------------------------------"
 			ranks = []
 			# NOTE: get ranking returns 100 if the student did not rank the project.
@@ -489,16 +494,17 @@ def print_final_solution(state, use_diversity):
 				if (not(use_diversity)):
 		 			print "Rank:",
 					print rank
-				print "Attributes: " + str(student.get_numerical_student_properties())
+				else:
+					print "Attributes: " + str(student.get_numerical_student_properties())
 				print
-				#cost = student.get_cost_from_ranking(rank)
 				ranks.append(rank)
 			cur_project_output = cur_project_output + [student.name for student in p.students]
 			avg_project_rank = np.mean(ranks)
 			all_avg_ranks.append(avg_project_rank)
 			output.append(cur_project_output)
-			print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
-			if (not(use_diversity)):
+			if (use_diversity):
+				print "Diversity: " + str(p.calculate_diversity(inv_cov_mat_tup))
+			else:
 				print "Average project rank: " + str(avg_project_rank)
 			print
 			print
