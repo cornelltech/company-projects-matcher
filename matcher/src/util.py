@@ -343,43 +343,53 @@ def create_students_from_input(file):
 			- 1 column for first name
 			- 1 column for last name
 	'''
-	data = pd.read_csv(file)
-	data_array = np.array(data)
-	shape = data_array.shape
-	num_rows = shape[0]
+	try:
+		data = pd.read_csv(file)
+		data_array = np.array(data)
+		shape = data_array.shape
+		num_rows = shape[0]
 
-	students_lst = []
+		students_lst = []
 
-	# Extract rows and create students
-	for i in range(0, num_rows):
-		student = data_array[i,:]
-		if (not(len(student) == classes.number_project_rankings + 7)):
-			error = "Row " + str(i) + " in " + str(file) + " does not have the number of fields required by the config file."
+		# Extract rows and create students
+		for i in range(0, num_rows):
+			student = data_array[i,:]
+			if (not(len(student) == classes.number_project_rankings + 7)):
+				error = "Row " + str(i) + " in " + str(file) + " does not have the number of fields required by the config file."
+				raise InputError(error)
+
+			ID 	= student[0]
+			if (ID in student_ids):
+				raise CompError("Student IDs must be unique.")
+			student_ids.append(ID)
+			 
+			degree_pursuing = student[1]
+			cs_ug = student[2]
+			coding_ability = student[3]
+			num_yrs_work_exp = student[4]
+
+			# Only take the desired number of project rankings that we want.
+			rankings = student[5:(5 + classes.number_project_rankings)]
+			first_name = student[5 + classes.number_project_rankings]
+			last_name = student[5 + classes.number_project_rankings + 1]
+			name = first_name + " " + last_name
+
+			a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
+			students_lst.append(a)
+
+		return students_lst
+
+	except(IOError):
+		if (len(file) == 0):
+			error = "Please enter a filename for the main_file field in config.txt."
+			raise InputError(error)
+		else:
+			error = "Error with reading the file for student data. Please edit the main_file field in config.txt."
 			raise InputError(error)
 
-		ID 	= student[0]
-		if (ID in student_ids):
-			raise CompError("Student IDs must be unique.")
-		student_ids.append(ID)
-		 
-		degree_pursuing = student[1]
-		cs_ug = student[2]
-		coding_ability = student[3]
-		num_yrs_work_exp = student[4]
-
-		# Only take the desired number of project rankings that we want.
-		rankings = student[5:(5 + classes.number_project_rankings)]
-		first_name = student[5 + classes.number_project_rankings]
-		last_name = student[5 + classes.number_project_rankings + 1]
-		name = first_name + " " + last_name
-
-		a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
-		students_lst.append(a)
-
-	return students_lst
 
 # num_MBAs and num_MEngs are the numbers required per team.
-def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
+def input_checks(students, projects, num_MBAs, num_MEngs, project_id_mappings, sorted = False):
 	if (len(projects) == 0):
 		raise FieldError ("There are no feasible projects.")
 
@@ -414,11 +424,20 @@ def input_checks(students, projects, num_MBAs, num_MEngs, sorted = False):
 	
 	num_teams = len(smaller)/num_req_per_team
 
+	if (len(project_id_mappings) == 0):
+		error = "Please enter a filename for the project_id_mappings field in config.txt."
+		raise InputError(error)
+	try:
+		data = pd.read_csv(project_id_mappings)
+	except(IOError):
+		error = "Could not read file for project-ID mappings. Fix the file and enter its name in the field project_id_mappings in config.txt."
+		raise InputError(error)
+
 	# If team size is too big for input.
 	if (num_teams == 0):
 		raise FieldError ("Team size is too large for given input.")
 
-	# If none of these errors are raised, then the input is fine.
+	#If none of these errors are raised, then the input is fine.
 	else:
 		pass
 
@@ -432,6 +451,7 @@ def read_project_ids_and_names_from_input():
 	file = configParser.get('files', 'project_id_mappings')
 
 	data = pd.read_csv(file)
+
 	data_array = np.array(data)
 	shape = data_array.shape
 	num_rows = shape[0]

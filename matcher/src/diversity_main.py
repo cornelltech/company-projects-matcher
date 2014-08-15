@@ -1,3 +1,5 @@
+#!/Users/ameyaacharya/anaconda/bin/python
+
 import util
 import ConfigParser
 import perry_geo_annealing_diversity as pgd
@@ -33,11 +35,13 @@ if (__name__ == "__main__"):
 
 	'''
 
+	# Create config parser to get various fields.
 	configParser = ConfigParser.ConfigParser()
 	configFilePath = r'config.txt'
 	configParser.read(configFilePath)
 
 	input_file = configParser.get('files', 'main_file')
+	project_id_mappings = configParser.get('files', 'project_id_mappings')
 	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
 	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
 	team_size = num_MBAs + num_MEngs
@@ -47,7 +51,8 @@ if (__name__ == "__main__"):
 	all_projects = util.generate_all_projects()
 	students = util.create_students_from_input(input_file)
 
-	sol = test.do_greedy_initial_solutions(students, all_projects, annealer)
+	# This contains the input checks in here (after it creates the feasible projects.)
+	sol = test.do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings)
 	use_diversity = True
 	use_file = False
 	test.manual_schedule(use_file, students, sol, annealer, use_diversity)

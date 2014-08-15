@@ -163,7 +163,7 @@ def do_random_initial_solutions(students, all_projects, annealer, use_diversity)
 	 	print "About to do manual schedule"
 	 	manual_schedule(False, students, sol, annealer, use_diversity)
 
-def do_greedy_initial_solutions(students, all_projects, annealer, verbose = False):
+def do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings, verbose = False):
 		'''
 			Creates the feasible projects, and iterates 1000 (default number) of greedy 
 			solutions, randomizing the order in which students get their "first pick."
@@ -181,7 +181,7 @@ def do_greedy_initial_solutions(students, all_projects, annealer, verbose = Fals
 		num_MEngs = configParser.getint('valid_values', 'num_MEngs')
 
 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose)
-		util.input_checks(students, feasible_projects, num_MBAs, num_MEngs, sorted = False) 
+		util.input_checks(students, feasible_projects, num_MBAs, num_MEngs, project_id_mappings, sorted = False) 
 
 		sol = greedy_solutions_and_goodness(students, feasible_projects)
 		print [p.ID for p in sol]
