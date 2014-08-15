@@ -73,35 +73,6 @@ def manual_schedule(use_file, students, sol, annealer, use_diversity, output_fil
 		util.list_unranked_students(state)
 		util.list_low_interest_students(state)
 
-def test_printing(students, sol, use_diversity):
-	'''
-		use_diversity tells us which energy function to use.
-		If use_diversity is True, then we use the energy function from
-		perry_geo_annealing_diversity.
-		If use_diversity is False, then we use the energy function from 
-		perry_geo_annealing.py.
-
-	'''
-
-	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
-	state = (sol, inv_cov_mat_tup)
-	print "Initial energy is " + str(pg.energy(state))
-	# Manually set the annealing schedule.
-	if (use_diversity):
-		print "Calculated final energy is " + str(diversity.energy(state))
-	else:
-		print "Calculated final energy is " + str(pg.energy(state))
-	util.print_final_solution(state, use_diversity)
-	util.list_unranked_students(state)
-
-def make_random_students():
-		remaining_num_MBAs = 37
- 		remaining_num_MEngs = 35
- 		MBAs = random_teams.create_random_MBAs(4, 4, remaining_num_MBAs)
- 		MEngs = random_teams.create_random_MEngs(4, 4, remaining_num_MEngs)
- 		students = MBAs + MEngs
-		return students
-
 def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000):
 		'''
 			Optimizes the average student ranking, not including diversity.
