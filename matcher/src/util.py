@@ -251,52 +251,17 @@ def create_feasible_projects(students, projects, verbose = False):
 	projects = filter(lambda p: not(p.ID in insufficient_IDs), projects)
 	return projects
 
-def better(students, projects):
-	def is_insufficient(p):
-		# All of the students who ranked this project:
-		matched = filter(lambda s: p.ID in s.project_rankings, students)
-		# All of the MBAs and MEngs who ranked this project
-		MBAs_ranked = [s for s in matched if s.degree_pursuing == "MBA" or s.degree_pursuing == 0]
-		MEngs_ranked = [s for s in matched if s.degree_pursuing == "MEng" or s.degree_pursuing == 1]
-		if (len(MBAs_ranked) < p.num_MBAs):
-			return True
-		elif (len(MEngs_ranked) < p.num_MEngs):
-			return True
-		else:
-			return False
-	return filter(lambda p: not(is_insufficient(p)), projects)
-#	pass
-
-# For a specific project p, get the students' overall interest in the project.
-# Higher interest means that more students ranked it highly on their lists.
-# The "interest" variable determines if how high a student ranked the project on their
-# list counts extra towards the ranking, or if it's just how many students ranked it.
-# Currently set the default so that its just how many students ranked it.
-def get_project_interest_from_rankings(p, students, verbose = False):
-
-	# Check which students ranked this project.
-	matched = filter(lambda s: p.ID in s.project_rankings, students)
-
-	if (verbose):
-		print "The following students ranked project " + str(p.ID) + ":"
-		print [s.ID for s in matched]
-
-	# For each student, get their interest in this project.
-	# Add this to the sum of the overall interest.
-	overall_interest = 0
-	for s in matched:
-		rank = s.get_ranking(p.ID)
-		interest = s.get_interest_from_ranking(rank)
- 		overall_interest = overall_interest + interest
-	return overall_interest
-
-# Get the number of students who ranked this project in their top 10.
 def get_num_ranked(p, students):
+	'''
+		Get the number of students who ranked this project in their top 10.
+	'''
 	matched = filter(lambda s: p.ID in s.project_rankings, students)
 	return len(matched)
 
-# Sort projects by highest demand to lowest demand.
 def sort_projects_by_demand(students, projects, tup = False):
+	'''
+		Sort projects by highest demand to lowest demand.
+	'''
 	def liking (p):
 		return get_num_ranked(p, students)
 	projects.sort(key = liking, reverse = True)
@@ -311,7 +276,6 @@ def sort_projects_by_demand(students, projects, tup = False):
 
 	else:
 		return projects
-
 
 def are_unique(l1, l2):
 	''' 
@@ -381,15 +345,17 @@ def create_students_from_input(file):
 
 	except(IOError):
 		if (len(file) == 0):
-			error = "Please enter a filename for the main_file field in config.txt."
+			error = "Please enter a valid filename."
 			raise InputError(error)
 		else:
-			error = "Error with reading the file for student data. Please edit the main_file field in config.txt."
+			error = "Error with reading the file for student data."
 			raise InputError(error)
 
 
-# num_MBAs and num_MEngs are the numbers required per team.
 def input_checks(students, projects, num_MBAs, num_MEngs, project_id_mappings, sorted = False):
+	'''
+		num_MBAs and num_MEngs are the numbers required per team (i.e. 2 and 2), not the total numbers.
+	'''
 	if (len(projects) == 0):
 		raise FieldError ("There are no feasible projects.")
 
@@ -411,9 +377,6 @@ def input_checks(students, projects, num_MBAs, num_MEngs, project_id_mappings, s
 	# Make sure that team size is not zero.
 	if (team_size == 0):
 		raise FieldError('Team size cannot be 0.')
-
-	# Number of teams is not actually just the total students divided by the team size.
-	# It's the smaller of total mbas and total mbas divided by num mbas or num mengs.
 
 	if (len(MBAs) < len(MEngs)):
 	 	smaller = MBAs
@@ -441,7 +404,6 @@ def input_checks(students, projects, num_MBAs, num_MEngs, project_id_mappings, s
 	else:
 		pass
 
-# Use on project_ids_and_names.csv
 def read_project_ids_and_names_from_input():
 
 	configParser = ConfigParser.ConfigParser()
