@@ -4,6 +4,7 @@ import util
 import perry_geo_annealing as pg
 import ConfigParser
 import perry_geo_test as test
+import time
 
 import sys, getopt
 
@@ -37,6 +38,7 @@ if (__name__ == "__main__"):
 		In our case, energy calculates the cost of assigning people to projects.
 
 	'''
+	start_time = time.time()
 
 	try:
 		argv = sys.argv[2:]
@@ -59,7 +61,7 @@ if (__name__ == "__main__"):
 
 	if (not(set_input_file)):
 		print "Please specify an input file."
-		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>]"
+		print " usage: ./ranked_teams_main.py -i <inputfile> [-o <outputfile>]"
 		sys.exit(2)
 
 	# Create a ConfigParser to get various fields from the config file.
@@ -85,6 +87,11 @@ if (__name__ == "__main__"):
 		test.manual_schedule(use_file, students, sol, annealer, use_diversity, output_file)
 	else:
 		test.manual_schedule(use_file, students, sol, annealer, use_diversity)
+
+	string =  "Program completed in " + str((time.time() - start_time)/60)
+	string += " minutes."
+	print string
+
 
 
 

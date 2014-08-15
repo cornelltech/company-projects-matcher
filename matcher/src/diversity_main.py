@@ -4,6 +4,7 @@ import util
 import ConfigParser
 import perry_geo_annealing_diversity as pgd
 import perry_geo_test as test
+import time
 
 import sys, getopt
 
@@ -36,6 +37,7 @@ if (__name__ == "__main__"):
 		In our case, energy calculates the similarity of teams.
 
 	'''
+	start_time = time.time()
 
 	try:
 		argv = sys.argv[2:]
@@ -58,7 +60,7 @@ if (__name__ == "__main__"):
 
 	if (not(set_input_file)):
 		print "Please specify an input file."
-		print " usage: ./diversity_main.py -i <inputfile>"
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>]"
 		sys.exit(2)
 
 	# Create config parser to get various fields.
@@ -85,6 +87,10 @@ if (__name__ == "__main__"):
 		test.manual_schedule(use_file, students, sol, annealer, use_diversity, output_file)
 	else:
 		test.manual_schedule(use_file, students, sol, annealer, use_diversity)
+
+	string =  "Program completed in " + str((time.time() - start_time)/60)
+	string += " minutes."
+	print string
 
 
 
