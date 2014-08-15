@@ -33,7 +33,7 @@ We also must input the project name that corresponds with each ID, so that when 
 
 ##Instructions
 
-1. Decide on the parameters for the problem, and set appropriate values in config.txt. How many MBA/MEng students would we like each team to have? What scales should our diversity metrics be on? How many projects are we allowing students to select from? For a complete list of parameters to consider, look at config.txt.
+1. Decide on the parameters for the problem, and set appropriate values in config.txt. How many MBA/MEng students would we like each team to have? What scales should our diversity metrics be on? For a complete list of parameters to consider, look at config.txt.
 
 2. Assign an ID number for each project that students may rank. ID numbers must be in [1, number of projects], inclusive. 
 
