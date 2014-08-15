@@ -69,7 +69,6 @@ if (__name__ == "__main__"):
 	configFilePath = r'config.txt'
 	configParser.read(configFilePath)
 
-	#input_file = configParser.get('files', 'main_file')
 	project_id_mappings = configParser.get('files', 'project_id_mappings')
 	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
 	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
