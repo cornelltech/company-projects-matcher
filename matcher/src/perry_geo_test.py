@@ -40,7 +40,7 @@ def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBA
 		print "The minimum energy is " + str(min_energy)
 		return [p for p in min_sol if len(p.students) > 0]
 
-def manual_schedule(use_file, students, sol, annealer, use_diversity):
+def manual_schedule(use_file, students, sol, annealer, use_diversity, output_file = "output.csv"):
 	'''
 		use_diversity tells us which energy function to use.
 		If use_diversity is True, then we use the energy function from
@@ -58,15 +58,15 @@ def manual_schedule(use_file, students, sol, annealer, use_diversity):
 	state = (sol, inv_cov_mat_tup)
 	print "Initial energy is " + str(pg.energy(state))
 	# Manually set the annealing schedule.
-	state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
+	#state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=0)
 
-	print "Final energy is " + str(e)
+	#print "Final energy is " + str(e)
 	if (use_diversity):
 		print "Calculated final energy is " + str(diversity.energy(state))
 	else:
 		print "Calculated final energy is " + str(pg.energy(state))
 
-	util.print_final_solution(state, use_diversity)
+	util.print_final_solution(state, use_diversity, output_file)
 
 	# Only print the unranked students if we a care about the students' rankings.
 	if (not(use_diversity)):
