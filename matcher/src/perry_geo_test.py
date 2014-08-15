@@ -71,6 +71,7 @@ def manual_schedule(use_file, students, sol, annealer, use_diversity, output_fil
 	# Only print the unranked students if we a care about the students' rankings.
 	if (not(use_diversity)):
 		util.list_unranked_students(state)
+		util.list_low_interest_students(state)
 
 def test_printing(students, sol, use_diversity):
 	'''

@@ -550,7 +550,7 @@ def list_low_interest_students(state):
 	print
 	threshold = classes.number_project_rankings / 2
 	print "The following students were assigned to a project below rank " + str(threshold) + ":"
-	print "-----------------------------------------------------------------------------"
+	print "*************************************************************************************"
 	(projects, inv_cov_mat_tup) = state
 	for p in projects:
 		for student in p.students:
@@ -559,6 +559,9 @@ def list_low_interest_students(state):
 			# The student didn't rank this
 			if (rank > threshold):
 				print student.name + " (" + str(student.degree_pursuing) + "):"
+				print "------------------------"
+				print "Assigned to rank " + str(rank) + ": " + str(dict_project_names[p.ID]) + "."
+				print "This student's rankings are: "
 				for i in range (0, len(student.project_rankings)):
 					print "Rank " + str(i + 1) + ":",
 					rank_i_project_id = student.project_rankings[i]
