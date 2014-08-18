@@ -5,6 +5,7 @@ import ConfigParser
 import perry_geo_annealing_diversity as pgd
 import perry_geo_test as test
 import time
+import initial_solution
 
 import sys, getopt
 
@@ -41,14 +42,15 @@ if (__name__ == "__main__"):
 
 	try:
 		argv = sys.argv[1:]
-		opts, args = getopt.getopt(argv, "i:o:", ["input", "output"])
+		opts, args = getopt.getopt(argv, "i:o:n:", ["input", "output", "numteams"])
 	except (getopt.GetoptError):
 		print "Unrecognized arguments."
-		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>]"
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
 		sys.exit(2)
 
 	set_input_file = False
 	set_output_file = False
+	set_num_teams = False
 
 	for opt, arg in opts:
 		if (opt == "-i"):
@@ -57,11 +59,18 @@ if (__name__ == "__main__"):
 		elif (opt == "-o"):
 			output_file = arg
 			set_output_file = True
+		elif (opt == "-n"):
+			num_teams = int(arg)
+			set_num_teams = True
 
 	if (not(set_input_file)):
 		print "Please specify an input file."
-		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>]"
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
 		sys.exit(2)
+
+	if (not(set_num_teams)):
+		print "Please specify the number of teams to create."
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
 
 	# Create config parser to get various fields.
 	configParser = ConfigParser.ConfigParser()
@@ -78,18 +87,25 @@ if (__name__ == "__main__"):
 	all_projects = util.generate_all_projects()
 	students = util.create_students_from_input(input_file)
 
-	# This contains the input checks in here (after it creates the feasible projects.)
-	sol = test.do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings)
-	use_diversity = True
-	use_file = False
-	if (set_output_file):
-		test.manual_schedule(use_file, students, sol, annealer, use_diversity, output_file)
-	else:
-		test.manual_schedule(use_file, students, sol, annealer, use_diversity)
+	#def random_initial_solution_for_diversity(students, projects, num_teams):
+	initial_solution.random_initial_solution_for_diversity(students, all_projects, num_teams)	
 
-	string =  "Program completed in " + str((time.time() - start_time)/60)
-	string += " minutes."
-	print string
+
+
+
+	# OLD THINGS that came after line 87.
+	# This contains the input checks in here (after it creates the feasible projects.)
+	# sol = test.do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings)
+	# use_diversity = True
+	# use_file = False
+	# if (set_output_file):
+	# 	test.manual_schedule(use_file, students, sol, annealer, use_diversity, output_file)
+	# else:
+	# 	test.manual_schedule(use_file, students, sol, annealer, use_diversity)
+
+	# string =  "Program completed in " + str((time.time() - start_time)/60)
+	# string += " minutes."
+	# print string
 
 
 
