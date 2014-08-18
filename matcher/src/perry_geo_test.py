@@ -17,28 +17,28 @@ class CompError(Exception):
 
 # Framework to use perrygeo's python-simulated-annealing library.
 
-def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100):
-		'''
-			Returns a list of projects.
-		'''
-		min_energy = float("inf")
-		min_sol = None
-		for i in range (0, num_times):
-			init = initial_solution.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
-		#	print "There are  " + str(len(feasible_projects)) + " feasible projects"
-			print "Random solution " + str(i) + ":"
-			for p in init:
-				print str(p.ID) + ":" + str([s.ID for s in p.students])
-			inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
-			#inv_cov_mat = inv_cov_mat_tup[0]
-			cur_energy = pg.energy((init, inv_cov_mat_tup))
-			if (cur_energy < min_energy):
-				min_sol = init
-				min_energy = cur_energy
-		for p in min_sol:
-			print str(p.ID) + ":" + str([s.ID for s in p.students])
-		print "The minimum energy is " + str(min_energy)
-		return [p for p in min_sol if len(p.students) > 0]
+# def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100):
+# 		'''
+# 			Returns a list of projects.
+# 		'''
+# 		min_energy = float("inf")
+# 		min_sol = None
+# 		for i in range (0, num_times):
+# 			init = initial_solution.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
+# 		#	print "There are  " + str(len(feasible_projects)) + " feasible projects"
+# 			print "Random solution " + str(i) + ":"
+# 			for p in init:
+# 				print str(p.ID) + ":" + str([s.ID for s in p.students])
+# 			inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
+# 			#inv_cov_mat = inv_cov_mat_tup[0]
+# 			cur_energy = pg.energy((init, inv_cov_mat_tup))
+# 			if (cur_energy < min_energy):
+# 				min_sol = init
+# 				min_energy = cur_energy
+# 		for p in min_sol:
+# 			print str(p.ID) + ":" + str([s.ID for s in p.students])
+# 		print "The minimum energy is " + str(min_energy)
+# 		return [p for p in min_sol if len(p.students) > 0]
 
 def manual_schedule(use_file, students, sol, annealer, use_diversity, output_file = "output.csv"):
 	'''
@@ -129,11 +129,11 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 		print "The returned solution has an avg rank of " + str(calculate_avg_rank(min_sol_projects, verbose = False))
 		return min_sol_projects
 
-def do_random_initial_solutions(students, all_projects, annealer, use_diversity):
- 		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
-	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
-	 	print "About to do manual schedule"
-	 	manual_schedule(False, students, sol, annealer, use_diversity)
+# def do_random_initial_solutions(students, all_projects, annealer, use_diversity):
+#  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
+# 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
+# 	 	print "About to do manual schedule"
+# 	 	manual_schedule(False, students, sol, annealer, use_diversity)
 
 def do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings, verbose = False):
 		'''
