@@ -87,25 +87,18 @@ if (__name__ == "__main__"):
 	all_projects = util.generate_all_projects()
 	students = util.create_students_from_input(input_file)
 
-	#def random_initial_solution_for_diversity(students, projects, num_teams):
-	initial_solution.random_initial_solution_for_diversity(students, all_projects, num_teams)	
+	sol = initial_solution.random_initial_solution_for_diversity(students, all_projects, num_teams)	
 
+	use_diversity = True
+	use_file = False
+	if (set_output_file):
+		test.manual_schedule(use_file, students, sol, annealer, use_diversity, output_file)
+	else:
+		test.manual_schedule(use_file, students, sol, annealer, use_diversity)
 
-
-
-	# OLD THINGS that came after line 87.
-	# This contains the input checks in here (after it creates the feasible projects.)
-	# sol = test.do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings)
-	# use_diversity = True
-	# use_file = False
-	# if (set_output_file):
-	# 	test.manual_schedule(use_file, students, sol, annealer, use_diversity, output_file)
-	# else:
-	# 	test.manual_schedule(use_file, students, sol, annealer, use_diversity)
-
-	# string =  "Program completed in " + str((time.time() - start_time)/60)
-	# string += " minutes."
-	# print string
+	string =  "Program completed in " + str((time.time() - start_time)/60)
+	string += " minutes."
+	print string
 
 
 
