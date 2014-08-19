@@ -475,7 +475,8 @@ def print_final_solution(state, use_diversity, output_file):
 			print "This solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
 		numpy_version_of_output = np.array(output)
 		print "numpy version of output is " + str(numpy_version_of_output)
-		dataframe_output = pd.DataFrame(numpy_version_of_output)
+		dataframe_output = pd.DataFrame(numpy_version_of_output, columns = ["Results:"])
+
 		print "data farme output = " + str(dataframe_output)
 
 		dataframe_output.to_csv(output_file, sep=',', index = False)
