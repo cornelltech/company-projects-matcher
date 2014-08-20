@@ -459,7 +459,7 @@ def print_final_solution(state, use_diversity, output_file):
 					print "Attributes: " + str(student.get_numerical_student_properties())
 				print
 				ranks.append(rank)
-				cur_project_output = cur_project_output + "\t" + student.name
+				cur_project_output = cur_project_output + student.name + "\t"
 			#cur_project_output = cur_project_output + [student.name for student in p.students]
 			avg_project_rank = np.mean(ranks)
 			all_avg_ranks.append(avg_project_rank)
@@ -474,7 +474,7 @@ def print_final_solution(state, use_diversity, output_file):
 			print
 			print "This solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
 		numpy_version_of_output = np.array(output)
-		dataframe_output = pd.DataFrame(numpy_version_of_output, columns = ["Results:"])
+		dataframe_output = pd.DataFrame(numpy_version_of_output, columns = [""])
 		dataframe_output.to_csv(output_file, sep=',', index = False)
 		print
 		print
