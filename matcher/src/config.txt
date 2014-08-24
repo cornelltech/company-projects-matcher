@@ -18,7 +18,7 @@ max_coding_ability = 4
 num_valid_projects = 250
 
 # Field: number of projects that each student should rank.
-number_project_rankings = 10
+number_project_rankings = 15
 
 # Field: number of students on each team.
 num_MBAs = 2
