@@ -9,7 +9,7 @@ The most important file in the classes folder is config.txt. Config.txt allows u
 ###Code
 -----
 
-Currently, all code for the algorithm is included in the classes folder. This might change soon.
+Currently, all code for the algorithm is included in the srcs folder. 
 
 There are four different types of modules in the classes folder:
 
@@ -25,7 +25,7 @@ There are four different types of modules in the classes folder:
 ###Data
 -----
 
-Data is included in this folder as well. We can specify which files to read from in config.txt, but files must follow the format shown by eighty_students.csv. The diverse subroutines will pull from config.txt also (the exact same file as perry_geo_main_file). 
+Data is included in this folder as well. We can specify which files to read from in config.txt, but files must follow the format shown by eighty_students.csv. The diverse subroutines will pull from config.txt also. 
 
 We also must input the project name that corresponds with each ID, so that when we print the final results, we may see the project names and the students' names as well.
 
