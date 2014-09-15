@@ -4,8 +4,6 @@ from scipy import linalg
 from scipy import spatial
 import clustering
 
-default_file = "/Users/ameyaacharya/Documents/Projects/Company Projects/Code/company-projects-matcher/matcher/src/classes/eighty_students.csv"
-
 class DistanceError(Exception):
 	def __init__(self, value):
 		self.val = value
@@ -14,14 +12,22 @@ class DistanceError(Exception):
 
 def is_positive_semidefinite(cov_matrix, verbose = False):
 	'''
-		Calculates all eigenvalues of the matrix
-		If there are negative eigenvalues, returns false.
+		Checks if the input matrix is positive semidefinite.
+		(If there are negative eigenvalues of the matrix, returns false.)
+
+		Parameters
+		----------
+		cov_matrix: the covariance matrix of the given data (2d numpy array of floats).
+
+		Returns
+		-------
+		is_positive_semidefinite: indicates if the given matrix is positive
+		                          semidefinite (bool).
+
 	'''
 	(eigenvalues, eigenvectors) = linalg.eig(cov_matrix)
 	res = []
-	#print eigenvalues.shape
 	for e in eigenvalues:
-		#print e
  		if (e < 0):
 	 		res.append(e)
 	if (verbose):
@@ -42,7 +48,6 @@ def create_covariance_matrix(use_file, students, file, verbose = False):
 	else:
 		multi_array = []
 		for student in students:
- 			# add their attributes to multi array
  			attributes = student.get_numerical_student_properties()
  			multi_array.append(attributes)
  		IDs = [s.ID for s in students]
@@ -106,13 +111,33 @@ def sqrt_matrix(matrix):
 	'''
 		Calcuate matrix square root using scipy linalg.
 
+		Parameters
+		----------
+		matrix: matrix (numpy 2d array of floats).
+
+		Returns
+		-------
+		sqrt_matrix: the matrix square root of the input matrix.
+
 	'''	
  	matrix_square_root = linalg.sqrtm(matrix)
 	return matrix_square_root
 
 def inverse_matrix(matrix, use_pseudo_inv = True, verbose = False):
 	'''
-		Can calculate real matrix inverse or pseudoinverse.
+		Calculates matrix inverse -- either true inverse or pseudoinverse.
+
+		Parameters
+		----------
+		matrix: matrix (numpy 2d array of floats).
+		use_pseudo_inv: indicates if we want to calculate the pseudoinverse (bool).
+		                If use_pseudo_inv = False, then we calculate the true inverse.
+		verbose: indicates whether we want to print updates.
+
+		Returns
+		-------
+		inverse_matrix: the (pseudo or real) inverse of the input matrix
+		                (numpy 2d array of floats).
 
 	'''
 	# Calculate real matrix inverse.
@@ -129,67 +154,26 @@ def inverse_matrix(matrix, use_pseudo_inv = True, verbose = False):
 
 def do_python_distance_data(student_one, student_two, inv_cov_mat):
 	'''
-		NOTE: this takes in the inverse of the cov mat, not the inverse sq cov mat.
+		Parameters
+		----------
+		student_one: data for first student (must be all numerical) (numpy 1D array).
+		student_two: data for second student (must be all numerical) (numpy 1D array).
+		inv_cov_mat: the inverse covariance matrix of the given data
+		             (2d numpy array of floats).
+
+		Returns
+		-------
+		distance: the distance between student_one and student_two (float).
 
 	'''
 	return spatial.distance.mahalanobis(student_one, student_two, inv_cov_mat)
 
-def create_inv_cov_mat_from_data(use_file, students, file):
-	quadruple = create_covariance_matrix(use_file, students, file)
+def create_inv_cov_mat_from_data(use_file, students, file_name):
+	'''
+		Creates inverse covariance matrix from the input file.
+	'''
+	quadruple = create_covariance_matrix(use_file, students, file_name)
 	cov_mat = quadruple[2]
 	dict_key_vals = quadruple[3]
 	inv_cov_mat = inverse_matrix(cov_mat)
 	return (inv_cov_mat, dict_key_vals)
-
-def do_all_python_distances_data(data, inv_cov_mat, unprocessed_data, start = 0, verbose = True):
-	'''
-		NOTE: this takes in the inverse of the cov mat, not the inverse sq cov mat.
-
-	'''
-	i = start
-	j = start
-	res = []
-	for student_one in data:
-		for student_two in data:
-			d = do_python_distance_data(student_one, student_two, inv_cov_mat)
-			tup = ((i, j), d)
-			keys = [t[0] for t in res]
-			if ((j, i) in keys):
-			 	pass
-			else:
-			 	res.append(tup)
-			j += 1
-		i += 1
-		j = start
-	res.sort(key = lambda tup: tup[1])
-
-	if (verbose):
-		 for i in res:
-		 	tup = i[0]
-		 	first_student = tup[0]
-			second_student = tup[1]
-
-			lst_first_student = unprocessed_data[first_student]
-			lst_second_student = unprocessed_data[second_student]
-
-			print lst_first_student
-			print lst_second_student
-
-			for x in range(0, 4):
-				if (not(lst_first_student[x] == lst_second_student[x])):
-					print "Diff at " + str(x)
-			print i[1]
-	#return res
-
-if (__name__ == "__main__"):
-	# Will print out the entire matrix if necessary
-	np.set_printoptions(threshold=np.nan)
-
-	tup = create_covariance_matrix()
-	unprocessed_data = tup[0]
-	processed_data = tup[1]
-	covariance_matrix = tup[2]
-
-	sq_cov = sqrt_matrix(covariance_matrix)
-	inv_cov = inverse_matrix(covariance_matrix)
-	inv_sq_cov = inverse_matrix(sq_cov)
