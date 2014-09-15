@@ -366,31 +366,11 @@ def greedy_initial_solution_and_fill_unmatched(students, feasible_projects, verb
 	feasible_projects = randomly_add_unmatched_students(initial_res, verbose)
 	return [p for p in feasible_projects if len(p.students) > 0]
 
-# For the given student, find the project that it was on.
-def find_students_project(student, projects, newly_added_ID):
-	#project_IDs = [p.ID for p in projects]
-	matched_projects = []
-	for project in projects:
-		# This is the project that we just added our student to,
-		# so we don't do anything in this way.
-		if (project.ID == newly_added_ID):
-			pass
-		else:
-			student_IDs = [s.ID for s in project.students]
-			if (student.ID in student_IDs):
-				matched_projects.append(project)
-	if (len(matched_projects) > 1):
-		raise CompError("More than one project that is not the newly added one.")
-	elif (len(matched_projects) == 0):
-		raise CompError("No project that is not the newly added one.")
-	else:
-		# There is only one project in matched_projects.
-		print "The project that " + str(student.ID) + " matched was:" + str(matched_projects[0].ID)
-		return matched_projects[0]	
-
-# NOTE: this is where the issue with indices and randomness came up.
 # ID is the ID of the project that we don't want them to be removed from.
 def remove_students_from_projects(students_to_remove, projects, ID, remove_from_waiting = False):
+	'''
+		students_to_remove: a list of Students that we would like to remove from other projects.
+	'''
 	for project in projects:
 		# Get the student objects from the tuples of (rank, student) in waiting_students
 		objects_waiting_students = [tup[1] for tup in project.waiting_students]
@@ -411,5 +391,3 @@ def remove_students_from_projects(students_to_remove, projects, ID, remove_from_
 						project.waiting_students.pop(index_student)
 					else:
 						pass
-
-
