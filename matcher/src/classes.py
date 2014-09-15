@@ -673,8 +673,8 @@ class Project(object):
 		num_students = len(self._students)
 		if (num_students < self.num_MBAs + self.num_MEngs):
 			error = "Students on project " + str(self.ID) + " are "
-			error += str(self.students) + ". This project is not full."
-			error += " Do you want to calculate diversity?"
+			error += str([s.ID for s in self.students]) + ". This project is not full."
+			error += " Cannot calculate diversity."
 			raise ValueError(error)
 		else:
 			attributes = []
