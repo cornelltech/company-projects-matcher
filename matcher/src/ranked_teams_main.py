@@ -85,7 +85,7 @@ if (__name__ == "__main__"):
 	if (set_output_file):
 		test.manual_schedule(use_file, students, sol, annealer, use_diversity, input_file, output_file)
 	else:
-		test.manual_schedule(use_file, students, sol, annealer, input_file, use_diversity)
+		test.manual_schedule(use_file, students, sol, annealer, use_diversity, input_file)
 
 	string =  "Program completed in " + str((time.time() - start_time)/60)
 	string += " minutes."
