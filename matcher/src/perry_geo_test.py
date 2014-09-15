@@ -40,7 +40,7 @@ class CompError(Exception):
 # 		print "The minimum energy is " + str(min_energy)
 # 		return [p for p in min_sol if len(p.students) > 0]
 
-def manual_schedule(use_file, students, sol, annealer, use_diversity, output_file = "output.csv"):
+def manual_schedule(use_file, students, sol, annealer, use_diversity, filename, output_file = "output.csv"):
 	'''
 		use_diversity tells us which energy function to use.
 		If use_diversity is True, then we use the energy function from
@@ -50,7 +50,7 @@ def manual_schedule(use_file, students, sol, annealer, use_diversity, output_fil
 
 	'''
 
-	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
+	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students, filename)
 	if (len(sol) < 2):
 		error = "There is only one team, so we cannot perform simulated annealing."
 		raise CompError(error)
