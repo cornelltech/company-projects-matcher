@@ -2,7 +2,6 @@ import util
 import initial_solution
 import perry_geo_annealing as pg
 import perry_geo_annealing_diversity as diversity
-import random_teams
 
 import distance
 import numpy as np
@@ -15,38 +14,27 @@ class CompError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
-# Framework to use perrygeo's python-simulated-annealing library.
-
-# def random_solutions_and_goodness(use_file, students, feasible_projects, num_MBAs, num_MEngs, num_times = 100):
-# 		'''
-# 			Returns a list of projects.
-# 		'''
-# 		min_energy = float("inf")
-# 		min_sol = None
-# 		for i in range (0, num_times):
-# 			init = initial_solution.make_initial_solution(students, feasible_projects, num_MBAs, num_MEngs)
-# 		#	print "There are  " + str(len(feasible_projects)) + " feasible projects"
-# 			print "Random solution " + str(i) + ":"
-# 			for p in init:
-# 				print str(p.ID) + ":" + str([s.ID for s in p.students])
-# 			inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(use_file, students)
-# 			#inv_cov_mat = inv_cov_mat_tup[0]
-# 			cur_energy = pg.energy((init, inv_cov_mat_tup))
-# 			if (cur_energy < min_energy):
-# 				min_sol = init
-# 				min_energy = cur_energy
-# 		for p in min_sol:
-# 			print str(p.ID) + ":" + str([s.ID for s in p.students])
-# 		print "The minimum energy is " + str(min_energy)
-# 		return [p for p in min_sol if len(p.students) > 0]
-
 def manual_schedule(use_file, students, sol, annealer, use_diversity, filename, output_file = "output.csv"):
 	'''
-		use_diversity tells us which energy function to use.
-		If use_diversity is True, then we use the energy function from
-		perry_geo_annealing_diversity.
-		If use_diversity is False, then we use the energy function from 
-		perry_geo_annealing.py.
+		Parameters
+		----------
+		use_file: indicates if we want to use the data from the file or not (bool).
+		students: student attributes (2d numpy array of ints).
+		sol: a solution (a Project list).
+		annealer: the Annealer object (Annealer).
+		use_diversity: indicates which energy function we want to use (bool).
+		    If use_diversity is True, then we use the energy function from
+		    perry_geo_annealing_diversity.
+		    If use_diversity is False, then we use the energy function from 
+		    perry_geo_annealing.py.
+		filename: file that the input should come from (string).
+		output_file: file that the output should go to (string).
+
+		Returns
+		-------
+		Nothing. Writes to the output file and prints updates and solution
+		to console.
+		
 
 	'''
 
@@ -79,7 +67,6 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 			Then, annealing will optimize a function of the two.
 			Returns a list of projects.
 		'''
-	#	min_energy = float("inf")
 		min_rank = float("inf")
 		min_sol = None
 
@@ -111,29 +98,15 @@ def greedy_solutions_and_goodness(students, feasible_projects, num_times = 1000)
 			
 			print "Solution " + str(i) + " average rank: " + str(cur_avg_rank)
 
-			# Actually calculating the energy.
-			#	inv_cov_mat_tup = distance.create_inv_cov_mat_from_data(False, students)
-			#cur_energy = pg.energy((init, inv_cov_mat_tup))
-			#if (cur_energy < min_energy):
-			#	min_sol = init
-			#	min_energy = cur_energy
-
-			# Just compare the average ranks.
+			# Compare the average ranks.
 			if (cur_avg_rank < min_rank):
 				min_rank = cur_avg_rank
 				min_sol = copy.deepcopy(cur_sol)
 
-	#	print "The minimum energy is " + str(min_energy)
 		print "The minimum avg rank is " + str(min_rank)
 		min_sol_projects = [p for p in min_sol if len(p.students) > 0]
 		print "The returned solution has an avg rank of " + str(calculate_avg_rank(min_sol_projects, verbose = False))
 		return min_sol_projects
-
-# def do_random_initial_solutions(students, all_projects, annealer, use_diversity):
-#  		feasible_projects = util.create_feasible_projects(students, all_projects, verbose = True)
-# 	 	sol = random_solutions_and_goodness(False, students, feasible_projects, 37, 35, num_times = 100)
-# 	 	print "About to do manual schedule"
-# 	 	manual_schedule(False, students, sol, annealer, use_diversity)
 
 def do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings, verbose = False):
 		'''

@@ -2,8 +2,10 @@ import numpy as np
 import util
 from classes import CompError
 
-# A function to calculate the energy of a state.
 def energy(state):
+	'''
+		Calculates the energy of a given state.
+	'''
 	projects = state[0]
 	inv_cov_mat_tup = state[1]
 
@@ -21,7 +23,6 @@ def energy(state):
 		energy = np.mean(project_costs)
 		return energy
 
-	# 34
 	def team_diversity_cost():
 		diversities = []
 		for project in projects:
@@ -32,17 +33,20 @@ def energy(state):
 
 	return avg_project_costs() + team_diversity_cost()
 
-# A function to make a random change to a state.
-# Returns None (just like the example).
-# Currently implemented as one swap of two people across teams.
-# NOTE: there should be no teams of size 0 before calling the function.
 def move(state, verbose = True, super_verbose = False):
+	'''
+		Makes a random change to a state.
+		
+		Picks two random teams, picks two random members, and performs
+		a swap of these members across the teams.
+		
+		NOTE: there should be no teams of size 0 before calling the function.	
+	'''
 	projects = state[0]
 	inv_cov_mat_tup = state[1]
 
 	project_one = util.random_project(projects, [], True)
 	project_two = util.random_project(projects, [], True)
-
 
 	# Guarantee that the projects are not the same.
 	# Continue to swap project two until it is diff from project one.

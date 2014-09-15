@@ -2,8 +2,10 @@ import numpy as np
 import util
 from classes import CompError
 
-# A function to calculate the energy of a state.
 def energy(state):
+	'''
+		Calculates the energy of a given state.
+	'''
 	projects = state[0]
 	inv_cov_mat_tup = state[1]
 	def team_diversity_cost():
@@ -16,11 +18,16 @@ def energy(state):
 
 	return team_diversity_cost()
 
-# A function to make a random change to a state.
-# Returns None (just like the example).
-# Currently implemented as one swap of two people across teams.
-# NOTE: there should be no teams of size 0 before calling the function.	
+
 def move(state, verbose = True, super_verbose = False):
+	'''
+		Makes a random change to a state.
+		
+		Picks two random teams, picks two random members, and performs
+		a swap of these members across the teams.
+		
+		NOTE: there should be no teams of size 0 before calling the function.	
+	'''
 	projects = state[0]
 	inv_cov_mat_tup = state[1]
 
@@ -59,7 +66,6 @@ def move(state, verbose = True, super_verbose = False):
 	student_two = util.random_student(second_team)
 
 	# NOTE: this is problematic if teams aren't full.
-	# 38
 	# Guarantee that the students are of the same type.
 	while (not (student_one.degree_pursuing == student_two.degree_pursuing)):
 		student_two = util.random_student(second_team)
