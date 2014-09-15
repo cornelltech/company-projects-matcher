@@ -57,9 +57,11 @@ def random_project(projects, already_picked, reuse, verbose = False):
 		-----------
 		projects: the list of projects to choose from (Project list).
 
-		already_picked: the projects that have already been assigned students (Project list).
+		already_picked: the projects that have already been assigned students
+		                (Project list).
 
-		reuse: if False, then we would like to pick a project not included in already_picked (boolean).
+		reuse: if False, then we would like to pick a project not
+		       included in already_picked (boolean).
 
 		verbose: print updates.
 
@@ -72,7 +74,9 @@ def random_project(projects, already_picked, reuse, verbose = False):
 		print "Length of projects is " + str(len(projects))
 	rand_index = random_index(len(projects))
 	if (verbose):
-		print "Length of project " + str(projects[rand_index].ID) + " is " + str(len(projects[rand_index].students))
+		statement =  "Length of project " + str(projects[rand_index].ID)
+		statement += " is " + str(len(projects[rand_index].students))
+		print statement
 	if (not (reuse)):
 		project_to_return = projects[rand_index]
 		while (project_to_return in already_picked):
@@ -227,8 +231,10 @@ def create_feasible_projects(students, projects, verbose = False):
 		if (verbose):
 			print "For project " + str(p.ID) + ":"
 			print [s.ID for s in matched]
-		MBAs_ranked = [s for s in matched if s.degree_pursuing == "MBA" or s.degree_pursuing == 0]
-		MEngs_ranked = [s for s in matched if s.degree_pursuing == "MEng" or s.degree_pursuing == 1]
+		MBAs_ranked = [s for s in matched if s.degree_pursuing == "MBA" 
+		  or s.degree_pursuing == 0]
+		MEngs_ranked = [s for s in matched if s.degree_pursuing == "MEng" 
+		  or s.degree_pursuing == 1]
 		if (verbose):
 			print "MBAs" + str([s.ID for s in MBAs_ranked])
 			print "MEngs" + str([s.ID for s in MEngs_ranked])
@@ -238,7 +244,12 @@ def create_feasible_projects(students, projects, verbose = False):
 			print str(len(MEngs_ranked)) + " MEngs ranked this project."
 			print str(len(MBAs_ranked)) + " < " + str(p.num_MBAs) + ":",
 			print str(len(MEngs_ranked)) + " < " + str(p.num_MEngs) + ":",
-			print "The comparison that we are checking: " + str((len(MBAs_ranked) < p.num_MBAs) or (len(MEngs_ranked) < p.num_MEngs))
+			comparison = "The comparison that we are checking: "
+			var_one = len(MBAs_ranked) < p.num_MBAs
+			var_two = len(MEngs_ranked) < p.num_MEngs
+			var = var_one or var_two
+			comparison += str(var)
+			print comparison
 	 
 	 	if ((len(MBAs_ranked) < p.num_MBAs) or (len(MEngs_ranked) < p.num_MEngs)):
 	 		if (verbose):
@@ -319,7 +330,8 @@ def create_students_from_input(file):
 		for i in range(0, num_rows):
 			student = data_array[i,:]
 			if (not(len(student) == classes.number_project_rankings + 7)):
-				error = "Row " + str(i) + " in " + str(file) + " does not have the number of fields required by the config file."
+				error = "Row " + str(i) + " in " + str(file) + " does not have"
+				error += "the number of fields required by the config file."
 				raise InputError(error)
 
 			ID 	= student[0]
@@ -338,7 +350,8 @@ def create_students_from_input(file):
 			last_name = student[5 + classes.number_project_rankings + 1]
 			name = first_name + " " + last_name
 
-			a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, num_yrs_work_exp, rankings)
+			a = Student(name, ID, degree_pursuing, cs_ug, coding_ability, 
+				num_yrs_work_exp, rankings)
 			students_lst.append(a)
 
 		return students_lst
@@ -352,9 +365,11 @@ def create_students_from_input(file):
 			raise InputError(error)
 
 
-def input_checks(students, projects, num_MBAs, num_MEngs, project_id_mappings, sorted = False):
+def input_checks(students, projects, num_MBAs, num_MEngs,
+                 project_id_mappings, sorted = False):
 	'''
-		num_MBAs and num_MEngs are the numbers required per team (i.e. 2 and 2), not the total numbers.
+		num_MBAs and num_MEngs are the numbers required per team
+		(i.e. 2 and 2), not the total numbers.
 	'''
 	if (len(projects) == 0):
 		raise FieldError ("There are no feasible projects.")
@@ -364,8 +379,10 @@ def input_checks(students, projects, num_MBAs, num_MEngs, project_id_mappings, s
 
 	team_size = num_MBAs + num_MEngs
 
-	MBAs = filter(lambda student: student.degree_pursuing == 0 or student.degree_pursuing == "MBA", students)
-	MEngs = filter(lambda student: student.degree_pursuing == 1 or student.degree_pursuing == "MEng", students)
+	MBAs = filter(lambda student: student.degree_pursuing == 0 or 
+		student.degree_pursuing == "MBA", students)
+	MEngs = filter(lambda student: student.degree_pursuing == 1 or 
+		student.degree_pursuing == "MEng", students)
 
 	# Make sure that there are no overlapping student IDs.
 	MBA_IDs = [s.ID for s in MBAs]
@@ -388,12 +405,14 @@ def input_checks(students, projects, num_MBAs, num_MEngs, project_id_mappings, s
 	num_teams = len(smaller)/num_req_per_team
 
 	if (len(project_id_mappings) == 0):
-		error = "Please enter a filename for the project_id_mappings field in config.txt."
+		error = "Please enter a filename for the project_id_mappings"
+		error += "field in config.txt."
 		raise InputError(error)
 	try:
 		data = pd.read_csv(project_id_mappings)
 	except(IOError):
-		error = "Could not read file for project-ID mappings. Fix the file and enter its name in the field project_id_mappings in config.txt."
+		error = "Could not read file for project-ID mappings. Fix the file and enter"
+		error += "its name in the field project_id_mappings in config.txt."
 		raise InputError(error)
 
 	# If team size is too big for input.
@@ -456,11 +475,11 @@ def print_final_solution(state, use_diversity, output_file):
 		 			print "Rank:",
 					print rank
 				else:
-					print "Attributes: " + str(student.get_numerical_student_properties())
+					print "Attributes: "
+					print str(student.get_numerical_student_properties())
 				print
 				ranks.append(rank)
 				cur_project_output = cur_project_output + student.name + "\t"
-			#cur_project_output = cur_project_output + [student.name for student in p.students]
 			avg_project_rank = np.mean(ranks)
 			all_avg_ranks.append(avg_project_rank)
 			output.append(cur_project_output)
@@ -472,7 +491,9 @@ def print_final_solution(state, use_diversity, output_file):
 			print
 		if (not(use_diversity)):
 			print
-			print "This solution had a " + str(np.mean(all_avg_ranks)) + " rank on average."
+			statement = "This solution had a " + str(np.mean(all_avg_ranks))
+			statement +=" rank on average."
+			print statement
 		numpy_version_of_output = np.array(output)
 		dataframe_output = pd.DataFrame(numpy_version_of_output, columns = [""])
 		dataframe_output.to_csv(output_file, sep=',', index = False)
@@ -483,6 +504,10 @@ def print_final_solution(state, use_diversity, output_file):
 
 
 def list_unranked_students(state):
+	'''
+		Lists the students in state that were assigned to a project that they did
+		not rank.
+	'''
 	dict_project_names = read_project_ids_and_names_from_input()
 	unranked = False
 	print
@@ -511,8 +536,12 @@ def list_low_interest_students(state):
 	unranked = False
 	print
 	threshold = classes.number_project_rankings / 2
-	print "The following students were assigned to a project below rank " + str(threshold) + ":"
-	print "*************************************************************************************"
+	statement =  "The following students were assigned to a project below rank "
+	statement += str(threshold) + ":"
+	print statement
+	stars = "***************************************************"
+	stars += "**********************************"
+	print stars
 	(projects, inv_cov_mat_tup) = state
 	for p in projects:
 		for student in p.students:
@@ -522,7 +551,9 @@ def list_low_interest_students(state):
 			if (rank > threshold):
 				print student.name + " (" + str(student.degree_pursuing) + "):"
 				print "------------------------"
-				print "Assigned to rank " + str(rank) + ": " + str(dict_project_names[p.ID]) + "."
+				statement = "Assigned to rank " + str(rank) + ": "
+				statement += str(dict_project_names[p.ID]) + "."
+				print statement
 				print "This student's rankings are: "
 				for i in range (0, len(student.project_rankings)):
 					print "Rank " + str(i + 1) + ":",
