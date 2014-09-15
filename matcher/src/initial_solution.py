@@ -1,7 +1,6 @@
 import util
 
 import classes
-import ConfigParser
 import random
 from classes import CompError
 from classes import FieldError
@@ -54,9 +53,6 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 				# Need to check if this project has already been matched.
 				project = util.random_project(sorted_projects, matched_projects, False)
 			
-			# def random_student_lst(student_lst, already_picked, reuse):
-
-			# Need to fix error here with popping from an empty list.
 			MBA_one = util.random_student_lst(MBAs, [], True)
 			MBAs.remove(MBA_one)
 			
@@ -94,7 +90,7 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 				MBAs.remove(student)
 				unmatched_students.remove(student)
 
-				# Just trying to make sure that this project doesn't receive more than 1 extra person.
+				# Making sure that this project doesn't receive more than 1 extra person.
 				if (len(matched_projects) > 1):
 					if (verbose):
 						print "Should remove project " + str(project.ID)
@@ -119,10 +115,12 @@ def make_initial_solution(students, unsorted_projects, num_MBAs, num_MEngs, sort
 	if (not (len(students) == num_total_students)):
 		raise CompError("Not all students were matched to projects.")
 
-
 	return [p for p in sorted_projects if len(p.students) > 0]
 
 def random_initial_solution_for_diversity(students, projects, num_teams):
+	'''
+		Using the inputs, creates a random set of initial Project-Student pairings.
+	'''
 	# If length of projects < num_teams, raise an error
 	if (len(projects) < int(num_teams)):
 		raise CompError("There are fewer projects than the number of desired teams.")
@@ -135,7 +133,6 @@ def random_initial_solution_for_diversity(students, projects, num_teams):
 
 	num_MBAs_per_team = len(MBAs) / num_teams
 	num_MEngs_per_team = len(MEngs) / num_teams
-	#num_students_per_team = len(students) / num_teams
 
 	# Copying the students over.
 	unmatched_students = students[:]
@@ -190,8 +187,6 @@ def random_initial_solution_for_diversity(students, projects, num_teams):
 
 	return projects
 	
-
-# Note: these projects are the feasible ones.
 def greedy_initial_solution(original_students, original_feasible_projects, verbose = False):
 	students = original_students[:]
 	feasible_projects = original_feasible_projects[:]
@@ -238,7 +233,6 @@ def greedy_initial_solution(original_students, original_feasible_projects, verbo
 					else:
 						if (verbose):
 							print "     Not successful. "
-						#cur_project.add_waiting_student(cur_student)
 
 					# If the project is full and its students havent been 
 					# removed yet, then remove it and its students.
