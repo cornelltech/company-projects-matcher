@@ -41,6 +41,17 @@ def create_covariance_matrix(use_file, students, file, verbose = False):
 		Preprocesses data with one hot encoding (changes categorical variables into numerical.)
 		Fixes matrix if it's not positive semidefinite (adds a small version of the identity.)
 		Returns (data, covariance matrix.)
+
+	    Parameters
+	    ----------
+	    use_file: indicates if we want to use the input from the file (bool).
+	    students: students to include in calculation (Student list).
+	    file: file to use (if use_file = True).
+
+	    Returns
+	    --------
+	    covariance_matrix: the covariance matrix of the data (either from file or students).
+	
 	'''
 	if (use_file):
 		data_array_tup = clustering.__init__(file)
