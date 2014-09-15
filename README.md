@@ -18,7 +18,6 @@ As of August 14, 2014, Anaconda comes with installers for Python 2.7 and 3.4. Wh
 
 Folders
 --------
-[data analysis:] (https://github.com/cornelltech/company-projects-matcher/tree/master/data_analysis) Contains the initial survey sent out to faculty and friends, and contains code and results of data analysis on the survey responses. 
 
 [matcher] (https://github.com/cornelltech/company-projects-matcher/tree/master/matcher): Contains test data, classes, and code for performing the match. Contains files for creating teams of students matched to projects, or diverse teams of a given size. The matcher performs [simulated annealing] (http://en.wikipedia.org/wiki/Simulated_annealing), and uses [perrygeo](https://github.com/perrygeo)'s [implementation](https://github.com/perrygeo/python-simulated-annealing).
 
