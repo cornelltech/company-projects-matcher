@@ -29,7 +29,7 @@ def is_positive_semidefinite(cov_matrix, verbose = False):
 		print res
 	return len(res) == 0
 
-def create_covariance_matrix(use_file, students, file = default_file, verbose = False):
+def create_covariance_matrix(use_file, students, file, verbose = False):
 	'''
 		Reads the data from the file (if we need to fix how the data is read, change clustering init.)
 		Preprocesses data with one hot encoding (changes categorical variables into numerical.)
@@ -134,7 +134,7 @@ def do_python_distance_data(student_one, student_two, inv_cov_mat):
 	'''
 	return spatial.distance.mahalanobis(student_one, student_two, inv_cov_mat)
 
-def create_inv_cov_mat_from_data(use_file, students, file = default_file):
+def create_inv_cov_mat_from_data(use_file, students, file):
 	quadruple = create_covariance_matrix(use_file, students, file)
 	cov_mat = quadruple[2]
 	dict_key_vals = quadruple[3]
