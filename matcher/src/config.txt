@@ -32,7 +32,13 @@ number_project_rankings = 10
 capacity = 5
 capacity_w = 6
 
-# Field: annealing parameters
+# Field: annealing parameters. Initial solution is already pretty good
+# so we do not want to deviate too much from that. Stick to
+# temperatures in the 10000~30000 range for best results. Excessively low
+# temperatures result in effectively local search, while excessively high
+# temperatures end up discarding the initial solution.
+# Number of iterations influence the speed at which the temperature drops.
+# A number from 50000~200000 is reasonable.
 temperature = 12500
 iterations = 54000
 
