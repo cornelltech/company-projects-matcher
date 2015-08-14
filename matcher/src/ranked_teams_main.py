@@ -87,6 +87,8 @@ if (__name__ == "__main__"):
         project_id_mappings = configParser.get('files', 'project_id_mappings')
         capacity = configParser.getint('valid_values', 'capacity')
         capacity_w = configParser.getint('valid_values', 'capacity_w')
+        temp = configParser.getint('valid_values', 'temperature')
+        iters = configParser.getint('valid_values', 'iterations')
         team_size = capacity
 
         # Creating the annealer with our energy and move functions.
@@ -105,9 +107,9 @@ if (__name__ == "__main__"):
         use_file = False
         use_diversity = False
         if (set_output_file):
-                test.manual_schedule(use_file, students, sol, feasibles,  annealer, use_diversity, input_file, output_file)
+                test.manual_schedule(use_file, students, sol, feasibles,  annealer, use_diversity, input_file, temp, iters, output_file)
         else:
-                test.manual_schedule(use_file, students, sol, feasibles,  annealer, use_diversity, input_file)
+                test.manual_schedule(use_file, students, sol, feasibles,  annealer, use_diversity, input_file, temp, iters)
 
         string =  "Program completed in " + str((time.time() - start_time)/60)
         string += " minutes."

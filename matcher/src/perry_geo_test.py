@@ -14,7 +14,7 @@ class CompError(Exception):
 	def __str__(self):
 		return repr(self.val)
 
-def manual_schedule(use_file, students, sol, feasible_projects,  annealer, use_diversity, filename, output_file = "output.csv"):
+def manual_schedule(use_file, students, sol, feasible_projects,  annealer, use_diversity, filename, temp, iters, output_file = "output.csv"):
 	'''
 		Parameters
 		----------
@@ -46,7 +46,7 @@ def manual_schedule(use_file, students, sol, feasible_projects,  annealer, use_d
 	state = (sol, inv_cov_mat_tup, feasible_projects, students)
 	print "Initial energy is " + str(pg.energy(state))
 	# Manually set the annealing schedule.
-        state, e = annealer.anneal(state, 10000, 0.01, 54000, updates=20000)
+        state, e = annealer.anneal(state, temp, 0.01, iters, updates=iters/10)
 
         #auto = annealer.auto(state, 90)
         #print auto

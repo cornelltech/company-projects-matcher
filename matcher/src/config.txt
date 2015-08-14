@@ -32,6 +32,10 @@ number_project_rankings = 10
 capacity = 5
 capacity_w = 6
 
+# Field: annealing parameters
+temperature = 12500
+iterations = 54000
+
 [files]
 # File to use for input. 
 
