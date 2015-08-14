@@ -68,8 +68,6 @@ def create_covariance_matrix(use_file, students, file, verbose = False):
  		data_array_tup = (data_array, IDs)
 
 	data_array = data_array_tup[0]
-
-	data_array = data_array_tup[0]
 	one_hot_data_preprocessed_tup = clustering.do_preprocessing(data_array_tup)
 
 	one_hot_data_preprocessed = one_hot_data_preprocessed_tup[0]

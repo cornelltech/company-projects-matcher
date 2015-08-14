@@ -1,0 +1,39 @@
+[valid_values]
+# Setting the valid values for Student and Project objects.
+
+# Field: use a binary field
+use_binary = True
+
+# Field: duplicate rankings
+duplicate_rankings = False
+
+#Field: everyone must be matched
+match_all = False
+
+# Field: "max. possible number of years of work experience."
+# Note: range (0, n) is a list [0, 1, ..., n-1].
+max_work_experience = 4
+
+# Field: "max possible coding ability."
+# On a scale from 0 to max_coding_ability.
+max_coding_ability = 4
+
+max_business_ability = 4
+
+# Field: the maximum number of projects that we are creating.
+# Note: this set high, and doesn't need to change unless there are
+# more than 250 projects that students are allowed to choose from.
+num_valid_projects = 250
+
+# Field: number of projects that each student should rank.
+number_project_rankings = 10
+
+# Field: number of students on each team.
+capacity = 6
+capacity_w = 6
+
+[files]
+# File to use for input. 
+
+# This is the filename for printing out the company names and project names at the end.
+project_id_mappings = project_ids_and_names.csv

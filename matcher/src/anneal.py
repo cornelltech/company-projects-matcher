@@ -156,8 +156,8 @@ class Annealer:
 
             # Calculate the energy of the new state.
             E = self.energy(state)
-            print "Best energy: " + str(bestEnergy)
-            print "Current energy: " + str(E)
+            #print "Best energy: " + str(bestEnergy)
+            #print "Current energy: " + str(E)
 
             # Change in energy
             dE = E - prevEnergy
@@ -186,6 +186,8 @@ class Annealer:
             if updates > 1:
                 if step // updateWavelength > (step-1) // updateWavelength:
                     update(T, E, float(accepts)/trials, float(improves)/trials)
+                    print "Best energy: " + str(bestEnergy)
+                    print "Current energy: " + str(E)
                     trials, accepts, improves = 0, 0, 0
         
         # Return best state and energy

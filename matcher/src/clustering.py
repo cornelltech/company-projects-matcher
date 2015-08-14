@@ -50,7 +50,7 @@ def do_preprocessing(data_array_tup, verbose = False):
 	if (verbose):
 		print "data array tup is " + str(data_array_tup)
 	IDs = data_array_tup[1]
-	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, True, False])
+	enc = preprocessing.OneHotEncoder(categorical_features = [True, False, False, False, True])
 	enc.fit(data_array)
 
 	one_hot_data = enc.transform(data_array).toarray()

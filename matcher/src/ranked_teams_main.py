@@ -1,6 +1,7 @@
 #!/usr/bin/env python 
 
 import util
+import classes
 import perry_geo_annealing as pg
 import ConfigParser
 import perry_geo_test as test
@@ -31,8 +32,8 @@ if (__name__ == "__main__"):
 
 		Desired postconditions:
 			- Each student is matched to exactly one project.
-			- Each project has its desired number and makeup of students:
-				Ex. 2 MBA, 2 MEng
+			- Each project is sufficiently diverse
+				Ex. >=1 MBA, 1 MEng per team, at least one person with >=3 years of work exp, etc.
 
 		The function to be minimized is the energy of the state (energy(state)).
 		In our case, energy calculates the cost of assigning people to projects.
@@ -42,14 +43,16 @@ if (__name__ == "__main__"):
 
 	try:
 		argv = sys.argv[1:]
-		opts, args = getopt.getopt(argv, "i:o:", ["input", "output"])
+		opts, args = getopt.getopt(argv, "i:o:m:c:", ["input", "output", "mode", "config"])
 	except (getopt.GetoptError):
 		print "Unrecognized arguments."
-		print " usage: ./ranked_teams_main.py -i <inputfile> [-o <outputfile>]"
+		print " usage: ./ranked_teams_main.py -i <inputfile> [-o <outputfile>] -m [cc|co] -c <configfile>"
 		sys.exit(2)
 
 	set_input_file = False
 	set_output_file = False
+        set_mode = False
+        set_config = False
 
 	for opt, arg in opts:
 		if (opt == "-i"):
@@ -58,38 +61,57 @@ if (__name__ == "__main__"):
 		elif (opt == "-o"):
 			output_file = arg
 			set_output_file = True
-
+                elif (opt == "-m"):
+                        mode = arg
+                        set_mode = True
+                elif (opt == "-c"):
+                        config = arg
+                        set_config = True
 	if (not(set_input_file)):
 		print "Please specify an input file."
-		print " usage: ./ranked_teams_main.py -i <inputfile> [-o <outputfile>]"
+		print " usage: ./ranked_teams_main.py -i <inputfile> [-o <outputfile>] -m [cc|co] -c <configfile>"
 		sys.exit(2)
-
+        if (not(set_mode)):
+                print "Please specify a mode."
+                print " usage: ./ranked_teams_main.py -i <inputfile> [-o <outputfile>] -m [cc|co] -c <configfile>"
+                sys.exit(2)
+        if (not(set_config)):
+                print "Please specify a config file."
+                sys.exit(2)
 	# Create a ConfigParser to get various fields from the config file.
 	configParser = ConfigParser.ConfigParser()
-	configFilePath = r'config.txt'
+	configFilePath = config
 	configParser.read(configFilePath)
 
-	project_id_mappings = configParser.get('files', 'project_id_mappings')
-	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
-	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
-	team_size = num_MBAs + num_MEngs
+        classes.init_classes(config)
+        project_id_mappings = configParser.get('files', 'project_id_mappings')
+        capacity = configParser.getint('valid_values', 'capacity')
+        capacity_w = configParser.getint('valid_values', 'capacity_w')
+        team_size = capacity
 
-	# Creating the annealer with our energy and move functions.
-	annealer = Annealer(pg.energy, pg.move)
-	all_projects = util.generate_all_projects()
-	students = util.create_students_from_input(input_file)
-	
-	sol = test.do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings)
-	use_file = False
-	use_diversity = False
-	if (set_output_file):
-		test.manual_schedule(use_file, students, sol, annealer, use_diversity, input_file, output_file)
-	else:
-		test.manual_schedule(use_file, students, sol, annealer, use_diversity, input_file)
+        # Creating the annealer with our energy and move functions.
+        if mode == "cc":
+                annealer = Annealer(pg.energy, pg.move)
+        elif mode == "co":
+                annealer = Annealer(pg.energy_co, pg.move_co)
+        else:
+                raise FieldError("Unknown algorithm mode")
+        all_projects = util.generate_all_projects(config)
 
-	string =  "Program completed in " + str((time.time() - start_time)/60)
-	string += " minutes."
-	print string
+        students = util.create_students_from_input(input_file, config)
+        feasibles = util.create_feasible_projects(students, all_projects)
+
+        sol = test.do_greedy_initial_solutions(students, all_projects, annealer, project_id_mappings, config)
+        use_file = False
+        use_diversity = False
+        if (set_output_file):
+                test.manual_schedule(use_file, students, sol, feasibles,  annealer, use_diversity, input_file, output_file)
+        else:
+                test.manual_schedule(use_file, students, sol, feasibles,  annealer, use_diversity, input_file)
+
+        string =  "Program completed in " + str((time.time() - start_time)/60)
+        string += " minutes."
+        print string
 
 
 

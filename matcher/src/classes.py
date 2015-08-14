@@ -1,28 +1,96 @@
 import ConfigParser
 import distance
 import itertools 
+import numpy as np
 
 configParser = ConfigParser.ConfigParser()
-configFilePath = r'config.txt'
-configParser.read(configFilePath)
+max_business_ability =None
+vals_business_ability = None
 
-# Declaring valid values for all fields.
-vals_cs_ug = [True, False]
-max_work_experience = configParser.getint('valid_values', 'max_work_experience')
-vals_work_experience = range(0, max_work_experience+1)
+max_work_experience = None
+vals_work_experience = None
 
 # 0 = lowest, 4 = most
-max_coding_ability = configParser.getint('valid_values', 'max_coding_ability')
-vals_coding_ability = range(0, max_coding_ability+1)
- 
+max_coding_ability = None
+vals_coding_ability = None
+
 # Keep these organized in alphabetical order. 
-vals_degree_pursuing = { 0 : "MBA", 1 : "MEng"}
+vals_degree_pursuing = None
 
 # Valid IDs for our projects.
-num_valid_projects = configParser.getint('valid_values', 'num_valid_projects')
-vals_valid_projects = range(1, num_valid_projects+1)
+num_valid_projects = None
+vals_valid_projects = None
 
-number_project_rankings = configParser.getint('valid_values', 'number_project_rankings')
+#duplicate projects for the 2 teams/project constraint
+number_project_rankings = None
+alg_number_project_rankings = None
+
+duplicate_rankings = None
+
+def init_classes(config):
+        global max_business_ability
+        global vals_business_ability
+        global max_work_experience
+        global vals_work_experience
+        global max_coding_ability
+        global vals_coding_ability
+        global vals_degree_pursuing 
+        global num_valid_projects 
+        global vals_valid_projects 
+        global number_project_rankings 
+        global alg_number_project_rankings 
+        global duplicate_rankings
+
+        configFilePath = config.encode('string-escape')
+        configParser.read(configFilePath)
+
+        # Declaring valid values for all fields.
+        try:
+                max_business_ability = configParser.getint('valid_values', 'max_business_ability')
+                vals_business_ability = range(0, max_business_ability+1)
+        except (ConfigParser.Error):
+                max_business_ability = 4
+                vals_business_ability = range(0, max_business_ability+1)
+        try:
+                max_work_experience = configParser.getint('valid_values', 'max_work_experience')
+                vals_work_experience = range(0, max_work_experience+1)
+        except (ConfigParser.Error):
+                max_work_experience = 4
+                vals_work_experience = range(0, max_work_experience+1)
+        # 0 = lowest, 4 = most
+        try:
+                max_coding_ability = configParser.getint('valid_values', 'max_coding_ability')
+                vals_coding_ability = range(0, max_coding_ability+1)
+        except (ConfigParser.Error):
+                max_coding_ability = 4
+                vals_coding_ability = range(0, max_coding_ability + 1)
+
+        # Keep these organized in alphabetical order. 
+        vals_degree_pursuing = { 0 : "MBA", 1 : "MEng", 2:"HT", 3:"CM"}
+
+        # Valid IDs for our projects.
+        try:
+                num_valid_projects = configParser.getint('valid_values', 'num_valid_projects')
+        except (ConfigParser.Error):
+                num_valid_projects = 250
+
+        #duplicate projects for the 2 teams/project constraint
+        try:
+                number_project_rankings = configParser.getint('valid_values', 'number_project_rankings')
+                duplicate_rankings = configParser.getboolean('valid_values', 'duplicate_rankings')
+                if duplicate_rankings:
+                        alg_number_project_rankings = 2*number_project_rankings
+                else:
+                        alg_number_project_rankings = number_project_rankings
+        except (ConfigParser.Error):
+                number_project_rankings = 10
+                duplicate_rankings = False
+                alg_number_project_rankings = 10
+        if duplicate_rankings:
+                vals_valid_projects = range(1, (2*num_valid_projects) + 1)
+        else :
+                vals_valid_projects = range(1, num_valid_projects + 1)
+
 
 existing_student_IDs = []
 existing_team_IDs = []
@@ -47,23 +115,27 @@ class Student(object):
 	global vals_coding_ability
 	global vals_valid_projects
 	global number_project_rankings
+        global alg_number_project_rankings
+        global duplicate_rankings
 
-	def __init__ (self, name, ID, degree_pursuing, cs_ug, cod_abil, num_yrs_work_exp,
-				   project_rnks, is_normalized=False, rankings_can_be_empty = False):
+	def __init__ (self, name, ID, degree_pursuing, bus_abil, cod_abil, num_yrs_work_exp,
+				   project_rnks, bin_field = 0, is_normalized=False, rankings_can_be_empty = False):
 		''' 
 			Parameters
 			----------
 			name  = student's name (string).
 			ID 	  = student's ID (int).
 			degree_pursuing =  student's degree (string or int).
-			    Can be "MBA" or 0 for MBA, and "MEng" or 1 for MEng.
-			csug  = indicates if the student was a cs undergrad (bool).
+			    0 for MBA, 1 for MEng, 2 for HT, 3 for CM
+			bus_abil  = student's business ability (int). From 0 to 4, inclusive.
 			cod_abil  = student's coding ability (int). From 0 to 4, inclusive.
-			num_yrs_work_exp  = student's years of work experience (int).
+			num_yrs_work_exp  = student's years of professional work experience (int).
 			    From 0 to 4, inclusive. 4 indicates 4 or more years of experience.
 			project_rnks = a list of project IDs (int list).
 			    Ints are the project IDs. There are number_project_rankings IDs.
 			    Ranked in order of preference.
+                        binary_field = any binary field you wish. Possible examples:
+                           Local/not-local, male/female, was a CS undergrad/was not, etc. 
 			is_normalized = indicates if values are normalized (bool).
 			rankings_can_be_empty = indicates if the ranking list can be empty (bool).
 			    (This allows us to construct students step by step.)
@@ -73,20 +145,21 @@ class Student(object):
 		    Student object with given parameters as attributes.
 
 		'''
-		self._name				 	  = name
-		self._ID				 	  = ID
-		
+                self._name = name
+		self._ID = ID
+		self.set_bin_field(bin_field)
+
 		if (not(is_normalized)):
-			self.set_valid_properties(degree_pursuing, cod_abil, cs_ug, 
+			self.set_valid_properties(degree_pursuing, cod_abil, bus_abil, 
 										num_yrs_work_exp, project_rnks, rankings_can_be_empty)
 
 		# If the data is already normalized, then we don't want to check membership with the above lists. 
 		else:
 			self._degree_pursuing = degree_pursuing
 			self._coding_ability = cod_abil
-			self._was_cs_ug = cs_ug
+			self._business_ability= bus_abil
 			self._work_experience = num_yrs_work_exp
-			self._project_rankings = project_rnks
+			self._project_rankings = np.asarray(list(itertools.chain.from_iterable((e,e+num_valid_projects) for e in project_rnks)))
 
 	# Defining properties for Student attributes.
 	def get_name(self):
@@ -104,6 +177,16 @@ class Student(object):
 		self._ID = val
 
 	ID = property(get_ID, set_ID, doc = "Get and set student ID.")
+
+        def get_bin_field(self):
+                return self.bin_field
+
+        def set_bin_field(self, val):
+                if not(val in [0,1]):
+                        raise FieldError("Binary field must be either 0 or 1.")
+                self._bin_field = val
+
+        bin_field = property(get_name, set_name, doc = "Get and set the binary field.")
 
 	def get_degree_pursuing(self):
 		return self._degree_pursuing
@@ -139,18 +222,18 @@ class Student(object):
 	coding_ability = property(get_coding_ability, set_coding_ability,
 					 doc = "Get and set coding ability.")
 
-	def get_cs_ug(self):
-		return self._was_cs_ug
+	def get_business_ability(self):
+		return self._business_ability
 
-	def set_cs_ug(self, val):
+	def set_business_ability(self, val):
 		'''
 			Checks if the input value is valid before setting it.
 		'''
-		self.check_valid(val, vals_cs_ug, s = " was cs undergrad")
-		self._was_cs_ug = val
+		self.check_valid(val, vals_business_ability, s = " business ability")
+		self._business_ability = val
 
-	was_cs_ug = property(get_cs_ug, set_cs_ug,
-				doc = "Get and set if student was a CS undergrad.")
+	business_ability = property(get_business_ability, set_business_ability,
+				doc = "Get and set business ability.")
 
 	def get_work_experience(self):
 		return self._work_experience
@@ -172,13 +255,17 @@ class Student(object):
 		'''
 			Checks if the input value is valid before setting it.
 		'''
-		self.check_valid_project_rankings(val, rankings_can_be_empty)
-		self._project_rankings = val
+                if duplicate_rankings:
+                        alg_project_rnk = np.asarray(list(itertools.chain.from_iterable((e,e+num_valid_projects) for e in val)))
+                else:
+                        alg_project_rnk = val
+		self.check_valid_project_rankings(alg_project_rnk, rankings_can_be_empty)
+		self._project_rankings = alg_project_rnk
 
 	project_rankings = property(get_project_rankings, set_project_rankings,
 					  doc = "Get and set the project rankings.")
 
-	def set_valid_properties(self, degree_pursuing, cod_abil, cs_ug, num_yrs_work_exp, 
+	def set_valid_properties(self, degree_pursuing, cod_abil, bus_abil, num_yrs_work_exp, 
 							project_lst, rankings_can_be_empty = False):
 		'''
 			Checks if all input values are valid before setting them.
@@ -186,7 +273,7 @@ class Student(object):
 		'''
 		self.set_degree_pursuing(degree_pursuing)
 		self.set_coding_ability(cod_abil)
-		self.set_cs_ug(cs_ug)
+		self.set_business_ability(bus_abil)
 		self.set_work_experience(num_yrs_work_exp)
 		self.set_project_rankings(project_lst, rankings_can_be_empty)
 
@@ -219,10 +306,11 @@ class Student(object):
 		lst.append(self._name)
 		lst.append(self._ID)
 		lst.append(self._degree_pursuing)
-		lst.append(self._was_cs_ug)
+		lst.append(self._business_ability)
 		lst.append(self._coding_ability)
 		lst.append(self._work_experience)
 		lst.append(self._project_rankings)
+                lst.append(self._bin_field)
 		return lst
 
 	def get_numerical_student_properties(self):
@@ -236,11 +324,16 @@ class Student(object):
 			lst.append(0)
 		elif (self._degree_pursuing == 1 or self._degree_pursuing == "MEng"):
 			lst.append(1)
+                elif (self._degree_pursuing == 2 or self._degree_pursuing == "HT"):
+                        lst.append(2)
+                elif (self._degree_pursuing == 3 or self._degree_pursuing == "CM"):
+                        lst.append(3)
 		else:
-			raise ValueError("What is this degree pursuing?")
-		lst.append(self._was_cs_ug)
+			raise ValueError("What kind of program is the student pursuing?")
+		lst.append(self._business_ability)
 		lst.append(self._coding_ability)
-		lst.append(self._work_experience)
+                lst.append(self._work_experience)
+                lst.append(self._bin_field)
 		return lst
 
 	def get_ranking(self, project_id): 
@@ -279,6 +372,8 @@ class Student(object):
 			--------
 			cost: int 
 		'''
+                if duplicate_rankings:
+                        rank = (rank + 1)/2
 		if (not(rank <= number_project_rankings)):
 			return 1000000000000000
 		else:
@@ -304,7 +399,7 @@ class Student(object):
 		try:
 			if (len(val) == 0 and rankings_can_be_empty):
 				self._project_rankings = val
-			elif (not (len(val) == number_project_rankings)):
+			elif (not (len(val) == alg_number_project_rankings)):
 				error = "There must be " + str(number_project_rankings)
 				error += " project rankings."
 				raise FieldError(error)
@@ -321,23 +416,20 @@ class Student(object):
 			past.append(elm)
 
 class Project(object):
-	def __init__(self, ID, num_MBAs, num_MEngs):
+	def __init__(self, ID, capacity, capacity_w):
 		'''
 			Parameters
 			----------
-			ID: Student's ID (int).
-			num_MBAs: number of MBAs that this Project requires (int).
-			num_MEngs: number of MEngs that this Project requires (int).
+			ID: Project's ID (int)
+                        capacity: The capacity per project (5 for 2015-2016) 
+                        capacity_w: The capacity per project with wiggle-room (6 for 2015-2016)
 		'''
 		self.set_ID(ID)
-		self.set_num_MBAs(num_MBAs)
-		self.set_num_MEngs(num_MEngs)
-		self._remaining_MBA_spots = num_MBAs
-		self._remaining_MEng_spots = num_MEngs
-		self._students = []
-		self._MBA_list  = []
-		self._MEng_list = []
-		# Waiting students is meant to be tuples of (rank, student) form.
+		self.set_capacity(capacity)
+		self.set_capacity_w(capacity_w)
+		self._remaining_spots = capacity
+                self._students = []
+                # Waiting students is meant to be tuples of (rank, student) form.
 		# I.e. (2, Ameya)  means that Ameya ranked this project 2 and is waiting.
 		self._waiting_students = []
 
@@ -370,50 +462,39 @@ class Project(object):
 			self._ID = val
 			existing_project_IDs.append(val)
 
+
+        def force_ID(self, val):
+                '''
+                    Force the project ID to be val.
+                '''
+                self._ID = val
+
 	ID = property(get_ID, set_ID,
 				  doc = "Get and set the team's ID, if not in the existing IDs.")
+        
+        def get_capacity(self):
+                return self._capacity
+        
+        def set_capacity(self, val):
+                self.check_valid_student_nums(val)
+                self._capacity = val
 
-	def get_num_MBAs(self):
-		return self._num_MBAs
+        capacity = property(get_capacity, set_capacity,
+                                                doc = "Get and set the capacity of this project.")
 
-	def set_num_MBAs(self, val):
-		self.check_valid_student_nums(val)
-		self._num_MBAs = val
 
-	num_MBAs = property(get_num_MBAs, set_num_MBAs,
-				  doc = "Get and set the number of MBAs that this team requires.")
+        def get_capacity_w(self):
+                return self._capacity_w
 
-	def get_num_MEngs(self):
-		return self._num_MEngs
+        def set_capacity_w(self, val):
+                self.check_valid_student_nums(val)
+                if (val >= self._capacity):
+                        self._capacity_w = val
+                else:
+                        raise FieldError("Wiggle capacity cannot be lower than the regular capacity")
 
-	def set_num_MEngs(self, val):
-		self.check_valid_student_nums(val)
-		self._num_MEngs = val
-
-	num_MEngs = property(get_num_MEngs, set_num_MEngs,
-				  doc = "Get and set the number of MEngs that this team requires.")
-
-	def get_MEng_list(self):
-		return self._MEng_list
-
-	def set_MEng_list(self, val):
-		error = "Cannot manually set the MEng list."
-		error += "Must add students via add_student function."
-		raise FieldError(error)
-
-	MEng_list = property(get_MEng_list, set_MEng_list,
-				  doc = "Get and set the MEng list on this project.")
-
-	def get_MBA_list(self):
-		return self._MBA_list
-
-	def set_MBA_list(self, val):
-		error = "Cannot manually set the MBA list. Must add students via."
-		error += "add_student function."
-		raise FieldError(error)
-
-	MBA_list = property(get_MBA_list, set_MBA_list,
-				  doc = "Get and set the MBA list on this project.")
+        capacity_w = property(get_capacity_w, set_capacity_w,
+                              doc = "Get and set the wiggle capacity of this project.")
 
 	def get_students(self):
 		return self._students
@@ -435,52 +516,22 @@ class Project(object):
 	waiting_students = property(get_waiting_students, set_waiting_students, 
 					   doc = "Get and set the waiting students for this project. ")
 
-	def get_remaining_MBA_spots(self):
-		return self._remaining_MBA_spots
+	def get_remaining_spots(self):
+		return self._remaining_spots
 
-	def set_remaining_MBA_spots(self, val):
+	def set_remaining_spots(self, val):
 		error = "Cannot manually set the remaining MBA spots."
 		raise FieldError(error)
 
-	remaining_MBA_spots = property(get_remaining_MBA_spots, set_remaining_MBA_spots,
-				  doc = "Get and set the remaining MBA spots on this project.")
-
-	def get_remaining_MEng_spots(self):
-		return self._remaining_MEng_spots
-
-	def set_remaining_MEng_spots(self, val):
-		error = "Cannot manually set the remaining MEng spots."
-		raise FieldError(error)
-
-	remaining_MEng_spots = property(get_remaining_MEng_spots, set_remaining_MEng_spots,
-				  doc = "Get and set the remaining MEng spots on this project.")
-
-	def has_remaining_MBA_spots(self):
-		'''
-			Returns a bool indicating if the project has remaining spots for MBAs.
-			Does not account for any "wiggle room" (one extra spot on the team).
-		'''
-		MBAs = filter(lambda s: s.degree_pursuing == 0 or s.degree_pursuing == "MBA", 
-			self._students)
-		num_MBAs_needed = self._num_MBAs - len(MBAs)
-		return (num_MBAs_needed > 0)
-
-	def has_remaining_MEng_spots(self):
-		'''
-			Returns a bool indicating if the project has remaining spots for MEngs.
-			Does not account for any "wiggle room" (one extra spot on the team).
-		'''
-		MEngs = filter(lambda s: s.degree_pursuing == 1 or s.degree_pursuing == "MEng",
-			 self._students)
-		num_MEngs_needed = self._num_MEngs - len(MEngs)
-		return (num_MEngs_needed > 0)
+	remaining_spots = property(get_remaining_spots, set_remaining_spots,
+				  doc = "Get and set the remaining spots on this project.")
 
 	def has_remaining_spots(self):
 		'''
 			Returns a bool indicating if the project has any spots remaining.
 			The spot could be for an MEng or an MBA.
 		'''
-		return self.has_remaining_MBA_spots() or self.has_remaining_MEng_spots()
+                return (self._remaining_spots > 0)
  
 	def has_waiting_students(self):
 		'''
@@ -488,99 +539,6 @@ class Project(object):
 			to join the project.
 		'''
 		return (len(self.waiting_students) > 0)
-
-	def add_student_to_MBAs(self, student, wiggle, verbose = False):
-		'''
-			Parameters
-			----------
-			student: MBA Student to add to the project (Student).
-			wiggle: indicates if we would like "wiggle room" or not (bool).
-			    If wiggle is True, then we will add one extra Student to
-			    the project (i.e. will make a project of 4 into one of 5).
-			    Note: will only add *one* extra Student.
-			    If wiggle is False, then we will only have the specified
-			    number of Students on the Project.
-			verbose: indicates if we want to print updates (bool).
-
-			Returns
-			-------
-			bool indicating if the add was successful.
-
-			If possible, adds student to the current Project (self), and returns True. 
-			Otherwise, does not modify the Project, and returns False.
-
-		'''
-		if (not(student._degree_pursuing == 0 or student._degree_pursuing == "MBA")):
-			if (verbose):
-				print "Degree is not 0 or MBA"
-			return False
-		elif (not(self.has_remaining_MBA_spots())):
-			if (wiggle):
-				if (len(self._students) > 4):
-					if (verbose):
-						print "This project does not have remaining MBA spots"
-					return False
-				# The wiggle spot is not taken. Can add this MBA.
-				else: 
-					self._MBA_list.append(student)
-					self._students.append(student)
-		else:
-			MBA_IDs  = [s.ID for s in self._students if s.degree_pursuing == 0 or
-			 s.degree_pursuing == "MBA"]
-			if (student.ID in MBA_IDs):
-				if (verbose):
-					print "Student is already on team"
-				return False
-			self._MBA_list.append(student)
-			self._students.append(student)
-			self._remaining_MBA_spots -= 1
-			return True
-
-	def add_student_to_MEngs(self, student, wiggle, verbose = False):
-		'''
-			Parameters
-			----------
-			student: MEng Student to add to the project (Student).
-			wiggle: indicates if we would like "wiggle room" or not (bool).
-			    If wiggle is True, then we will add one extra Student to
-			    the project (i.e. will make a project of 4 into one of 5).
-			    Note: will only add *one* extra Student.
-			    If wiggle is False, then we will only have the specified
-			    number of Students on the Project.
-			verbose: indicates if we want to print updates (bool).
-
-			Returns
-			-------
-			bool indicating if the add was successful.
-
-			If possible, adds student to the current Project (self), and returns True. 
-			Otherwise, does not modify the Project, and returns False.
-
-		'''
-		if (not(student.degree_pursuing == 1 or student.degree_pursuing == "MEng")):
-			if (verbose):
-				print "Degree is not 1 or MEng"
-			return False
-		elif (not(self.has_remaining_MEng_spots())):
-			if (wiggle):
-			# Wiggle spot already taken
-				if (len(self._students) > 4):
-					if (verbose):
-						print "This project does not have remaining Meng spots"
-					return False
-				# The wiggle spot is not taken. Can add this MEng.
-				else: 
-					self._MEng_list.append(student)
-					self._students.append(student)
-		else:
-			MEng_IDs  = [s.ID for s in self._students if s.degree_pursuing == 1 or 
-			s.degree_pursuing == "MEng"]
-			if (student.ID in MEng_IDs):
-				return False
-			self._MEng_list.append(student)
-			self._students.append(student)
-			self._remaining_MEng_spots -= 1
-			return True
 
 	def add_student(self, student, wiggle, verbose = False):
 		'''
@@ -606,16 +564,32 @@ class Project(object):
 		if (student.degree_pursuing == "MBA" or student.degree_pursuing == 0):
 			if (verbose):
 				print "Adding an MBA. ID is " + str(student.ID)
-			return self.add_student_to_MBAs(student, wiggle, verbose)
-		elif (student.degree_pursuing == "MEng" or student.degree_pursuing == 1):
+                elif (student.degree_pursuing == "MEng" or student.degree_pursuing == 1):
 			if (verbose):
 				print "Adding an MEng. ID is " + str(student.ID)
-			return self.add_student_to_MEngs(student, wiggle, verbose)
-		else:
-			raise FieldError("Are there more than two types?")
-
-	def num_spots_remaining(self):
-		return self._remaining_MEng_spots + self._remaining_MBA_spots
+                elif (student.degree_pursuing == "HT" or student.degree_pursuing == 2):
+                        if (verbose):
+                                print "Adding a Health Tech. ID is " + str(student.ID)
+                elif (student.degree_pursuing == "CM" or student.degree_pursuing == 3):
+                        if verbose:
+                                print "Adding a Connective Media. ID is " + str(student.ID)
+                else:
+                        raise FieldError("Is there a fifth program we are unaware of?")
+                if (not(self.has_remaining_spots())):
+                        if (wiggle):
+                                if (len(self._students) < self._capacity_w):
+                                        self._students.append(student)
+                                        return True
+                                else:
+                                        if (verbose):
+                                                print "This project does not have enough spots."
+                                        return False
+                else:
+                        if (student in self._students):
+                                return False
+                        self._students.append(student)
+                        self._remaining_spots -= 1
+                        return True
 
 	def add_waiting_student(self, student, verbose = False):
 		'''
@@ -629,7 +603,7 @@ class Project(object):
 			Nothing. Adds student to the waiting list.
 
 		'''
-		if (student in self._MBA_list or student in self._MEng_list):
+		if (student in self._students):
 			pass
 		else:
 			# Get the rank that this student gave this project.
@@ -639,13 +613,26 @@ class Project(object):
 			# Add the tuple to the waiting students list.
 			self._waiting_students.append(tup)
 
+                        
+        def remove_student(self, student):
+                self._students.remove(student)
+                self._remaining_spots += 1
+
+
+        def reset(self):
+                self._students = []
+                self._waiting_students = []
+                self._remaining_spots = self._capacity
+
+        def inv_get_ranking(self, student):
+                return student.get_ranking(self._ID)
+
 	def is_empty(self):
 		'''
 			Returns a bool indicating if the Project is empty.
 			An empty project is one that has no Students.
 		'''
-		return (self._remaining_MEng_spots == self._num_MEngs
-			and self.remaining_MBA_spots == self._num_MBAs)
+		return (self._remaining_spots == self._capacity)
 
 	def calculate_diversity(self, tup):
 		'''
@@ -671,16 +658,16 @@ class Project(object):
 		dict_key_vals = tup[1]
 		diversity = 0
 		num_students = len(self._students)
-		if (num_students < self.num_MBAs + self.num_MEngs):
+		if (num_students < self._capacity):
 			error = "Students on project " + str(self.ID) + " are "
 			error += str([s.ID for s in self.students]) + ". This project is not full."
 			error += " Cannot calculate diversity."
 			raise ValueError(error)
 		else:
 			attributes = []
-			for student in self._students:
+                        for student in self._students:
 				attributes.append(dict_key_vals[student.ID])
-			# Make a list of indices in attributes (using range)
+                        # Make a list of indices in attributes (using range)
 			indices = range(len(attributes))
 
 			# Generate all possible combinations of those (not permutations)
@@ -693,7 +680,6 @@ class Project(object):
 				d = distance.do_python_distance_data(fst_properties,
 					snd_properties, inv_cov_mat)
 				diversity += d
-
 	 	return diversity
 
 

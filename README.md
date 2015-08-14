@@ -3,6 +3,10 @@ company-projects-matcher
 
 The matching algorithm for [Company Projects: CS 5999] (http://tech.cornell.edu/experience/company-projects/).
 
+NEW in this version:
+Numerous bugfixes.
+Extended configurability to allow use for other matching purposes.
+
 Dependencies
 ------------
 ###Installation of Python
