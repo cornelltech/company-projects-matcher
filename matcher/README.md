@@ -9,7 +9,7 @@ The config file allows us to specify certain parameters, including team size, nu
 
 The configuration file must comply with the following format:
 
-`[valid_values]
+```[valid_values]
 
 use_binary = True|False
 
@@ -33,7 +33,8 @@ capacity_w = [int >= capacity]
 
 [files]
 
-project_id_mappings = [*.csv]`
+project_id_mappings = [*.csv]
+```
 
 use_binary indicates whether the program should give the students an extra binary field (like gender and other things) for the purposes of diversity.
 Only one binary field is supported at this time. Future versions may allow for multiple binary fields (e.g. gender AND native NYer/nonlocal) 
