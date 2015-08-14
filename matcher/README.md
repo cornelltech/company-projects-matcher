@@ -11,18 +11,27 @@ The configuration file must comply with the following format:
 
 [valid_values]
 use_binary = True|False
+
 duplicate_rankings = True|False
+
 match_all = True|False
+
 max_work_experience = [int]
+
 max_coding_ability = [int]
 
 max_business_ability = [int]
+
 num_valid_projects = [int]
+
 number_project_rankings = [int]
+
 capacity = [int]
+
 capacity_w = [int >= capacity]
 
 [files]
+
 project_id_mappings = [*.csv]
 
 use_binary indicates whether the program should give the students an extra binary field (like gender and other things) for the purposes of diversity.
