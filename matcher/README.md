@@ -10,6 +10,7 @@ The config file allows us to specify certain parameters, including team size, nu
 The configuration file must comply with the following format:
 
 [valid_values]
+
 use_binary = True|False
 
 duplicate_rankings = True|False
