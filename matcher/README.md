@@ -88,20 +88,22 @@ We also must input the project name that corresponds with each ID, so that when 
 
 4. Create or obtain data with information on students, their backgrounds, and their project rankings. Project rankings are entered in the form of Project ID. 
 
+5. Run the main files -- for creating teams with the project rankings, the format is `./ranked_teams_main.py -i <inputfile> [-o <outputfile>] -m [cc|co] -c <configfile>` while for creating diverse teams without rankings, the format is `./diversity_main.py -i <inputfile> [-o <outputfile>] -n <number_of_teams> -c <configfile>`
+
+Caveats below:
+
 Make sure your input data is formatted correctly! Due to time constraints, the ONLY optional column for the student file input is the binary field column. All others are required. If you do not care about some fields, fill the columns with zeroes.
 
 Example: Conversations in the studio cares only about gender and program for diversity. So fill in the work experience, business ability, and coding ability columns with zeroes.
 
 All project rankings must be valid (described in #3) and students must select num_project_rankings *distinct* project IDs to include in his/her rankings.
 
-	* If you are trying to create diverse teams, you can use the exact same file that you would use to match students to projects. The diversity algorithm also relies on Project and Student objects, but ignores the student rankings as part of the energy function. Each team is assigned to a "project" -- this name is purely for organizational purposes, so that we can group the students easily.
+If you are trying to create diverse teams, you can use the exact same file that you would use to match students to projects. The diversity algorithm also relies on Project and Student objects, but ignores the student rankings as part of the energy function. Each team is assigned to a "project" -- this name is purely for organizational purposes, so that we can group the students easily.
 
-	* Note: when number of project rankings changes, so will the exact configuration of the input test file that you will have to input. eighty_students.csv is just a rough model of what the data should look like (with 10 examples, currently).
-
-5. Run the main files -- for creating teams with the project rankings, the format is `./ranked_teams_main.py -i <inputfile> [-o <outputfile>] -m [cc|co] -c <configfile>`
+Note: when number of project rankings changes, so will the exact configuration of the input test file that you will have to input. eighty_students.csv is just a rough model of what the data should look like (with 10 examples, currently).
 
 cc and co tell the annealer which energy+move functions to use. cc is based on company challenges, and so moves involve both students and projects; co is based on conversations in the studio, so moves involve only students.
 
 Use cc if you are using the algorithm for company challenges. Use co if you are using the algorithm for conversations in the studio.  
 
-
+When attempting to make diverse teams, the match_all config field is ignored. Furthermore, the number you specify with the `-n` flag should result in teams with a minimum capacity of `capacity` as specified in the config file, as the diversity calculations will not proceed unless all the teams are at least at their capacity.
