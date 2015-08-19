@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import util
+import classes
 import ConfigParser
 import perry_geo_annealing_diversity as pgd
 import perry_geo_test as test
@@ -42,15 +43,16 @@ if (__name__ == "__main__"):
 
 	try:
 		argv = sys.argv[1:]
-		opts, args = getopt.getopt(argv, "i:o:n:", ["input", "output", "numteams"])
+		opts, args = getopt.getopt(argv, "i:o:n:c:", ["input", "output", "numteams", "config"])
 	except (getopt.GetoptError):
 		print "Unrecognized arguments."
-		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams> -c <configfile>"
 		sys.exit(2)
 
 	set_input_file = False
 	set_output_file = False
 	set_num_teams = False
+        set_config = False
 
 	for opt, arg in opts:
 		if (opt == "-i"):
@@ -62,7 +64,9 @@ if (__name__ == "__main__"):
 		elif (opt == "-n"):
 			num_teams = int(arg)
 			set_num_teams = True
-
+                elif (opt == "-c"):
+                        config = arg
+                        set_config = True
 	if (not(set_input_file)):
 		print "Please specify an input file."
 		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
@@ -72,29 +76,36 @@ if (__name__ == "__main__"):
 		print "Please specify the number of teams to create."
 		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
 
+        if (not(set_config)):
+                print "Please specify a config file."
+                sys.exit(2)
+
 	# Create config parser to get various fields.
 	configParser = ConfigParser.ConfigParser()
-	configFilePath = r'config.txt'
+	configFilePath = config
 	configParser.read(configFilePath)
 
+        classes.init_classes(config)
 	project_id_mappings = configParser.get('files', 'project_id_mappings')
-	num_MBAs = configParser.getint('valid_values', 'num_MBAs')
-	num_MEngs = configParser.getint('valid_values', 'num_MEngs')
-	team_size = num_MBAs + num_MEngs
+	capacity = configParser.getint('valid_values', 'capacity')
+	capacity_w = configParser.getint('valid_values', 'capacity_w')
+        temp = configParser.getint('valid_values', 'temperature')
+        iters = configParser.getint('valid_values', 'iterations')
+	team_size = capacity
 
 	# Creating the annealer with our energy and move functions.
 	annealer = Annealer(pgd.energy, pgd.move)
-	all_projects = util.generate_all_projects()
-	students = util.create_students_from_input(input_file)
+	all_projects = util.generate_all_projects(config)
+	students = util.create_students_from_input(input_file, config)
 
 	sol = initial_solution.random_initial_solution_for_diversity(students, all_projects, num_teams)	
 
 	use_diversity = True
 	use_file = False
 	if (set_output_file):
-		test.manual_schedule(use_file, students, sol, annealer, use_diversity, input_file, output_file)
+		test.manual_schedule(use_file, students, sol, None, annealer, use_diversity, input_file, temp, iters, output_file)
 	else:
-		test.manual_schedule(use_file, students, sol, annealer, input_file, use_diversity)
+		test.manual_schedule(use_file, students, sol, None, annealer, use_diversity, input_file, temp, iters)
 
 	string =  "Program completed in " + str((time.time() - start_time)/60)
 	string += " minutes."

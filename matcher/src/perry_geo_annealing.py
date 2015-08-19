@@ -147,7 +147,7 @@ def move(state, verbose = False, super_verbose = False):
 		for p in projects:
 		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
-	state_after_change = (projects, inv_cov_mat_tup, feasibles)
+	#state_after_change = (projects, inv_cov_mat_tup, feasibles)
 
 	#print energy(state_after_change)
 

@@ -8,18 +8,19 @@ def energy(state):
 	'''
 	projects = state[0]
 	inv_cov_mat_tup = state[1]
+        human_readability_constant = 50
 	def team_diversity_cost():
 		diversities = []
 		for project in projects:
 			project_diversity = project.calculate_diversity(inv_cov_mat_tup)
 			diversities.append(project_diversity)
 		avg_diversity = np.mean(diversities)
-		return 1 / avg_diversity
+		return -avg_diversity
 
-	return team_diversity_cost()
+	return team_diversity_cost() + human_readability_constant
 
 
-def move(state, verbose = True, super_verbose = False):
+def move(state, verbose = False, super_verbose = False):
 	'''
 		Makes a random change to a state.
 		
@@ -65,12 +66,7 @@ def move(state, verbose = True, super_verbose = False):
 	student_one = util.random_student(first_team)
 	student_two = util.random_student(second_team)
 
-	# NOTE: this is problematic if teams aren't full.
-	# Guarantee that the students are of the same type.
-	while (not (student_one.degree_pursuing == student_two.degree_pursuing)):
-		student_two = util.random_student(second_team)
-
-	# Remove the students from their respective teams
+        # Remove the students from their respective teams
 	first_team.students.remove(student_one)
 	if (not(student_two in second_team.students)):
 		if (super_verbose):
@@ -92,9 +88,9 @@ def move(state, verbose = True, super_verbose = False):
 		for p in projects:
 		 	print str(p.ID) + ": " + str([s.ID for s in p.students])
 
-	state_after_change = (projects, inv_cov_mat_tup)
+        #state_after_change = (projects, inv_cov_mat_tup)
 
-	print energy(state_after_change)
+	#print energy(state_after_change)
 
 	return projects
 

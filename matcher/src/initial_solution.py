@@ -23,45 +23,30 @@ def random_initial_solution_for_diversity(students, projects, num_teams):
 	# Otherwise, pick num_teams projects (the first ones)
 	projects = projects[0:num_teams]
 
-	# Get the MBAs and MEngs
-	MBAs = filter(lambda student: student.degree_pursuing == 0 or student.degree_pursuing == "MBA", students)
-	MEngs = filter(lambda student: student.degree_pursuing == 1 or student.degree_pursuing == "MEng", students)
-
-	num_MBAs_per_team = len(MBAs) / num_teams
-	num_MEngs_per_team = len(MEngs) / num_teams
+	num_students_per_team = len(students) / num_teams
 
 	# Copying the students over.
 	unmatched_students = students[:]
 	matched_projects = []
 	# If num MBAs per team == 0 or num Mengs per team == 0 raise an error
-	if (num_MBAs_per_team == 0 or num_MEngs_per_team == 0):
-		raise CompError ("There are not enough MBAs or MEngs to produce the desired teams.")
+	if (num_students_per_team == 0):
+		raise CompError ("There are not enough students to produce the desired number of teams.")
 
-	# Sequentially go through the projects, and assign the proper number of MBAs and 
-	# MEngs to each project.
+	# Sequentially go through the projects, and assign the proper number of students to them
 	for project in projects:
 
-		num_MBAs_needed_for_this_team = num_MBAs_per_team
-		num_MEngs_needed_for_this_team = num_MEngs_per_team
+                num_students_needed_for_this_team = num_students_per_team
 
-		# Get the required number of MBAs.
-		while (num_MBAs_needed_for_this_team > 0):
-			cur_MBA = util.random_student_lst(MBAs, [], True)
-			project.students.append(cur_MBA)
-			MBAs.remove(cur_MBA)
-			unmatched_students.remove(cur_MBA)
-			num_MBAs_needed_for_this_team -= 1
-
-		# Get the required number of MEngs.
-		while (num_MEngs_needed_for_this_team > 0):
-			cur_MEng = util.random_student_lst(MEngs, [], True)
-			project.students.append(cur_MEng)
-			MEngs.remove(cur_MEng)
-			unmatched_students.remove(cur_MEng)
-			num_MEngs_needed_for_this_team -= 1
+                # Get the required number of students
+		while (num_students_needed_for_this_team > 0):
+			cur_student = util.random_student_lst(unmatched_students, [], True)
+			project.students.append(cur_student)
+			unmatched_students.remove(cur_student)
+			num_students_needed_for_this_team -= 1
 
 		matched_projects.append(project)
 
+        #distributes the remainder evenly
 	index = 0
 	while (len(unmatched_students) > 0):
 		project = projects[index]
