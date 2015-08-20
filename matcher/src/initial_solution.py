@@ -40,7 +40,7 @@ def random_initial_solution_for_diversity(students, projects, num_teams):
                 # Get the required number of students
 		while (num_students_needed_for_this_team > 0):
 			cur_student = util.random_student_lst(unmatched_students, [], True)
-			project.students.append(cur_student)
+			project.add_student(cur_student, False)
 			unmatched_students.remove(cur_student)
 			num_students_needed_for_this_team -= 1
 
@@ -51,7 +51,7 @@ def random_initial_solution_for_diversity(students, projects, num_teams):
 	while (len(unmatched_students) > 0):
 		project = projects[index]
 		cur_student = util.random_student_lst(unmatched_students, [], True)
-		project.students.append(cur_student)
+		project.add_student(cur_student, True)
 		unmatched_students.remove(cur_student)
 		if (index == len(projects) - 1):
 			index = 0
@@ -62,10 +62,11 @@ def random_initial_solution_for_diversity(students, projects, num_teams):
 		print str(p.ID) + ":" + str([s.ID for s in p.students])
 
 	# Sanity check to make sure that all students were matched to projects.
-	num_total_students = sum([len(project.students) for project in projects])
-	if (not (len(students) == num_total_students)):
-		raise CompError("Not all students were matched to projects.")
-
+	num_matched_students = sum([len(project.students) for project in projects])
+	if (len(students) > num_matched_students):
+		raise CompError("Not all students were matched to projects. Increase the team capacity in the config file.")
+        elif (len(students) < num_matched_students):
+                raise CompError("Somehow the number of students matched exceeds the number of students to begin with. This shouldn't happen.")
 	return projects
 	
 def greedy_initial_solution(original_students, original_feasible_projects, verbose = False):

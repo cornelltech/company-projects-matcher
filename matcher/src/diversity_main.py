@@ -69,15 +69,16 @@ if (__name__ == "__main__"):
                         set_config = True
 	if (not(set_input_file)):
 		print "Please specify an input file."
-		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams> -c <configfile>"
 		sys.exit(2)
 
 	if (not(set_num_teams)):
 		print "Please specify the number of teams to create."
-		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams>"
+		print " usage: ./diversity_main.py -i <inputfile> [-o <outputfile>] -n <numteams> -c <configfile>"
 
         if (not(set_config)):
                 print "Please specify a config file."
+                print " usage: ./diversity_main.py -i <inputfile> [-o outputifle>] -n <numteams> -c <configfile>"
                 sys.exit(2)
 
 	# Create config parser to get various fields.
