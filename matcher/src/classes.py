@@ -27,6 +27,8 @@ alg_number_project_rankings = None
 
 duplicate_rankings = None
 
+project_names_and_ids_file = None
+
 def init_classes(config):
         global max_business_ability
         global vals_business_ability
@@ -40,6 +42,7 @@ def init_classes(config):
         global number_project_rankings 
         global alg_number_project_rankings 
         global duplicate_rankings
+        global project_names_and_ids_file
 
         configFilePath = config.encode('string-escape')
         configParser.read(configFilePath)
@@ -90,7 +93,10 @@ def init_classes(config):
                 vals_valid_projects = range(1, (2*num_valid_projects) + 1)
         else :
                 vals_valid_projects = range(1, num_valid_projects + 1)
-
+        try:
+                project_names_and_ids_file = configParser.get('files', 'project_id_mappings')
+        except (ConfigParser.Error):
+                project_names_and_ids_file = "project_ids_and_names.csv"
 
 existing_student_IDs = []
 existing_team_IDs = []

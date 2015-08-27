@@ -434,11 +434,7 @@ def input_checks(students, projects, capacity, capacity_w,
 
 def read_project_ids_and_names_from_input():
 
-	configParser = ConfigParser.ConfigParser()
-	configFilePath = r'config.txt'
-	configParser.read(configFilePath)
-
-	file = configParser.get('files', 'project_id_mappings')
+	file = classes.project_names_and_ids_file
 
 	data = pd.read_csv(file)
 
@@ -642,7 +638,7 @@ def list_low_interest_students(state):
                                                 print dict_project_names[rank_i_project_id]
                                 else:
                                         for i in range (0, len(student.project_rankings),2):
-                                                print "Rank " + str(i + 1) + ":",b
+                                                print "Rank " + str(i + 1) + ":",
                                                 rank_i_project_id = student.project_rankings[i]
                                                 print dict_project_names[rank_i_project_id]
 				unranked = True
