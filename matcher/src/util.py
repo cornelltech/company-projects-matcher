@@ -637,7 +637,7 @@ def list_low_interest_students(state):
                                                 rank_i_project_id = student.project_rankings[i]
                                                 print dict_project_names[rank_i_project_id]
                                 else:
-                                        for i in range (0, len(student.project_rankings),2):
+                                        for i in range (0, len(student.project_rankings)):
                                                 print "Rank " + str(i + 1) + ":",
                                                 rank_i_project_id = student.project_rankings[i]
                                                 print dict_project_names[rank_i_project_id]
