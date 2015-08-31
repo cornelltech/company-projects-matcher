@@ -77,7 +77,10 @@ def move(state, verbose = False, super_verbose = False):
                         return len(filter(lambda s:s.get_ranking(p.ID) < 100,project_to_swap.students))
                 reasonable_projects.sort(key=popularity, reverse = True)
                 most_likely_popular = reasonable_projects[:max(10, 2*len(projects))]
-                other = util.random_project(most_likely_popular, projects, False)
+                #other = util.random_project(most_likely_popular, projects, False)
+                other = util.random_project(most_likely_popular, [], True)
+                while (project_to_swap.ID == other.ID):
+                        other = util.random_project(most_likely_popular, [], True)
                 if other == None:
                         pass
                 else :
@@ -85,6 +88,8 @@ def move(state, verbose = False, super_verbose = False):
                         projects.remove(project_to_swap)
                         projects.append(other)
                         util.safe_project_swap(project_to_swap, other)
+                # print "swapping " + str(tmp) + " for " + str(other.ID)
+                #print "Project IDs in swap move is " + str([p.ID for p in projects])
         else: 
                 project_one = util.random_project(projects, [], True)
                 project_two = util.random_project(projects, [], True)
