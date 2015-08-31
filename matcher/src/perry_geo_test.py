@@ -63,7 +63,7 @@ def manual_schedule(use_file, students, sol, feasible_projects,  annealer, use_d
 		util.list_unranked_students(state)
 		util.list_low_interest_students(state)
 
-def greedy_solutions_and_goodness(students, feasible_projects, match_all, num_times = 1000):
+def greedy_solutions_and_goodness(students, feasible_projects, match_all, num_times = 1):
 		'''
 			Optimizes the initial solution energy, not including diversity.
 			Then, annealing will optimize a function of the two.
@@ -94,8 +94,13 @@ def greedy_solutions_and_goodness(students, feasible_projects, match_all, num_ti
 				project.reset()
                                 
 			cur_sol = initial_solution.greedy_initial_solution(students, feasible_projects)
+                        ''' print "UNMATCHED STUDENTS ARE AS FOLLOWS"
+                        for s in cur_sol[1]:
+                                print s.ID
+                        print "MAKING INITIAL SOLUTION"'''
                         if match_all:
                                 cur_sol = initial_solution.randomly_add_unmatched_students(cur_sol)
+                                cur_sol = [p for p in cur_sol if len(p.students) > 0]
                         else :
                                 cur_sol = filter(lambda project: len(project.students) == project.capacity, cur_sol[0])
 			print "Greedy solution " + str(i) + ":"
@@ -117,6 +122,7 @@ def greedy_solutions_and_goodness(students, feasible_projects, match_all, num_ti
                         cur_sol = initial_solution.greedy_initial_solution_team_first(students, feasible_projects, i)
                         if match_all:
                                 cur_sol = initial_solution.randomly_add_unmatched_students(cur_sol)
+                                cur_sol = [p for p in cur_sol if len(p.students) > 0]
                         else:
                                 cur_sol = filter(lambda project: len(project.students) == project.capacity, cur_sol[0])
                         cur_avg_rank = avg_ranking_cost(cur_sol)

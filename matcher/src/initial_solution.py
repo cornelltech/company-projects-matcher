@@ -218,7 +218,7 @@ def randomly_add_unmatched_students((original_feasible_projects, original_unmatc
 	# If there are any teams that are not full, remove all students from them.
 	for project in feasible_projects:
 		if (not(len(project.students) == team_size)):
-			project.students = []
+			project.reset()
 
 	matched_projects = [project for project in feasible_projects if len(project.students) >= team_size]
 	
@@ -233,7 +233,7 @@ def randomly_add_unmatched_students((original_feasible_projects, original_unmatc
                         for i in range(team_size):
                                 st = util.random_student_lst(unmatched_students, [], False)
                                 unmatched_students.remove(st)
-                                project.students.append(st)
+                                project.add_student(st, False)
 			matched_projects.append(project)
 		else:
 			#pass
